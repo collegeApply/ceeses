@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceeses.dao.mapper.LnfsdxqMapper">
+
+
+
+    <insert id="initLnfsdxq">
+	    INSERT INTO `t_lnfsdxq`(`year`, `total_grade`, `student_count`, `category`, `ranking`, `rural_area_count`,
+	    `pasturing_area_count`, `pre_reguar_count`, `rural_ten_add`, `rural_twen_add`, `han_ten_add`,
+        `han_twen_add`,`pasturing_ten_add`,`pasturing_twen_add`)
+	    VALUES
+	    <foreach collection="list" item="lnfsdxq" separator=",">
+            (#{lnfsdxq.year}, #{lnfsdxq.totalGrade}, #{lnfsdxq.studentCount}, #{lnfsdxq.category}, #{lnfsdxq.ranking}, #{lnfsdxq.ruralAreaCount},
+            #{lnfsdxq.pasturingAreaCount}, #{lnfsdxq.preReguarCount}, #{lnfsdxq.ruralTenAdd},
+            #{lnfsdxq.ruralTwenAdd}, #{lnfsdxq.hanTenAdd}, #{lnfsdxq.hanTwenAdd},
+            #{lnfsdxq.pasturingTenAdd}, #{lnfsdxq.pasturingTwenAdd})
+        </foreach>
+	</insert>
+
+    <resultMap id="keyresult" type="com.ceeses.model.Lnfsdxq">
+        <result column="year" property="year"/>
+        <result column="total_grade" property="totalGrade"/>
+        <result column="student_count" property="studentCount" />
+        <result column="category" property="category"/>
+        <result column="ranking" property="ranking"/>
+
+    </resultMap>
+
+    <select id="queryTotalByGrade" resultMap="keyresult">
+
+        select `year`, `total_grade`, `student_count`, `category`, `ranking`
+
+        from t_lnfsdxq
+
+        where `year` = #{0} and `total_grade` = #{1}
+
+    </select>
+
+
+    <select id="queryCountByGrade" resultType="java.lang.Integer" parameterType="com.ceeses.model.Lnfsdxq">
+
+        SELECT  sum(student_count) from t_lnfsdxq where
+        `year`  = #{year}
+        <![CDATA[
+        and `total_grade` >= #{totalGrade}
+
+]]>
+
+
+    </select>
+
+</mapper>

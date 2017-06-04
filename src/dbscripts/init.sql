@@ -15,3 +15,96 @@ CREATE TABLE `t_lnyxlqqk`(
   `cast_archive_unit_name` VARCHAR(256) NOT NULL COMMENT '投档单位名称',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年院校录取情况，所有招录信息汇总';
+
+-- 历年分数段信息统计表
+CREATE TABLE `t_lnfsdxq` (
+  `year` smallint(4) NOT NULL COMMENT '年份',
+  `total_grade` smallint(3) NOT NULL COMMENT '总分',
+  `student_count` smallint(4) NOT NULL COMMENT '学生统计',
+  `category` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '科别-文科理科',
+  `ranking` int(8) NOT NULL COMMENT '排名',
+  `rural_area_count` smallint(4) NOT NULL COMMENT '农区统计',
+  `pasturing_area_count` smallint(4) DEFAULT NULL COMMENT '牧区统计',
+  `pre_reguar_count` smallint(4) NOT NULL COMMENT '预科统计',
+  `rural_ten_add` smallint(4) NOT NULL COMMENT '农区+10分统计',
+  `rural_twen_add` smallint(4) NOT NULL COMMENT '农区+20统计',
+  `han_ten_add` smallint(4) NOT NULL COMMENT '汉族+10分统计',
+  `han_twen_add` smallint(4) NOT NULL COMMENT '汉族+20统计',
+  `pasturing_ten_add` smallint(4) NOT NULL COMMENT '牧区+10分统计',
+  `pasturing_twen_add` smallint(4) NOT NULL COMMENT '牧区+20统计'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年分数段信息统计表';
+
+-- 历年省控分数线
+CREATE TABLE `t_lnskfxs` (
+  `year` smallint(4) NOT NULL COMMENT '年份',
+  `batch` smallint(3) NOT NULL COMMENT '批次，只分本科一批，二批，三批，专科',
+  `category` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '科类',
+  `grade` smallint(4) NOT NULL COMMENT '分数'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年省控线表';
+
+--省控线直接初始化进去
+INSERT INTO `t_lnskfxs` (`year`, `batch`, `category`, `grade`)
+VALUES
+	(2016,1,'1',457),
+	(2016,2,'1',415),
+	(2016,3,'1',379),
+	(2016,4,'1',200),
+	(2016,1,'5',416),
+	(2016,2,'5',380),
+	(2016,3,'5',353),
+	(2016,4,'5',200),
+	(2015,1,'1',466),
+	(2015,2,'1',420),
+	(2015,3,'1',382),
+	(2015,4,'1',200),
+	(2015,1,'5',400),
+	(2015,2,'5',363),
+	(2015,3,'5',339),
+	(2015,4,'5',200),
+	(2014,1,'1',473),
+	(2014,2,'1',426),
+	(2014,3,'1',386),
+	(2014,4,'1',200),
+	(2014,1,'5',406),
+	(2014,2,'5',362),
+	(2014,3,'5',330),
+	(2014,4,'5',200),
+	(2013,1,'1',435),
+	(2013,2,'1',382),
+	(2013,3,'1',344),
+	(2013,4,'1',200),
+	(2013,1,'5',383),
+	(2013,2,'5',340),
+	(2013,3,'5',310),
+	(2013,4,'5',200),
+	(2012,1,'1',433),
+	(2012,2,'1',373),
+	(2012,3,'1',320),
+	(2012,4,'1',316),
+	(2012,5,'1',220),
+	(2012,1,'5',401),
+	(2012,2,'5',355),
+	(2012,3,'5',318),
+	(2012,4,'5',315),
+	(2012,5,'5',228),
+	(2011,1,'1',430),
+	(2011,2,'1',380),
+	(2011,3,'1',342),
+	(2011,4,'1',340),
+	(2011,5,'1',240),
+	(2011,1,'5',380),
+	(2011,2,'5',331),
+	(2011,3,'5',300),
+	(2011,4,'5',295),
+	(2011,5,'5',226),
+	(2010,1,'1',430),
+	(2010,2,'1',386),
+	(2010,3,'1',350),
+	(2010,4,'1',346),
+	(2010,5,'1',295),
+	(2010,1,'5',405),
+	(2010,2,'5',363),
+	(2010,3,'5',328),
+	(2010,4,'5',323),
+	(2010,5,'5',220);
+
