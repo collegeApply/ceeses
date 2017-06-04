@@ -4,6 +4,7 @@ import com.ceeses.dao.LnfsdxqDao;
 import com.ceeses.dao.LnskfsxDao;
 import com.ceeses.model.Lnfsdxq;
 import com.ceeses.model.Lnskfsx;
+import com.ceeses.utils.CommonConstans;
 import com.ceeses.utils.ExcelUtil;
 import com.ceeses.web.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,6 @@ public class LnfsdxqController extends BaseController {
         Integer g  = lnfsdxqDao.queryCountByGrade(lnfsdxq);
         System.out.println(lnfsdxq);
 
-        List<Lnskfsx>  lnskfsxes = lnskfsxDao.queryLnskfsx(null);
-        System.out.println(lnskfsxes);
-
         return new JsonResult();
     }
 
@@ -62,6 +60,19 @@ public class LnfsdxqController extends BaseController {
 
             String lkFilePath = path + "/lnfsd_lk.xlsx";
             excelUtil.initLnfsdxq(lkFilePath);
+        }
+
+        return new JsonResult();
+    }
+
+    @RequestMapping("/initLnskfs")
+    @ResponseBody
+    public JsonResult initLnskfs() throws IOException {
+
+        List<Lnskfsx> lnskfsxes = lnskfsxDao.queryLnskfsx(null);
+        for (Lnskfsx lnskfsx: lnskfsxes) {
+            CommonConstans.lnskfsxMap.put(lnskfsx.getYear()+"_" + lnskfsx.getBatch() + "_" +lnskfsx.getCategory(),
+                    lnskfsx);
         }
 
         return new JsonResult();

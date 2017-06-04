@@ -12,7 +12,7 @@ public class ProbabilityCalcRequest {
     private String examRegCode;
     private Integer grade;
     private Integer ranking;
-    private Integer category;
+    private String category;
 
     //以下可选
     private Integer batch;
@@ -92,11 +92,11 @@ public class ProbabilityCalcRequest {
         this.targetMajor = targetMajor;
     }
 
-    public Integer getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(Integer category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 }
