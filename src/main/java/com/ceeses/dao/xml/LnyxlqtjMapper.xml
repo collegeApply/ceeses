@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceeses.dao.mapper.LnyxlqtjMapper">
+
+
+
+    <insert id="batchSaveLnyxlqtj">
+        INSERT INTO `t_lnyxlqtj` (`year`, `college_code`, `college_name`, `batch_code`,
+        `category`, `enroll_count`, `high_grade`, `low_grade`, `avg_grade`,
+        `high_ranking`, `low_ranking`, `avg_ranking`)
+        VALUES
+	    <foreach collection="list" item="lnyxlqtj" separator=",">
+            (#{lnyxlqtj.year}, #{lnyxlqtj.collegeCode}, #{lnyxlqtj.collegeName}, #{lnyxlqtj.batchCode},
+            #{lnyxlqtj.category}, #{lnyxlqtj.enrollCount}, #{lnyxlqtj.highGrade}, #{lnyxlqtj.lowGrade}, #{lnyxlqtj.avgGrade},
+            #{lnyxlqtj.highRanking}, #{lnyxlqtj.lowRanking}, #{lnyxlqtj.avgRanking})
+        </foreach>
+	</insert>
+
+
+</mapper>

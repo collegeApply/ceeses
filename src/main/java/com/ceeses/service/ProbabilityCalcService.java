@@ -108,6 +108,9 @@ public class ProbabilityCalcService {
 
 
     private List<Lnyxlqtj> queryAllColleges() {
+
+
+
         return  null;
     }
 

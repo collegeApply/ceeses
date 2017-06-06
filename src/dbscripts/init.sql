@@ -42,6 +42,54 @@ CREATE TABLE `t_lnskfxs` (
   `grade` smallint(4) NOT NULL COMMENT '分数'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年省控线表';
 
+-- 历年院校录取统计表
+CREATE TABLE `t_lnyxlqtj` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `year` smallint(4) NOT NULL COMMENT '年份',
+  `college_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校编码，统一代码',
+  `college_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校名称',
+  `batch_code` char(1) COLLATE utf8_unicode_ci NOT NULL COMMENT '批次编号',
+  `category` char(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '科类编号',
+  `enroll_count` smallint(4) NOT NULL COMMENT '录取人数统计',
+  `high_grade` smallint(4) NOT NULL COMMENT '最高分',
+  `low_grade` smallint(4) NOT NULL COMMENT '最低分',
+  `avg_grade` float(6,2) DEFAULT NULL COMMENT '平均分，需计算出来',
+  `high_ranking` smallint(4) NOT NULL COMMENT '最高名次，数字越小名次越高',
+  `low_ranking` smallint(4) NOT NULL COMMENT '最低名次',
+  `avg_ranking` float(9,3) DEFAULT NULL COMMENT '平均名次需计算出来',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年院校录取统计，针对某个院校';
+
+-- 历年专业录取统计表
+CREATE TABLE `t_lnzylqtj` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `college_enroll_id` int(11) COMMENT '对应历年院校录取表中的id，外键',
+  `major_name` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT '专业名称，专业只按名称模糊筛选',
+  `enroll_count` smallint(4) NOT NULL COMMENT '录取人数统计',
+  `high_grade` smallint(4) NOT NULL COMMENT '最高分',
+  `low_grade` smallint(4) NOT NULL COMMENT '最低分',
+  `avg_grade` float(6,2) DEFAULT NULL COMMENT '平均分，需计算出来',
+  `high_ranking` smallint(4) NOT NULL COMMENT '最高名次，数字越小名次越高',
+  `low_ranking` smallint(4) NOT NULL COMMENT '最低名次',
+  `avg_ranking` float(9,3) DEFAULT NULL COMMENT '平均名次需计算出来',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年专业录取统计，针对某个院校';
+
+-- 院校基础信息表
+CREATE TABLE `t_college_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `code` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校编码，统一代码',
+  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校名称',
+  `emial` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '批次编号',
+  `area` varchar(10) COLLATE utf8_unicode_ci COMMENT '区域编码，建议用01-30代码各省',
+  `type` varchar(5)  COMMENT '院校类型，直接用211，958表示',
+  `ranking` smallint(4) COMMENT '学校排名',
+  `create_time` DATETIME COMMENT '创建时间',
+  `update_time` DATETIME COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='院校基础信息，可能扩展';
+
+
 --省控线直接初始化进去
 INSERT INTO `t_lnskfxs` (`year`, `batch`, `category`, `grade`)
 VALUES

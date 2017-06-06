@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceeses.dao.mapper.CollegeInfoMapper">
+
+
+
+    <insert id="batchSaveCollegeInfo">
+        
+        INSERT INTO `t_college_info` (`code`, `name`, `emial`, `area`, `type`,
+          `ranking`, `create_time`, `update_time`)
+        VALUES
+        <foreach collection="list" item="collegeInfo" separator=",">
+            (#{collegeInfo.code}, #{collegeInfo.name}, #{collegeInfo.email}, #{collegeInfo.area},
+            #{collegeInfo.type}, #{collegeInfo.ranking},
+            #{collegeInfo.createTime}, #{collegeInfo.updateTime})
+        </foreach>
+
+    </insert>
+
+
+
+</mapper>

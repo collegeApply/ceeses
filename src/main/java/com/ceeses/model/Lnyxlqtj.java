@@ -10,7 +10,17 @@ public class Lnyxlqtj {
     private Long id;
     private Integer year;
     private String collegeCode;
+    private String collegeName;
+    // 1.提前本科   2.第一批本科   3.第二批本科   4.第三批本科   5.省内预科
+    // 6.提前专科   7.普通专科   8.省内本科定向   9.省内专科定向   A.提前本科定向
+    // B.一本定向   C.二本定向   D.三本定向   E.提前专科定向   F.普通专科定向
+    // H.贫困地区定向   Z.自主招生
     private String batchCode;
+    //0-A
+    /**
+     0-文理综合   1-文史  2-外语(文)  3-艺术(文)  4-体育(文)  5-理工
+     6-外语(理)  7-艺术(理) 8-体育(理)  9-单独考试  A-艺术(不分文理)
+     */
     private String category;
     private Integer enrollCount;
     private Integer highGrade;
@@ -123,5 +133,13 @@ public class Lnyxlqtj {
 
     public void setMajorEnrollHistoryList(List<Lnzylqtj> majorEnrollHistoryList) {
         this.majorEnrollHistoryList = majorEnrollHistoryList;
+    }
+
+    public String getCollegeName() {
+        return collegeName;
+    }
+
+    public void setCollegeName(String collegeName) {
+        this.collegeName = collegeName;
     }
 }
