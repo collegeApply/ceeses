@@ -23,8 +23,8 @@ public class Lnyxlqtj {
      */
     private String category;
     private Integer enrollCount;
-    private Integer highGrade;
-    private Integer lowGrade;
+    private Float highGrade;
+    private Float lowGrade;
     private Float avgGrade;
     private Integer highRanking;
     private Integer lowRanking;
@@ -79,19 +79,19 @@ public class Lnyxlqtj {
         this.enrollCount = enrollCount;
     }
 
-    public Integer getHighGrade() {
+    public Float getHighGrade() {
         return highGrade;
     }
 
-    public void setHighGrade(Integer highGrade) {
+    public void setHighGrade(Float highGrade) {
         this.highGrade = highGrade;
     }
 
-    public Integer getLowGrade() {
+    public Float getLowGrade() {
         return lowGrade;
     }
 
-    public void setLowGrade(Integer lowGrade) {
+    public void setLowGrade(Float lowGrade) {
         this.lowGrade = lowGrade;
     }
 

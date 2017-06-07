@@ -51,8 +51,8 @@ CREATE TABLE `t_lnyxlqtj` (
   `batch_code` char(1) COLLATE utf8_unicode_ci NOT NULL COMMENT '批次编号',
   `category` char(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '科类编号',
   `enroll_count` smallint(4) NOT NULL COMMENT '录取人数统计',
-  `high_grade` smallint(4) NOT NULL COMMENT '最高分',
-  `low_grade` smallint(4) NOT NULL COMMENT '最低分',
+  `high_grade` float(9,3) NOT NULL COMMENT '最高分',
+  `low_grade` float(9,3) NOT NULL COMMENT '最低分',
   `avg_grade` float(6,2) DEFAULT NULL COMMENT '平均分，需计算出来',
   `high_ranking` smallint(4) NOT NULL COMMENT '最高名次，数字越小名次越高',
   `low_ranking` smallint(4) NOT NULL COMMENT '最低名次',
@@ -80,12 +80,12 @@ CREATE TABLE `t_college_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `code` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校编码，统一代码',
   `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校名称',
-  `emial` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '批次编号',
+  `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校电子邮箱',
   `area` varchar(10) COLLATE utf8_unicode_ci COMMENT '区域编码，建议用01-30代码各省',
   `type` varchar(5)  COMMENT '院校类型，直接用211，958表示',
   `ranking` smallint(4) COMMENT '学校排名',
-  `create_time` DATETIME COMMENT '创建时间',
-  `update_time` DATETIME COMMENT '更新时间',
+  `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='院校基础信息，可能扩展';
 

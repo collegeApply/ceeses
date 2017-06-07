@@ -3,6 +3,8 @@ package com.ceeses.extractor;
 import com.ceeses.dao.LnyxlqqkDao;
 import com.ceeses.http.util.HttpClientUtil;
 import com.ceeses.model.Lnyxlqqk;
+import com.ceeses.model.PageInfo;
+import com.ceeses.utils.PageInfoUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -96,34 +98,6 @@ public class LnyxlqqkExtractor {
     }
 
     /**
-     * 提取分页信息
-     *
-     * @param params 参数
-     * @return 分页信息
-     */
-    private PageInfo extractPageInfo(Map<String, String> params) {
-        PageInfo pageInfo = new PageInfo();
-        String html = HttpClientUtil.post(lnyxlqqkPageUrl, params).getHtml();
-        if (html != null && !"".equals(html.trim())) {
-            Document document = Jsoup.parse(html);
-            // 获取分页信息
-            Element pagerDiv = document.getElementById("AspNetPager1");
-            String pageInfoString = pagerDiv.child(0).text();
-            String[] pageInfoSegmentArray = pageInfoString.split("：");
-
-            String pageInfoSegment1 = pageInfoSegmentArray[1].trim();
-            String pageInfoSegment2 = pageInfoSegmentArray[2].trim();
-            String pageInfoSegment3 = pageInfoSegmentArray[3].trim();
-
-            pageInfo.setTotal(Integer.valueOf(pageInfoSegment1.substring(0, pageInfoSegment1.indexOf(" "))));
-            pageInfo.setTotalPage(Integer.valueOf(pageInfoSegment3));
-            pageInfo.setCurrentPageNo(Integer.valueOf(pageInfoSegment2.substring(0, 1)));
-        }
-
-        return pageInfo;
-    }
-
-    /**
      * 分页提取历年院校录取情况信息
      *
      * @param params 参数
@@ -163,50 +137,6 @@ public class LnyxlqqkExtractor {
         return lnyxlqqks;
     }
 
-    private class PageInfo {
-        /**
-         * 总记录数
-         */
-        private Integer total;
-        /**
-         * 总页数
-         */
-        private Integer totalPage;
-        /**
-         * 当前页码
-         */
-        private Integer currentPageNo;
-
-        public Integer getTotal() {
-            return total;
-        }
-
-        public void setTotal(Integer total) {
-            this.total = total;
-        }
-
-        public Integer getTotalPage() {
-            return totalPage;
-        }
-
-        public void setTotalPage(Integer totalPage) {
-            this.totalPage = totalPage;
-        }
-
-        public Integer getCurrentPageNo() {
-            return currentPageNo;
-        }
-
-        public void setCurrentPageNo(Integer currentPageNo) {
-            this.currentPageNo = currentPageNo;
-        }
-
-        @Override
-        public String toString() {
-            return "[总记录数: " + getTotal() + ", 总页数: " + getTotalPage() + ", 当前页: " + getCurrentPageNo() + "]";
-        }
-    }
-
     private class ExtractTask implements Callable<Integer> {
         /**
          * 年份
@@ -237,7 +167,7 @@ public class LnyxlqqkExtractor {
                     params.put("kldm", kldm);
                     params.put("dydm", dydm);
                     params.remove("pageNum");
-                    PageInfo pageInfo = extractPageInfo(params);
+                    PageInfo pageInfo = PageInfoUtil.extractPageInfo(lnyxlqqkPageUrl, params);
                     LOGGER.info("提取参数为{}的数据, {}", params, pageInfo);
                     long startTime = System.currentTimeMillis();
                     for (int i = 1; i <= pageInfo.getTotalPage(); i++) {

@@ -6,13 +6,12 @@
 
     <insert id="batchSaveCollegeInfo">
         
-        INSERT INTO `t_college_info` (`code`, `name`, `emial`, `area`, `type`,
-          `ranking`, `create_time`, `update_time`)
+        INSERT INTO `t_college_info` (`code`, `name`, `email`, `area`, `type`,
+          `ranking`)
         VALUES
         <foreach collection="list" item="collegeInfo" separator=",">
             (#{collegeInfo.code}, #{collegeInfo.name}, #{collegeInfo.email}, #{collegeInfo.area},
-            #{collegeInfo.type}, #{collegeInfo.ranking},
-            #{collegeInfo.createTime}, #{collegeInfo.updateTime})
+            #{collegeInfo.type}, #{collegeInfo.ranking})
         </foreach>
 
     </insert>
