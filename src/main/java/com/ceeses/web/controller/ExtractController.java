@@ -3,6 +3,7 @@ package com.ceeses.web.controller;
 import com.ceeses.extractor.CollegeInfoExtractor;
 import com.ceeses.extractor.LnyxlqqkExtractor;
 import com.ceeses.extractor.LnyxlqtjExtractor;
+import com.ceeses.extractor.LnzylqtjExtractor;
 import com.ceeses.http.model.HttpResponseInfo;
 import com.ceeses.http.util.HttpClientUtil;
 import com.ceeses.web.result.JsonResult;
@@ -33,6 +34,11 @@ public class ExtractController extends BaseController {
     @Autowired
     private LnyxlqtjExtractor lnyxlqtjExtractor;
     /**
+     * 历年专业录取统计数据提取器
+     */
+    @Autowired
+    private LnzylqtjExtractor lnzylqtjExtractor;
+    /**
      * 院校信息提取器
      */
     @Autowired
@@ -51,6 +57,14 @@ public class ExtractController extends BaseController {
     public JsonResult extractLnyxlqtj() throws IOException {
         login();
         lnyxlqtjExtractor.extract();
+        return new JsonResult();
+    }
+
+    @RequestMapping("/lnzylqtj")
+    @ResponseBody
+    public JsonResult extractLnzylqtj() throws IOException {
+        login();
+        lnzylqtjExtractor.extract();
         return new JsonResult();
     }
 

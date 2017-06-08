@@ -6,11 +6,15 @@ package com.ceeses.model;
  */
 public class Lnzylqtj {
     private Long id;
+    private Integer year;
     private Long collegeEnrollId;
+    private String collegeName;
     private String majorName;
+    private String batchCode;
+    private String category;
     private Integer enrollCount;
-    private Integer highGrade;
-    private Integer lowGrade;
+    private Float highGrade;
+    private Float lowGrade;
     private Float avgGrade;
     private Integer highRanking;
     private Integer lowRanking;
@@ -24,12 +28,28 @@ public class Lnzylqtj {
         this.id = id;
     }
 
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
     public Long getCollegeEnrollId() {
         return collegeEnrollId;
     }
 
     public void setCollegeEnrollId(Long collegeEnrollId) {
         this.collegeEnrollId = collegeEnrollId;
+    }
+
+    public String getCollegeName() {
+        return collegeName;
+    }
+
+    public void setCollegeName(String collegeName) {
+        this.collegeName = collegeName;
     }
 
     public String getMajorName() {
@@ -40,6 +60,22 @@ public class Lnzylqtj {
         this.majorName = majorName;
     }
 
+    public String getBatchCode() {
+        return batchCode;
+    }
+
+    public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public Integer getEnrollCount() {
         return enrollCount;
     }
@@ -48,19 +84,19 @@ public class Lnzylqtj {
         this.enrollCount = enrollCount;
     }
 
-    public Integer getHighGrade() {
+    public Float getHighGrade() {
         return highGrade;
     }
 
-    public void setHighGrade(Integer highGrade) {
+    public void setHighGrade(Float highGrade) {
         this.highGrade = highGrade;
     }
 
-    public Integer getLowGrade() {
+    public Float getLowGrade() {
         return lowGrade;
     }
 
-    public void setLowGrade(Integer lowGrade) {
+    public void setLowGrade(Float lowGrade) {
         this.lowGrade = lowGrade;
     }
 

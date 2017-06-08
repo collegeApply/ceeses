@@ -63,8 +63,12 @@ CREATE TABLE `t_lnyxlqtj` (
 -- 历年专业录取统计表
 CREATE TABLE `t_lnzylqtj` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `year` smallint(4) NOT NULL COMMENT '年份',
   `college_enroll_id` int(11) COMMENT '对应历年院校录取表中的id，外键',
+  `college_name` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校名称',
   `major_name` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT '专业名称，专业只按名称模糊筛选',
+  `batch_code` char(1) COLLATE utf8_unicode_ci NOT NULL COMMENT '批次编号',
+  `category` char(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '科类编号',
   `enroll_count` smallint(4) NOT NULL COMMENT '录取人数统计',
   `high_grade` smallint(4) NOT NULL COMMENT '最高分',
   `low_grade` smallint(4) NOT NULL COMMENT '最低分',
