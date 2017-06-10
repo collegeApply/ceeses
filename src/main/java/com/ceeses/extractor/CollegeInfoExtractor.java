@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,15 +33,28 @@ public class CollegeInfoExtractor {
      * 院校信息
      */
     private String collegeInfoPageUrl = "http://www.qhzk.com/yxList.action";
+    /**
+     * 院校类型Map
+     */
+    private Map<String, String> collegeTypeMap;
+    /**
+     * 院校排名Map
+     */
+    private Map<String, Integer> collegeRankingMap;
     @Autowired
     private CollegeInfoDao collegeInfoDao;
 
-    public Integer extract() throws IOException {
+    public Integer extract() {
         LOGGER.info("提取院校信息开始......");
         long startTime = System.currentTimeMillis();
 
         PageInfo pageInfo = PageInfoUtil.extractPageInfo(collegeInfoPageUrl, null);
         LOGGER.info("提取分页信息结束, {}", pageInfo);
+
+        if (pageInfo.getTotal() > 0) {
+            LOGGER.info("清空院校信息表数据");
+            collegeInfoDao.empty();
+        }
 
         Map<String, String> params = new HashMap<>();
 
@@ -78,10 +90,13 @@ public class CollegeInfoExtractor {
                     Elements tds = dataTableTr.select("td");
                     if (tds.size() == 5) {
                         CollegeInfo collegeInfo = new CollegeInfo();
-                        collegeInfo.setName(tds.get(0).text());
+                        Element collegeNameElement = tds.get(0).getElementsByTag("a").get(0);
+                        collegeInfo.setName(collegeNameElement.text());
+                        collegeInfo.setCode(collegeNameElement.attr("href").split("\\?")[1].split("&")[0].split("=")[1]);
                         collegeInfo.setArea(tds.get(1).text());
                         collegeInfo.setEmail(tds.get(3).text());
-                        collegeInfo.setCode(tds.get(4).text());
+                        collegeInfo.setType(collegeTypeMap.get(collegeInfo.getName()));
+                        collegeInfo.setRanking(collegeRankingMap.get(collegeInfo.getName()));
 
                         collegeInfos.add(collegeInfo);
                     }
@@ -90,5 +105,13 @@ public class CollegeInfoExtractor {
         }
 
         return collegeInfos;
+    }
+
+    public void setCollegeTypeMap(Map<String, String> collegeTypeMap) {
+        this.collegeTypeMap = collegeTypeMap;
+    }
+
+    public void setCollegeRankingMap(Map<String, Integer> collegeRankingMap) {
+        this.collegeRankingMap = collegeRankingMap;
     }
 }

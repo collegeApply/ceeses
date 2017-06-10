@@ -80,18 +80,20 @@ CREATE TABLE `t_lnzylqtj` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年专业录取统计，针对某个院校';
 
 -- 院校基础信息表
+DROP TABLE IF EXISTS `t_college_info`;
 CREATE TABLE `t_college_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `code` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校编码，统一代码',
   `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校名称',
   `email` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校电子邮箱',
   `area` varchar(10) COLLATE utf8_unicode_ci COMMENT '区域编码，建议用01-30代码各省',
-  `type` varchar(5)  COMMENT '院校类型，直接用211，958表示',
+  `type` varchar(8)  COMMENT '院校类型，直接用211，958表示, 逗号分隔',
   `ranking` smallint(4) COMMENT '学校排名',
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='院校基础信息，可能扩展';
+  `update_time` TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unq_college_code`(`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='院校基础信息，可能扩展';
 
 
 -- 省控线直接初始化进去
