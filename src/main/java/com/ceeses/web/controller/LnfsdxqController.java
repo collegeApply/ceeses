@@ -103,7 +103,7 @@ public class LnfsdxqController extends BaseController {
 //        collegeInfoDao.batchSaveCollegeInfo(collegeInfos);
 
         ProbabilityCalcRequest probabilityCalcRequest = new ProbabilityCalcRequest();
-        probabilityCalcRequest.setTargetMajor("法学");
+        //probabilityCalcRequest.setTargetMajor("法学");
         probabilityCalcRequest.setTargetSchool("北京");
         probabilityCalcRequest.setRanking(5);
         probabilityCalcRequest.setYear(2016);

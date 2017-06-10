@@ -68,10 +68,9 @@ public class ProbabilityCalcService {
 
         //查询省控线
         for (Lnskfsx lnskfsx : CommonConstans.lnskfsxMap.values()){
-            if (lnskfsx.getYear() != year || !lnskfsx.getCategory().equals(category)){
-                continue;
+            if (lnskfsx.getYear().equals(year)  && lnskfsx.getCategory().equals(category)){
+                sortedSet.add(lnskfsx);
             }
-            sortedSet.add(lnskfsx);
         }
 
         for (Object obj : sortedSet){
@@ -79,6 +78,7 @@ public class ProbabilityCalcService {
             //拿到的第一个小于你当前分数的就是你分数对应的批次线
             if (hg.getGrade() < grade){
                 batchResult = hg.getBatch();
+                break;
             }
         }
         return batchResult;
@@ -120,7 +120,7 @@ public class ProbabilityCalcService {
         lnfsdxq.setTotalGrade(grade);
         //对应年份达到某个批次的总人数
         Integer total = lnfsdxqDao.queryCountByGrade(lnfsdxq);
-        return 0;
+        return total;
     }
 
     /**
@@ -128,6 +128,8 @@ public class ProbabilityCalcService {
      *
      */
     public ProbabilityCalaResponse getTargetColleges(ProbabilityCalcRequest probabilityCalcRequest){
+
+        ProbabilityCalaResponse response = new ProbabilityCalaResponse();
         //默认只模拟计算15年之后的数据
         if (probabilityCalcRequest.getYear() < 2015) {
             return null;
@@ -140,9 +142,17 @@ public class ProbabilityCalcService {
                 probabilityCalcRequest.getCategory());
         LOGGER.info("根据分数计算当前批次：{}" , batch);
 
+        //TODO 需做批次转换
+
+        String category = null;
+        if (probabilityCalcRequest.getCategory().equals("文史")){
+            category = "1";
+        } else if (probabilityCalcRequest.getCategory().equals("理工")){
+            category = "5";
+        }
         //2.获取当年批次分数，计算达到这个批次的总人数
         Integer currentGrade = CommonConstans.lnskfsxMap.get(currentYear + "_" + batch + "_" +
-                probabilityCalcRequest.getCategory()).getGrade();
+                category).getGrade();
         Integer currentTotal = getTotalRanking(currentYear,currentGrade);
 
         LOGGER.info("当年该批次分数线：{}，通过此批次总人数{}" , currentGrade, currentTotal);
@@ -168,7 +178,7 @@ public class ProbabilityCalcService {
 
             //首先拿到某年固定批次的分数
             Integer batchGrade = CommonConstans.lnskfsxMap.get(yearIndex + "_" + batch + "_" +
-                    probabilityCalcRequest.getCategory()).getGrade();
+                    category).getGrade();
             Integer indexTotal = getTotalRanking(yearIndex,batchGrade);
 
             LOGGER.info("年份：{} 分数线: {}, 通过分数线总人数：{}" ,yearIndex, batchGrade, indexTotal);
@@ -241,7 +251,7 @@ public class ProbabilityCalcService {
                     lnzymc.setEnrollCunt(enrollHistory.getZy_enroll_count());
                     lnzymc.setYear(yearIndex);
                     allMajorMap.put(yearIndex + "_" + enrollHistory.getCollege_code() + "_" +
-                            enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory() +
+                            enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory() + "_" +
                             enrollHistory.getMajor_name(), lnzymc);
                 }
 
@@ -374,9 +384,13 @@ public class ProbabilityCalcService {
         //5.开始计算概率
         System.out.println(probabilityCalaDTOMap);
         for (String resultIndex : probabilityCalaDTOMap.keySet()){
-
+            
         }
 
+        //6.开始排序
+
+        response.setResult(true);
+        response.setProbabilityCalaDTOs(new ArrayList<ProbabilityCalaDTO>(probabilityCalaDTOMap.values()));
         return null;
     }
 
