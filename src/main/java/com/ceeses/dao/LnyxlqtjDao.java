@@ -1,5 +1,6 @@
 package com.ceeses.dao;
 
+import com.ceeses.dto.CollegeEnrollHistory;
 import com.ceeses.dto.ProbabilityCalcRequest;
 import com.ceeses.model.Lnyxlqtj;
 
@@ -24,5 +25,5 @@ public interface LnyxlqtjDao {
      * @param probabilityCalcRequest
      * @return
      */
-    List<Lnyxlqtj> queryColleges(ProbabilityCalcRequest probabilityCalcRequest);
+    List<CollegeEnrollHistory> queryCollegeEnrollHistory(ProbabilityCalcRequest probabilityCalcRequest);
 }

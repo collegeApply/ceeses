@@ -1,7 +1,10 @@
 package com.ceeses.web.controller;
 
 import com.ceeses.dao.*;
+import com.ceeses.dto.CollegeEnrollHistory;
+import com.ceeses.dto.ProbabilityCalcRequest;
 import com.ceeses.model.*;
+import com.ceeses.service.ProbabilityCalcService;
 import com.ceeses.utils.CommonConstans;
 import com.ceeses.utils.ExcelUtil;
 import com.ceeses.web.result.JsonResult;
@@ -41,6 +44,9 @@ public class LnfsdxqController extends BaseController {
 
     @Autowired
     CollegeInfoDao collegeInfoDao;
+
+    @Autowired
+    ProbabilityCalcService probabilityCalcService;
 
     @RequestMapping("/test")
     @ResponseBody
@@ -83,19 +89,33 @@ public class LnfsdxqController extends BaseController {
 //        lnzylqtjDao.batchSaveLnzylqtj(lnzylqtjs);
 
 
-        List<CollegeInfo> collegeInfos = new ArrayList<>();
-        CollegeInfo collegeInfo = new CollegeInfo();
-        collegeInfo.setArea("01");
-        collegeInfo.setCode("10001");
-        collegeInfo.setCreateTime(new Date());
-        collegeInfo.setEmail("bjtc@15677.com");
-        collegeInfo.setName("北京大学");
-        collegeInfo.setRanking(1);
-        collegeInfo.setType("985");
-        collegeInfo.setUpdateTime(new Date());
-        collegeInfos.add(collegeInfo);
-        collegeInfoDao.batchSaveCollegeInfo(collegeInfos);
+//        List<CollegeInfo> collegeInfos = new ArrayList<>();
+//        CollegeInfo collegeInfo = new CollegeInfo();
+//        collegeInfo.setArea("01");
+//        collegeInfo.setCode("10001");
+//        collegeInfo.setCreateTime(new Date());
+//        collegeInfo.setEmail("bjtc@15677.com");
+//        collegeInfo.setName("北京大学");
+//        collegeInfo.setRanking(1);
+//        collegeInfo.setType("985");
+//        collegeInfo.setUpdateTime(new Date());
+//        collegeInfos.add(collegeInfo);
+//        collegeInfoDao.batchSaveCollegeInfo(collegeInfos);
 
+        ProbabilityCalcRequest probabilityCalcRequest = new ProbabilityCalcRequest();
+        probabilityCalcRequest.setTargetMajor("法学");
+        probabilityCalcRequest.setTargetSchool("北京");
+        probabilityCalcRequest.setRanking(5);
+        probabilityCalcRequest.setYear(2016);
+        probabilityCalcRequest.setAreaName("北京");
+        probabilityCalcRequest.setGrade(567);
+        probabilityCalcRequest.setBatch(2);
+        probabilityCalcRequest.setCategory("文史");
+        List<CollegeEnrollHistory> result = lnyxlqtjDao.queryCollegeEnrollHistory(probabilityCalcRequest);
+
+        System.out.println(result);
+
+        probabilityCalcService.getTargetColleges(probabilityCalcRequest);
 
         return new JsonResult();
     }

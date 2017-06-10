@@ -94,7 +94,7 @@ CREATE TABLE `t_college_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='院校基础信息，可能扩展';
 
 
---省控线直接初始化进去
+-- 省控线直接初始化进去
 INSERT INTO `t_lnskfxs` (`year`, `batch`, `category`, `grade`)
 VALUES
 	(2016,1,'1',457),

@@ -1,24 +1,23 @@
 package com.ceeses.dto;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by zhaoshan on 2017/6/3.
- * 院校名次统计，返回结果，最高名次，最低名次，平均名次
+ * 专业名次统计，返回结果，最高名次，最低名次，平均名次
  */
-public class Lnyxmc {
+public class Lnzymc {
 
     private Integer year;
+    private String majorName;
+    private Integer enrollCunt;
+
+
     private Float highRanking;
     private Float LowRanking;
-    private Integer enrollCunt;
     private Float avgRanking;
 
     private Float highGrade;
     private Float LowGrade;
     private Float avgGrade;
-
 
 
     public Integer getYear() {
@@ -29,31 +28,6 @@ public class Lnyxmc {
         this.year = year;
     }
 
-    public Integer getEnrollCunt() {
-        return enrollCunt;
-    }
-
-    public void setEnrollCunt(Integer enrollCunt) {
-        this.enrollCunt = enrollCunt;
-    }
-
-    public Float getAvgRanking() {
-        return avgRanking;
-    }
-
-    public void setAvgRanking(Float avgRanking) {
-        this.avgRanking = avgRanking;
-    }
-
-
-
-    public Float getAvgGrade() {
-        return avgGrade;
-    }
-
-    public void setAvgGrade(Float avgGrade) {
-        this.avgGrade = avgGrade;
-    }
 
     public Float getHighRanking() {
         return highRanking;
@@ -69,6 +43,10 @@ public class Lnyxmc {
 
     public void setLowRanking(Float lowRanking) {
         LowRanking = lowRanking;
+    }
+
+    public void setAvgRanking(Float avgRanking) {
+        this.avgRanking = avgRanking;
     }
 
     public Float getHighGrade() {
@@ -87,5 +65,31 @@ public class Lnyxmc {
         LowGrade = lowGrade;
     }
 
+    public Integer getEnrollCunt() {
+        return enrollCunt;
+    }
 
+    public void setEnrollCunt(Integer enrollCunt) {
+        this.enrollCunt = enrollCunt;
+    }
+
+    public Float getAvgRanking() {
+        return avgRanking;
+    }
+
+    public Float getAvgGrade() {
+        return avgGrade;
+    }
+
+    public void setAvgGrade(Float avgGrade) {
+        this.avgGrade = avgGrade;
+    }
+
+    public String getMajorName() {
+        return majorName;
+    }
+
+    public void setMajorName(String majorName) {
+        this.majorName = majorName;
+    }
 }

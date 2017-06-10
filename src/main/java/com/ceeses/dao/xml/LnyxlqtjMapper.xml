@@ -17,4 +17,72 @@
 	</insert>
 
 
+    <select id="queryCollegeEnrollHistory" resultType="com.ceeses.dto.CollegeEnrollHistory" parameterType="com.ceeses.dto.ProbabilityCalcRequest">
+
+         SELECT
+	       ci.`area`,
+	       ci.`email`,
+	       ci.`type`,
+	       ci.`ranking`,
+	       yx.college_code,
+	       yx.college_name,
+	       yx.batch_code,
+	       yx.`category`,
+	       yx.`high_ranking`,
+	       yx.`avg_ranking`,
+	       yx.`low_ranking`,
+	       yx.`high_grade`,
+	       yx.`avg_grade`,
+	       yx.`low_grade`,
+	       yx.`enroll_count`,
+	       zy.`major_name`,
+	       zy.`high_ranking` as zy_high_ranking,
+	       zy.`avg_ranking` as zy_avg_ranking,
+	       zy.`low_ranking` as zy_low_ranking,
+	       zy.`high_grade` as zy_high_grade,
+	       zy.`avg_grade` as zy_avg_grade,
+	       zy.`low_grade` as zy_low_grade,
+	       zy.`enroll_count` as zy_enroll_count
+        FROM
+    	    t_lnyxlqtj yx LEFT JOIN t_lnzylqtj zy ON yx.`college_name` = zy.`college_name`
+    	        and yx.`batch_code` = zy.`batch_code` and yx.`category` = zy.`category`
+    	    Left join t_college_info ci on yx.college_name = ci.name
+    	where
+		1=1
+		<if test="year !=null">
+			and yx.year = #{year}
+			and zy.`year`= #{year}
+		</if>
+
+		<if test="ranking !=null">
+			<![CDATA[
+				AND yx.low_ranking >= #{ranking}
+			]]>
+		</if>
+
+		<if test="targetSchool !=null">
+			AND yx.college_name LIKE concat('%',#{targetSchool},'%')
+		</if>
+
+		<if test="category !=null">
+			and yx.category = #{category}
+		</if>
+
+		<if test="batch !=null">
+			and yx.batch_code = #{batch}
+		</if>
+
+		<if test="areaName !=null">
+			and ci.`area` = #{areaName}
+		</if>
+
+		<if test="targetMajor !=null">
+			<![CDATA[
+				and zy.`low_ranking` >= #{ranking}
+			]]>
+			AND zy.major_name LIKE concat('%',#{targetMajor},'%')
+		</if>
+
+    </select>
+
 </mapper>

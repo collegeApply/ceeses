@@ -2,6 +2,7 @@ package com.ceeses.dao.impl;
 
 import com.ceeses.dao.LnyxlqtjDao;
 import com.ceeses.dao.mapper.LnyxlqtjMapper;
+import com.ceeses.dto.CollegeEnrollHistory;
 import com.ceeses.dto.ProbabilityCalcRequest;
 import com.ceeses.model.Lnyxlqtj;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class LnyxlqtjDaoImpl implements LnyxlqtjDao {
     }
 
     @Override
-    public List<Lnyxlqtj> queryColleges(ProbabilityCalcRequest probabilityCalcRequest) {
-        return null;
+    public List<CollegeEnrollHistory> queryCollegeEnrollHistory(ProbabilityCalcRequest probabilityCalcRequest) {
+        return lnyxlqtjMapper.queryCollegeEnrollHistory(probabilityCalcRequest);
     }
 }

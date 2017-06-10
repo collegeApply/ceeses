@@ -1,5 +1,6 @@
 package com.ceeses.dao.mapper;
 
+import com.ceeses.dto.CollegeEnrollHistory;
 import com.ceeses.dto.ProbabilityCalcRequest;
 import com.ceeses.model.Lnyxlqtj;
 
@@ -17,5 +18,10 @@ public interface LnyxlqtjMapper {
      */
     void batchSaveLnyxlqtj(List<Lnyxlqtj> lnyxlqtjs);
 
-
+    /**
+     * 查询历年院校录取历史
+     * @param probabilityCalcRequest
+     * @return
+     */
+    public List<CollegeEnrollHistory> queryCollegeEnrollHistory(ProbabilityCalcRequest probabilityCalcRequest);
 }

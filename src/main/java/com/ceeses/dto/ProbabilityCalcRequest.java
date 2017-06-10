@@ -11,12 +11,14 @@ public class ProbabilityCalcRequest {
     private String name;
     private String examRegCode;
     private Integer grade;
+    //名次
     private Integer ranking;
+    //科类
     private String category;
 
     //以下可选
     private Integer batch;
-    private Integer areaName;
+    private String areaName;
     private String targetSchool;
     private String targetMajor;
 
@@ -68,11 +70,11 @@ public class ProbabilityCalcRequest {
         this.batch = batch;
     }
 
-    public Integer getAreaName() {
+    public String getAreaName() {
         return areaName;
     }
 
-    public void setAreaName(Integer areaName) {
+    public void setAreaName(String areaName) {
         this.areaName = areaName;
     }
 
@@ -98,5 +100,21 @@ public class ProbabilityCalcRequest {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    @Override
+    public String toString() {
+        return "ProbabilityCalcRequest{" +
+                "year=" + year +
+                ", name='" + name + '\'' +
+                ", examRegCode='" + examRegCode + '\'' +
+                ", grade=" + grade +
+                ", ranking=" + ranking +
+                ", category='" + category + '\'' +
+                ", batch=" + batch +
+                ", areaName=" + areaName +
+                ", targetSchool='" + targetSchool + '\'' +
+                ", targetMajor='" + targetMajor + '\'' +
+                '}';
     }
 }
