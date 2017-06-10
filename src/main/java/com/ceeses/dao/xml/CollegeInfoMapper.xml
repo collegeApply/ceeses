@@ -2,20 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ceeses.dao.mapper.CollegeInfoMapper">
 
-
-
     <insert id="batchSaveCollegeInfo">
-        
         INSERT INTO `t_college_info` (`code`, `name`, `email`, `area`, `type`,
-          `ranking`)
+        `ranking`)
         VALUES
         <foreach collection="list" item="collegeInfo" separator=",">
             (#{collegeInfo.code}, #{collegeInfo.name}, #{collegeInfo.email}, #{collegeInfo.area},
             #{collegeInfo.type}, #{collegeInfo.ranking})
         </foreach>
-
     </insert>
 
-
-
+    <delete id="empty">
+        TRUNCATE TABLE `t_college_info`;
+    </delete>
 </mapper>

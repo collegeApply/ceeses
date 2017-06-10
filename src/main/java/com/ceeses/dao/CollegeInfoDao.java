@@ -8,11 +8,15 @@ import java.util.List;
  * Created by zhaoshan on 2017/6/6.
  */
 public interface CollegeInfoDao {
-
     /**
      * 批量保存院校信息
-     * @param collegeInfos
+     *
+     * @param collegeInfos 院校信息
      */
     void batchSaveCollegeInfo(List<CollegeInfo> collegeInfos);
 
+    /**
+     * 清空表数据
+     */
+    void empty();
 }

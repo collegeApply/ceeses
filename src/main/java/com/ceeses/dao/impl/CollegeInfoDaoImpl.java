@@ -21,4 +21,9 @@ public class CollegeInfoDaoImpl implements CollegeInfoDao {
     public void batchSaveCollegeInfo(List<CollegeInfo> collegeInfos) {
         collegeInfoMapper.batchSaveCollegeInfo(collegeInfos);
     }
+
+    @Override
+    public void empty() {
+        collegeInfoMapper.empty();
+    }
 }

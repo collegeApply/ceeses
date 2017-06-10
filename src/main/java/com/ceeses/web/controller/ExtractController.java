@@ -6,6 +6,7 @@ import com.ceeses.extractor.LnyxlqtjExtractor;
 import com.ceeses.extractor.LnzylqtjExtractor;
 import com.ceeses.http.model.HttpResponseInfo;
 import com.ceeses.http.util.HttpClientUtil;
+import com.ceeses.service.CollegeInfoService;
 import com.ceeses.web.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,10 +40,10 @@ public class ExtractController extends BaseController {
     @Autowired
     private LnzylqtjExtractor lnzylqtjExtractor;
     /**
-     * 院校信息提取器
+     * 院校信息服务
      */
     @Autowired
-    private CollegeInfoExtractor collegeInfoExtractor;
+    private CollegeInfoService collegeInfoService;
 
     @RequestMapping("/lnyxlqqk")
     @ResponseBody
@@ -72,7 +73,7 @@ public class ExtractController extends BaseController {
     @ResponseBody
     public JsonResult extractCollegeInfo() throws IOException {
         login();
-        collegeInfoExtractor.extract();
+        collegeInfoService.extract();
         return new JsonResult();
     }
 

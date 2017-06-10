@@ -10,7 +10,13 @@ import java.util.List;
 public interface CollegeInfoMapper {
     /**
      * 批量保存院校信息
-     * @param collegeInfos
+     *
+     * @param collegeInfos 院校信息
      */
     void batchSaveCollegeInfo(List<CollegeInfo> collegeInfos);
+
+    /**
+     * 清空表数据
+     */
+    void empty();
 }
