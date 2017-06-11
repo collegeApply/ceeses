@@ -10,6 +10,7 @@ import com.ceeses.model.Lnfsdxq;
 import com.ceeses.model.Lnskfsx;
 import com.ceeses.model.Lnyxlqtj;
 import com.ceeses.utils.CommonConstans;
+import com.sun.org.apache.bcel.internal.generic.LLOAD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -84,31 +85,6 @@ public class ProbabilityCalcService {
         return batchResult;
     }
 
-    public static void main(String[] args) {
-        SortedSet sortedSet = new TreeSet(new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                Integer h1 = (Integer) o1;
-                Integer h2 = (Integer) o2;
-                if (h1 > h2) {
-                    return -1;
-                }
-                if (h1 < h2) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-        sortedSet.add(123);
-        sortedSet.add(18);
-        sortedSet.add(122);
-        sortedSet.add(135);
-        sortedSet.add(128);
-        for (Object obj : sortedSet){
-            System.out.println(obj);
-        }
-    }
-
     /**
      * 这里的批次只有本科一批二批三批专科等
      * 根据年份，批次，科类，当年名次 + 分数段表，首先得出达到这个科类的人数
@@ -121,7 +97,7 @@ public class ProbabilityCalcService {
         if (category.equals("1")){
             lnfsdxq.setCategory("文科");
         }
-        if (category.equals(5)){
+        if (category.equals("5")){
             lnfsdxq.setCategory("理科");
         }
         //对应年份达到某个批次的总人数
@@ -138,7 +114,7 @@ public class ProbabilityCalcService {
         ProbabilityCalaResponse response = new ProbabilityCalaResponse();
 
         //计算过去多少年的数据
-        int calcYears = 2;
+        int calcYears = 3;
 
         //默认只模拟计算15年之后的数据
         if (probabilityCalcRequest.getYear() < 2015) {
@@ -152,14 +128,14 @@ public class ProbabilityCalcService {
                 probabilityCalcRequest.getCategory());
         LOGGER.info("根据分数计算当前批次：{}" , batch);
 
-        //TODO 需做批次转换
-
+        //科类转换，只处理文史理工两个科类
         String category = null;
         if (probabilityCalcRequest.getCategory().equals("文史")){
             category = "1";
         } else if (probabilityCalcRequest.getCategory().equals("理工")){
             category = "5";
         }
+
         //2.获取当年批次分数，计算达到这个批次的总人数
         Integer currentGrade = CommonConstans.lnskfsxMap.get(currentYear + "_" + batch + "_" +
                 category).getGrade();
@@ -203,6 +179,8 @@ public class ProbabilityCalcService {
             BeanUtils.copyProperties(probabilityCalcRequest,queryTarget);
             queryTarget.setYear(yearIndex);
             queryTarget.setRanking((int)indexRanking);
+            //TODO 需做批次转换，客户使用时候，统一转成16年的批次编号，输入参数转回当年，输出参数设置Map时候转回16年
+            LOGGER.info("开始查询并初始化年份{}的录取数据", yearIndex);
             List<CollegeEnrollHistory> enrollHistories = lnyxlqtjDao.queryCollegeEnrollHistory(queryTarget);
             for (CollegeEnrollHistory enrollHistory :enrollHistories){
 
@@ -215,7 +193,7 @@ public class ProbabilityCalcService {
                     calaDTO.setBatchCode(enrollHistory.getBatch_code());
                     calaDTO.setCollegeType(enrollHistory.getType());
                     calaDTO.setCategory(enrollHistory.getCategory());
-                    calaDTO.setBatchName(enrollHistory.getBatch_code());
+                    calaDTO.setBatchName(BatchInfoEnum.getNameByKey(enrollHistory.getBatch_code()));
                     calaDTO.setCollegeName(enrollHistory.getCollege_name());
                     calaDTO.setCategory(enrollHistory.getCategory());
                     calaDTO.setCollegeRanking(enrollHistory.getRanking());
@@ -271,12 +249,13 @@ public class ProbabilityCalcService {
 
             }
 
-            LOGGER.info("年份{}的原始数据组装完成",yearIndex);
+            LOGGER.info("年份{}的原始数据查询并初始化完成",yearIndex);
         }
 
         //4.处理原始数据
         //第一步，处理完整院校原始数据，目标：保证每个曾经出现过的院校+科类+批次的组合在每年都有记录
         for (String resultIndex : probabilityCalaDTOMap.keySet()){
+            LOGGER.info("处理院校{}：的原始数据--start",probabilityCalaDTOMap.get(resultIndex).getCollegeName());
             probabilityCalaDTOMap.get(resultIndex).setYxRankingMap(new HashMap<Integer, Lnyxmc>());
 
             for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
@@ -325,6 +304,7 @@ public class ProbabilityCalcService {
 
             }
 
+            LOGGER.info("处理院校{}： 的原始数据完成--end",probabilityCalaDTOMap.get(resultIndex).getCollegeName());
         }
 
         //第二步，处理完整专业原始数据，目标：保证每个曾经出现过的院校+科类+批次的组合在每年都有记录
@@ -332,8 +312,10 @@ public class ProbabilityCalcService {
             List<String> majorNameList = schoolMajorMap.get(resultIndex);
             //设置专业录取统计Map
             probabilityCalaDTOMap.get(resultIndex).setMajorEnrollDTOMap(new HashMap<String, MajorEnrollDTO>());
-
+            LOGGER.info("处理院校{}所有专业： 查询出的原始数据---start   ",
+                    probabilityCalaDTOMap.get(resultIndex).getCollegeName());
             for (String majorName : majorNameList){
+
                 //对每个专业录取统计Map在不同的专业时候增加一个DTO记录
                 probabilityCalaDTOMap.get(resultIndex).getMajorEnrollDTOMap().put(majorName,new MajorEnrollDTO());
 
@@ -341,7 +323,7 @@ public class ProbabilityCalcService {
                 probabilityCalaDTOMap.get(resultIndex).getMajorEnrollDTOMap().
                         get(majorName).setLnzymcMap(new HashMap<Integer, Lnzymc>());
 
-                for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - 2 ;yearIndex -- ) {
+                for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ) {
                     //如果记录存在
                     if (allMajorMap.keySet().contains(yearIndex + "_" + resultIndex + "_" + majorName)) {
                         probabilityCalaDTOMap.get(resultIndex).getMajorEnrollDTOMap().get(majorName)
@@ -390,12 +372,13 @@ public class ProbabilityCalcService {
                     }
                 }
             }
+            LOGGER.info("院校{}所有专业： 查询出的原始数据完成--end",
+                    probabilityCalaDTOMap.get(resultIndex).getCollegeName());
 
         }
 
         LOGGER.info("组装完成，开始计算概率");
         //5.开始计算概率
-        System.out.println(probabilityCalaDTOMap);
         //5.1先计算院校招生概率
         for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
             //5.1.1先只计算存在招生计划的
@@ -415,7 +398,7 @@ public class ProbabilityCalcService {
                 }
             }
         }
-
+        LOGGER.info("院校概率：完成计算存在招生计划的和未被录取的");
         //5.1.2先院校找出一个基准概率，如果当年无录取计划的，设置为该基准概率
         Map<String,Double> defaultGailv = new HashMap<>();
         for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
@@ -428,7 +411,7 @@ public class ProbabilityCalcService {
                 }
             }
         }
-
+        LOGGER.info("院校概率：查询并构造基础概率");
         for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
             //5.1.3处理无招生计划的
             for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
@@ -443,6 +426,7 @@ public class ProbabilityCalcService {
                 }
             }
         }
+        LOGGER.info("院校概率：完成无招生计划院校的概率设置");
         //5.1.4对概率按年份加权,可能查过去2年或者过去3年
         for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
             List<Double> gailv = new ArrayList<>();
@@ -457,7 +441,7 @@ public class ProbabilityCalcService {
             }
         }
 
-        System.out.println(probabilityCalaDTOMap);
+        LOGGER.info("院校概率：完成加权概率计算");
 
         //5.2先计算专业招生概率
         for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
@@ -483,7 +467,7 @@ public class ProbabilityCalcService {
 
             }
         }
-
+        LOGGER.info("专业概率：完成计算存在招生计划的和未被录取的");
 
         //5.2.2先给专业找出一个基准概率，如果某年无录取计划的，设置为该基准概率
         Map<String,Double> defaultZyGailv = new HashMap<>();
@@ -504,6 +488,7 @@ public class ProbabilityCalcService {
 
             }
         }
+        LOGGER.info("专业概率：完成计算并保存基准概率");
 
         for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
             //5.2.3处理无招生计划的
@@ -521,6 +506,7 @@ public class ProbabilityCalcService {
                 }
             }
         }
+        LOGGER.info("专业概率：设置无招生计划年份的概率");
         //5.2.4计算专业加权概率
         for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
 
@@ -539,10 +525,14 @@ public class ProbabilityCalcService {
 
         }
 
-        System.out.println(probabilityCalaDTOMap);
+        LOGGER.info("专业概率：完成所有专业加权概率设置");
 
-        //6.开始排序,先做按照学校排名排序
+        //6.获取非第一志愿录取率
 
+
+
+        //7.开始排序,先做按照学校排名排序
+        //排序可能有三种，按院校排名，按总录取概率，按非第一志愿录取率
         TreeSet<ProbabilityCalaDTO> sortedSet = new TreeSet<>(new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {

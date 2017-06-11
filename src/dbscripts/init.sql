@@ -95,6 +95,11 @@ CREATE TABLE `t_college_info` (
   UNIQUE KEY `unq_college_code`(`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='院校基础信息，可能扩展';
 
+-- 新增索引字段
+ALTER TABLE t_lnyxlqtj ADD INDEX yx_low_rank_index (`low_ranking`);
+ALTER TABLE t_lnzylqtj ADD INDEX zy_low_rank_index (`low_ranking`);
+ALTER TABLE t_lnyxlqtj ADD INDEX yx_year_index (`year`);
+ALTER TABLE t_lnzylqtj ADD INDEX zy_year_index (`year`);
 
 -- 省控线直接初始化进去
 INSERT INTO `t_lnskfxs` (`year`, `batch`, `category`, `grade`)
