@@ -3,6 +3,7 @@ package com.ceeses.service;
 
 
 import com.ceeses.dao.LnfsdxqDao;
+import com.ceeses.dao.LnskfsxDao;
 import com.ceeses.dao.LnyxlqtjDao;
 import com.ceeses.dto.*;
 import com.ceeses.extractor.LnyxlqqkExtractor;
@@ -35,6 +36,9 @@ public class ProbabilityCalcService {
 
     @Autowired
     LnyxlqtjDao lnyxlqtjDao;
+
+    @Autowired
+    LnskfsxDao lnskfsxDao;
 
     /**
      * 根据年份，成绩，科类计算能达到的批次，只计算需要预估的年份比如2017
@@ -121,6 +125,14 @@ public class ProbabilityCalcService {
             return null;
         }
 
+        if (CommonConstans.lnskfsxMap.isEmpty()){
+            List<Lnskfsx> lnskfsxes = lnskfsxDao.queryLnskfsx(null);
+            for (Lnskfsx lnskfsx: lnskfsxes) {
+                CommonConstans.lnskfsxMap.put(lnskfsx.getYear()+"_" + lnskfsx.getBatch() + "_" +lnskfsx.getCategory(),
+                        lnskfsx);
+            }
+        }
+
         LOGGER.info("查询请求参数：" + probabilityCalcRequest.toString());
         //1.根据分数获取当年批次
         Integer currentYear = probabilityCalcRequest.getYear();
@@ -137,6 +149,7 @@ public class ProbabilityCalcService {
         }
 
         //2.获取当年批次分数，计算达到这个批次的总人数
+
         Integer currentGrade = CommonConstans.lnskfsxMap.get(currentYear + "_" + batch + "_" +
                 category).getGrade();
         Integer currentTotal = getTotalRanking(currentYear,currentGrade,category);
