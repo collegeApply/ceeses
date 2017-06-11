@@ -541,11 +541,43 @@ public class ProbabilityCalcService {
 
         System.out.println(probabilityCalaDTOMap);
 
-        //6.开始排序
+        //6.开始排序,先做按照学校排名排序
+
+        TreeSet<ProbabilityCalaDTO> sortedSet = new TreeSet<>(new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                ProbabilityCalaDTO h1 = (ProbabilityCalaDTO) o1;
+                ProbabilityCalaDTO h2 = (ProbabilityCalaDTO) o2;
+                String h1Ranking = h1.getCollegeRanking();
+                if (null == h1Ranking || h1Ranking.equals("")){
+                    h1Ranking = "9999";
+                }
+                String h2Ranking = h2.getCollegeRanking();
+                if (null == h2Ranking || h2Ranking.equals("")){
+                    h2Ranking = "9999";
+                }
+                try {
+                    if (Integer.valueOf(h1Ranking) < Integer.valueOf(h2Ranking)) {
+                        return -1;
+                    }
+                    if (Integer.valueOf(h1Ranking) > Integer.valueOf(h2Ranking)) {
+                        return 1;
+                    }
+                } catch (Exception e){
+                    LOGGER.error("院校名次比较出错");
+                    return 0;
+                }
+                return 0;
+            }
+        });
+
+        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
+            sortedSet.add(calaDTO);
+        }
 
         response.setResult(true);
-        response.setProbabilityCalaDTOs(new ArrayList<ProbabilityCalaDTO>(probabilityCalaDTOMap.values()));
-        return null;
+        response.setProbabilityCalaDTOs(new ArrayList<ProbabilityCalaDTO>(sortedSet));
+        return response;
     }
 
 
