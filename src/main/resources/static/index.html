@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>高考分数评估系统-欢迎您</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="select2/css/select2.min.css" rel="stylesheet" media="screen">
+    <link href="css/index.css" rel="stylesheet" media="screen">
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">高考分数评估系统</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">为您评估</a></li>
+                <li><a href="#about">了解我们</a></li>
+                <li><a href="#contact">联系我们</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+<div class="container">
+    <div class="content-container">
+        <div class="row">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h4 class="panel-title">请您如实填写如下信息，以便我们为您做出更精确的推荐</h4>
+                </div>
+
+                <div class="panel-body">
+                    <div id="searchConditionsContainer">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group pull-left" style="width: 100px;">
+                                    <label style="margin-top: 34px">必填信息（<span style="color: red;">*</span>）:</label>
+                                </div>
+                                <div class="form-group pull-left" style="width: 160px;">
+                                    <label>姓名</label>
+                                    <input type="text" class="form-control input-sm" name="name" placeholder="输入您的姓名">
+                                </div>
+                                <div class="form-group pull-left" style="width: 160px;">
+                                    <label>考试分数</label>
+                                    <input type="text" class="form-control input-sm" name="grade" placeholder="输入考试分数">
+                                </div>
+                                <div class="form-group pull-left" style="width: 160px;">
+                                    <label>分数名次</label>
+                                    <input type="text" class="form-control input-sm" name="ranking" placeholder="输入分数名次">
+                                </div>
+                                <div class="form-group pull-left" style="width: 160px;">
+                                    <label>科别</label>
+                                    <select class="form-control" name="category">
+                                        <option value="理科">理科</option>
+                                        <option value="文科">文科</option>
+                                    </select>
+                                </div>
+                                <div class="form-group pull-left" style="width: 160px;">
+                                    <label>意向批次</label>
+                                    <select class="form-control" name="batch">
+                                        <option value="" selected>请选择批次</option>
+                                        <option value="1">提前本科</option>
+                                        <option value="2">第一批本科</option>
+                                        <option value="3">第二批本科</option>
+                                        <option value="4">第三批本科</option>
+                                        <option value="5">省内预科</option>
+                                        <option value="6">提前专科</option>
+                                        <option value="7">普通专科</option>
+                                        <option value="8">省内本科定向</option>
+                                        <option value="9">省内专科定向</option>
+                                        <option value="A">提前本科定向</option>
+                                        <option value="B">一本定向</option>
+                                        <option value="C">二本定向</option>
+                                        <option value="D">三本定向</option>
+                                        <option value="E">提前专科定向</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group pull-left" style="width: 100px;">
+                                    <label style="margin-top: 34px">选填信息（<span style="color: black;">*</span>）:</label>
+                                </div>
+                                <div class="form-group pull-left" style="width: 160px;">
+                                    <label>院校所在省市</label>
+                                    <select class="form-control" name="areaName"></select>
+                                </div>
+                                <div class="form-group pull-left" style="width: 260px;">
+                                    <label>目标院校</label>
+                                    <select class="form-control" name="targetSchool"></select>
+                                </div>
+                                <div class="form-group pull-left" style="width: 260px;">
+                                    <label>目标专业</label>
+                                    <input type="text" class="form-control input-sm" name="targetMajor" placeholder="输入目标专业">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div style="text-align: center;">
+                                    <button class="btn btn-danger btn-sm" name="resetSearchConditionBtn"
+                                            style="margin-right: 50px;">
+                                        <i class="glyphicon glyphicon-trash"></i>重新填写
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" name="searchBtn">
+                                        <i class="glyphicon glyphicon-cog"></i>为我评估
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h4 class="panel-title">如下是根据您提供的信息进行评估的结果</h4>
+                </div>
+                <div class="panel-body">
+
+                </div>
+                <div class="box-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="select2/js/select2.min.js"></script>
+<script src="bootbox/4.4.0/bootbox.min.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>

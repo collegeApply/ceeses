@@ -26,4 +26,9 @@ public class CollegeInfoDaoImpl implements CollegeInfoDao {
     public void empty() {
         collegeInfoMapper.empty();
     }
+
+    @Override
+    public List<CollegeInfo> findByArea(String area) {
+        return collegeInfoMapper.findByArea(area);
+    }
 }

@@ -1,6 +1,8 @@
 package com.ceeses.service;
 
+import com.ceeses.dao.CollegeInfoDao;
 import com.ceeses.extractor.CollegeInfoExtractor;
+import com.ceeses.model.CollegeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,6 +27,18 @@ public class CollegeInfoService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CollegeInfoService.class);
     @Autowired
     private CollegeInfoExtractor collegeInfoExtractor;
+    @Autowired
+    private CollegeInfoDao collegeInfoDao;
+
+    /**
+     * 根据省市查询院校信息
+     *
+     * @param area 省市名称
+     * @return 院校信息列表
+     */
+    public List<CollegeInfo> findByArea(String area) {
+        return collegeInfoDao.findByArea(area);
+    }
 
     public void extract() {
         try {
