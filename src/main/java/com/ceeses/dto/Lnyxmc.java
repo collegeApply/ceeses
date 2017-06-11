@@ -19,7 +19,7 @@ public class Lnyxmc {
     private Float LowGrade;
     private Float avgGrade;
 
-
+    private double gaiLv = 0.0d;
 
     public Integer getYear() {
         return year;
@@ -87,5 +87,11 @@ public class Lnyxmc {
         LowGrade = lowGrade;
     }
 
+    public double getGaiLv() {
+        return gaiLv;
+    }
 
+    public void setGaiLv(double gaiLv) {
+        this.gaiLv = gaiLv;
+    }
 }

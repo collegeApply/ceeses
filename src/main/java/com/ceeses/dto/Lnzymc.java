@@ -19,6 +19,8 @@ public class Lnzymc {
     private Float LowGrade;
     private Float avgGrade;
 
+    private double gaiLv = 0.0d;
+
 
     public Integer getYear() {
         return year;
@@ -91,5 +93,13 @@ public class Lnzymc {
 
     public void setMajorName(String majorName) {
         this.majorName = majorName;
+    }
+
+    public double getGaiLv() {
+        return gaiLv;
+    }
+
+    public void setGaiLv(double gaiLv) {
+        this.gaiLv = gaiLv;
     }
 }

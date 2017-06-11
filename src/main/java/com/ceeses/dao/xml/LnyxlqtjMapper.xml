@@ -24,6 +24,7 @@
 	       ci.`email`,
 	       ci.`type`,
 	       ci.`ranking`,
+
 	       yx.college_code,
 	       yx.college_name,
 	       yx.batch_code,

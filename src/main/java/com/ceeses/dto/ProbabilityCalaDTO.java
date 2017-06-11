@@ -16,7 +16,7 @@ public class ProbabilityCalaDTO {
     private String collegeType;
     private String category;
     private String enrollCount;
-    private Integer collegeRanking;
+    private String collegeRanking;
 
     //主键使年份，展示的使每年的录取情况
     private Map<Integer, Lnyxmc> yxRankingMap;
@@ -84,11 +84,11 @@ public class ProbabilityCalaDTO {
         this.enrollCount = enrollCount;
     }
 
-    public Integer getCollegeRanking() {
+    public String getCollegeRanking() {
         return collegeRanking;
     }
 
-    public void setCollegeRanking(Integer collegeRanking) {
+    public void setCollegeRanking(String collegeRanking) {
         this.collegeRanking = collegeRanking;
     }
 

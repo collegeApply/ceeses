@@ -43,8 +43,8 @@
         `year`  = #{year}
         <![CDATA[
         and `total_grade` >= #{totalGrade}
-
-]]>
+        ]]>
+        AND  `category` = #{category}
 
 
     </select>
