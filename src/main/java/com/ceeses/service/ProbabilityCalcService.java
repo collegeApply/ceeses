@@ -125,7 +125,9 @@ public class ProbabilityCalcService {
 
         //默认只模拟计算15年之后的数据
         if (probabilityCalcRequest.getYear() < 2015) {
-            return null;
+            response.setResult(false);
+            response.setErrorCode("不模拟计算15年以前的记录");
+            return response;
         }
 
         if (CommonConstans.lnskfsxMap.isEmpty()){
@@ -428,7 +430,9 @@ public class ProbabilityCalcService {
 
         //默认只模拟计算15年之后的数据
         if (probabilityCalcRequest.getYear() < 2015) {
-            return null;
+            response.setResult(false);
+            response.setErrorCode("不模拟计算15年以前的记录");
+            return response;
         }
 
         if (CommonConstans.lnskfsxMap.isEmpty()){
