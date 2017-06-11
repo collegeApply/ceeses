@@ -105,12 +105,13 @@ public class LnfsdxqController extends BaseController {
         ProbabilityCalcRequest probabilityCalcRequest = new ProbabilityCalcRequest();
         //probabilityCalcRequest.setTargetMajor("法学");
         //probabilityCalcRequest.setTargetSchool("华北电力大学(北京)");
-        probabilityCalcRequest.setRanking(154);
+        probabilityCalcRequest.setRanking(1208);
         probabilityCalcRequest.setYear(2016);
         //probabilityCalcRequest.setAreaName("北京");
-        probabilityCalcRequest.setGrade(610);
+        probabilityCalcRequest.setGrade(533);
         probabilityCalcRequest.setBatch(2);
         probabilityCalcRequest.setCategory("理工");
+        probabilityCalcRequest.setSortedType(2);
         List<CollegeEnrollHistory> result = lnyxlqtjDao.queryCollegeEnrollHistory(probabilityCalcRequest);
 
         System.out.println(result);

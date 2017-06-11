@@ -540,48 +540,64 @@ public class ProbabilityCalcService {
 
         LOGGER.info("专业概率：完成所有专业加权概率设置");
 
-        //6.获取非第一志愿录取率
+        //6.获取非第一志愿录取率，排序方式为3时用
 
 
-
-        //7.开始排序,先做按照学校排名排序
-        //排序可能有三种，按院校排名，按总录取概率，按非第一志愿录取率
-        TreeSet<ProbabilityCalaDTO> sortedSet = new TreeSet<>(new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                ProbabilityCalaDTO h1 = (ProbabilityCalaDTO) o1;
-                ProbabilityCalaDTO h2 = (ProbabilityCalaDTO) o2;
-                String h1Ranking = h1.getCollegeRanking();
-                if (null == h1Ranking || h1Ranking.equals("")){
-                    h1Ranking = "9999";
-                }
-                String h2Ranking = h2.getCollegeRanking();
-                if (null == h2Ranking || h2Ranking.equals("")){
-                    h2Ranking = "9999";
-                }
-                try {
-                    if (Integer.valueOf(h1Ranking) < Integer.valueOf(h2Ranking)) {
+        //7.排序可能有三种，按院校排名，按总录取概率，按非第一志愿录取率
+        List<ProbabilityCalaDTO> calcDTOList = new ArrayList<>(probabilityCalaDTOMap.values());
+        //按照计算出的录取概率高低排名
+        if (probabilityCalcRequest.getSortedType() == 1) {
+            Collections.sort(calcDTOList,new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    ProbabilityCalaDTO h1 = (ProbabilityCalaDTO) o1;
+                    ProbabilityCalaDTO h2 = (ProbabilityCalaDTO) o2;
+                    if (h1.getGaiLv() > h2.getGaiLv()) {
                         return -1;
                     }
-                    if (Integer.valueOf(h1Ranking) > Integer.valueOf(h2Ranking)) {
+                    if (h1.getGaiLv() < h2.getGaiLv()) {
                         return 1;
                     }
-                } catch (Exception e){
-                    LOGGER.error("院校名次比较出错");
                     return 0;
                 }
-                return 0;
-            }
-        });
+            });
 
-        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
-            sortedSet.add(calaDTO);
         }
 
+        ///开始做按照学校排名排序
+        if (probabilityCalcRequest.getSortedType() == 2) {
+            Collections.sort(calcDTOList , new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    ProbabilityCalaDTO h1 = (ProbabilityCalaDTO) o1;
+                    ProbabilityCalaDTO h2 = (ProbabilityCalaDTO) o2;
+                    String h1Ranking = h1.getCollegeRanking();
+                    if (null == h1Ranking || h1Ranking.equals("")){
+                        h1Ranking = "9999";
+                    }
+                    String h2Ranking = h2.getCollegeRanking();
+                    if (null == h2Ranking || h2Ranking.equals("")){
+                        h2Ranking = "9999";
+                    }
+                    try {
+                        if (Integer.valueOf(h1Ranking) < Integer.valueOf(h2Ranking)) {
+                            return -1;
+                        }
+                        if (Integer.valueOf(h1Ranking) > Integer.valueOf(h2Ranking)) {
+                            return 1;
+                        }
+                    } catch (Exception e){
+                        LOGGER.error("院校名次比较出错");
+                        return 0;
+                    }
+                    return 0;
+                }
+            });
+        }
+
+        response.setProbabilityCalaDTOs(calcDTOList);
         response.setResult(true);
-        response.setProbabilityCalaDTOs(new ArrayList<ProbabilityCalaDTO>(sortedSet));
         return response;
     }
-
 
 }

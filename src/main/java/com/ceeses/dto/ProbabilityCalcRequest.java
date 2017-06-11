@@ -22,6 +22,9 @@ public class ProbabilityCalcRequest {
     private String targetSchool;
     private String targetMajor;
 
+    //排序方式1：录取概率高优先，2：学校排名高优先，3：非第一志愿多优先
+    private Integer sortedType = 1;
+
     public Integer getYear() {
         return year;
     }
@@ -102,6 +105,14 @@ public class ProbabilityCalcRequest {
         this.category = category;
     }
 
+    public Integer getSortedType() {
+        return sortedType;
+    }
+
+    public void setSortedType(Integer sortedType) {
+        this.sortedType = sortedType;
+    }
+
     @Override
     public String toString() {
         return "ProbabilityCalcRequest{" +
@@ -112,9 +123,10 @@ public class ProbabilityCalcRequest {
                 ", ranking=" + ranking +
                 ", category='" + category + '\'' +
                 ", batch=" + batch +
-                ", areaName=" + areaName +
+                ", areaName='" + areaName + '\'' +
                 ", targetSchool='" + targetSchool + '\'' +
                 ", targetMajor='" + targetMajor + '\'' +
+                ", sortedType=" + sortedType +
                 '}';
     }
 }
