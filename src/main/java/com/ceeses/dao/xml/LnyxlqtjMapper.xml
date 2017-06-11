@@ -65,6 +65,10 @@
 			AND yx.college_name LIKE concat('%',#{targetSchool},'%')
 		</if>
 
+		<if test="collegeCode !=null">
+			AND yx.college_code = #{collegeCode}
+		</if>
+
 		<if test="category !=null">
 			and yx.category = #{category}
 		</if>

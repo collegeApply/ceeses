@@ -22,6 +22,9 @@ public class ProbabilityCalcRequest {
     private String targetSchool;
     private String targetMajor;
 
+    //院校查询出后单独查询专业时用
+    private String collegeCode;
+
     //排序方式1：录取概率高优先，2：学校排名高优先，3：非第一志愿多优先
     private Integer sortedType = 1;
 
@@ -113,6 +116,15 @@ public class ProbabilityCalcRequest {
         this.sortedType = sortedType;
     }
 
+
+    public String getCollegeCode() {
+        return collegeCode;
+    }
+
+    public void setCollegeCode(String collegeCode) {
+        this.collegeCode = collegeCode;
+    }
+
     @Override
     public String toString() {
         return "ProbabilityCalcRequest{" +
@@ -126,6 +138,7 @@ public class ProbabilityCalcRequest {
                 ", areaName='" + areaName + '\'' +
                 ", targetSchool='" + targetSchool + '\'' +
                 ", targetMajor='" + targetMajor + '\'' +
+                ", collegeCode='" + collegeCode + '\'' +
                 ", sortedType=" + sortedType +
                 '}';
     }
