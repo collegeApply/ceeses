@@ -2,6 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ceeses.dao.mapper.CollegeInfoMapper">
 
+    <resultMap id="collegeInfoMap" type="com.ceeses.model.CollegeInfo">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="code" column="code" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="area" column="area" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="ranking" column="ranking" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
     <insert id="batchSaveCollegeInfo">
         INSERT INTO `t_college_info` (`code`, `name`, `email`, `area`, `type`,
         `ranking`)
@@ -15,4 +27,12 @@
     <delete id="empty">
         TRUNCATE TABLE `t_college_info`;
     </delete>
+
+    <select id="findByArea" parameterType="string" resultMap="collegeInfoMap">
+        SELECT `code`, `name`, `email`, `area`, `type`, `ranking`
+        FROM `t_college_info`
+        <if test="_parameter != null and _parameter != ''">
+            WHERE `area` = #{area};
+        </if>
+    </select>
 </mapper>

@@ -19,4 +19,12 @@ public interface CollegeInfoMapper {
      * 清空表数据
      */
     void empty();
+
+    /**
+     * 根据省市查询院校信息
+     *
+     * @param area 省市名称
+     * @return 院校信息列表
+     */
+    List<CollegeInfo> findByArea(String area);
 }
