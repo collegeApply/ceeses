@@ -61,27 +61,27 @@
 			]]>
 		</if>
 
-		<if test="targetSchool !=null">
+		<if test="targetSchool !=null and targetSchool !='' ">
 			AND yx.college_name LIKE concat('%',#{targetSchool},'%')
 		</if>
 
-		<if test="collegeCode !=null">
+		<if test="collegeCode !=null  and collegeCode !=''">
 			AND yx.college_code = #{collegeCode}
 		</if>
 
-		<if test="category !=null">
+		<if test="category !=null and category !=''">
 			and yx.category = #{category}
 		</if>
 
-		<if test="batch !=null">
+		<if test="batch !=null and batch != ''">
 			and yx.batch_code = #{batch}
 		</if>
 
-		<if test="areaName !=null">
+		<if test="areaName !=null and areaName != ''">
 			and ci.`area` = #{areaName}
 		</if>
 
-		<if test="targetMajor !=null">
+		<if test="targetMajor !=null and targetMajor != ''">
 			<![CDATA[
 				and zy.`low_ranking` >= #{ranking}
 			]]>
