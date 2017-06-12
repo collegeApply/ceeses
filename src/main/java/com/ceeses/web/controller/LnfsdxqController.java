@@ -1,22 +1,19 @@
 package com.ceeses.web.controller;
 
 import com.ceeses.dao.*;
-import com.ceeses.dto.CollegeEnrollHistory;
+import com.ceeses.dto.ProbabilityCalaResponse;
 import com.ceeses.dto.ProbabilityCalcRequest;
-import com.ceeses.model.*;
+import com.ceeses.model.Lnskfsx;
 import com.ceeses.service.ProbabilityCalcService;
 import com.ceeses.utils.CommonConstans;
 import com.ceeses.utils.ExcelUtil;
 import com.ceeses.web.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,75 +47,16 @@ public class LnfsdxqController extends BaseController {
 
     @RequestMapping("/test")
     @ResponseBody
-    public JsonResult test() throws IOException {
-//        Lnfsdxq lnfsdxq = lnfsdxqDao.queryTotalByGrade(2016,350);
-//        Integer g  = lnfsdxqDao.queryCountByGrade(lnfsdxq);
-//        System.out.println(lnfsdxq);
-
-//        List<Lnyxlqtj> lnyxlqtjs = new ArrayList<>();
-//        Lnyxlqtj lnyxlqtj = new Lnyxlqtj();
-//        lnyxlqtj.setYear(2016);
-//        lnyxlqtj.setAvgGrade(634.56f);
-//        lnyxlqtj.setAvgRanking(23.5f);
-//        lnyxlqtj.setBatchCode("2");
-//        lnyxlqtj.setCategory("5");
-//        lnyxlqtj.setCollegeCode("10001");
-//        lnyxlqtj.setCollegeName("qinghuadaxue");
-//        lnyxlqtj.setEnrollCount(23);
-//        lnyxlqtj.setHighGrade(660);
-//        lnyxlqtj.setHighRanking(18);
-//        lnyxlqtj.setLowGrade(600);
-//        lnyxlqtj.setLowRanking(34);
-//
-//        lnyxlqtjs.add(lnyxlqtj);
-//        lnyxlqtjDao.batchSaveLnyxlqtj(lnyxlqtjs);
-
-
-//        List<Lnzylqtj> lnzylqtjs = new ArrayList<>();
-//        Lnzylqtj lnzylqtj = new Lnzylqtj();
-//        lnzylqtj.setCollegeEnrollId(22l);
-//        lnzylqtj.setMajorName("zidonghua");
-//        lnzylqtj.setAvgGrade(638.56f);
-//        lnzylqtj.setAvgRanking(23.5f);
-//        lnzylqtj.setEnrollCount(23);
-//        lnzylqtj.setHighGrade(658);
-//        lnzylqtj.setHighRanking(19);
-//        lnzylqtj.setLowGrade(620);
-//        lnzylqtj.setLowRanking(31);
-//        lnzylqtjs.add(lnzylqtj);
-//        lnzylqtjDao.batchSaveLnzylqtj(lnzylqtjs);
-
-
-//        List<CollegeInfo> collegeInfos = new ArrayList<>();
-//        CollegeInfo collegeInfo = new CollegeInfo();
-//        collegeInfo.setArea("01");
-//        collegeInfo.setCode("10001");
-//        collegeInfo.setCreateTime(new Date());
-//        collegeInfo.setEmail("bjtc@15677.com");
-//        collegeInfo.setName("北京大学");
-//        collegeInfo.setRanking(1);
-//        collegeInfo.setType("985");
-//        collegeInfo.setUpdateTime(new Date());
-//        collegeInfos.add(collegeInfo);
-//        collegeInfoDao.batchSaveCollegeInfo(collegeInfos);
-
-        ProbabilityCalcRequest probabilityCalcRequest = new ProbabilityCalcRequest();
-        //probabilityCalcRequest.setTargetMajor("法学");
-        //probabilityCalcRequest.setTargetSchool("华北电力大学(北京)");
-        probabilityCalcRequest.setRanking(1208);
+    public ProbabilityCalaResponse test(ProbabilityCalcRequest probabilityCalcRequest) throws IOException {
         probabilityCalcRequest.setYear(2016);
-        //probabilityCalcRequest.setAreaName("北京");
-        probabilityCalcRequest.setGrade(533);
-        probabilityCalcRequest.setBatch(2);
-        probabilityCalcRequest.setCategory("理工");
-        probabilityCalcRequest.setSortedType(2);
-        List<CollegeEnrollHistory> result = lnyxlqtjDao.queryCollegeEnrollHistory(probabilityCalcRequest);
+        ProbabilityCalaResponse response = null;
+        try {
+            response = probabilityCalcService.getTargetColleges(probabilityCalcRequest);
+        } catch (Exception e) {
+            LOGGER.error("失败", e);
+        }
 
-        System.out.println(result);
-
-        probabilityCalcService.getTargetColleges(probabilityCalcRequest);
-
-        return new JsonResult();
+        return response;
     }
 
 
@@ -129,7 +67,7 @@ public class LnfsdxqController extends BaseController {
         String path = this.getClass().getResource("/").getFile();
 
         //初始化传入的文件
-        if (null != fileName &&  !"".equals(fileName)){
+        if (null != fileName && !"".equals(fileName)) {
             String filePath = path + "/" + fileName;
             excelUtil.initLnfsdxq(filePath);
         } else {//初始化默认理工和文科历史数据
@@ -148,14 +86,13 @@ public class LnfsdxqController extends BaseController {
     public JsonResult initLnskfs() throws IOException {
 
         List<Lnskfsx> lnskfsxes = lnskfsxDao.queryLnskfsx(null);
-        for (Lnskfsx lnskfsx: lnskfsxes) {
-            CommonConstans.lnskfsxMap.put(lnskfsx.getYear()+"_" + lnskfsx.getBatch() + "_" +lnskfsx.getCategory(),
+        for (Lnskfsx lnskfsx : lnskfsxes) {
+            CommonConstans.lnskfsxMap.put(lnskfsx.getYear() + "_" + lnskfsx.getBatch() + "_" + lnskfsx.getCategory(),
                     lnskfsx);
         }
 
         return new JsonResult();
     }
-
 
 
 }

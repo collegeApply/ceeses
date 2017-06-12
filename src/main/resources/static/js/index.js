@@ -28,6 +28,41 @@ $(function () {
                 data: extractForm(),
                 success: function (result) {
                     console.info(result);
+                    if (result && result.probabilityCalaDTOs && result.probabilityCalaDTOs.length > 0) {
+                        var resultTableHtml = '<table class="table table-striped">';
+                        resultTableHtml += '<thead>';
+                        resultTableHtml += '<tr>';
+                        resultTableHtml += '<th>序号</th>';
+                        resultTableHtml += '<th>院校代码</th>';
+                        resultTableHtml += '<th>院校名称</th>';
+                        resultTableHtml += '<th>省/市</th>';
+                        resultTableHtml += '<th>批次</th>';
+                        resultTableHtml += '<th>高校类型</th>';
+                        resultTableHtml += '<th>招生计划</th>';
+                        resultTableHtml += '<th>全国排名</th>';
+                        resultTableHtml += '<th>录取概率</th>';
+                        resultTableHtml += '</tr>';
+                        resultTableHtml += '</thead>';
+                        resultTableHtml += '<tbody>';
+                        $.each(result.probabilityCalaDTOs, function (index) {
+                            resultTableHtml += '<tr>';
+                            resultTableHtml += '<td>' + (index + 1) + '</td>';
+                            resultTableHtml += '<td>' + this.collegeCode + '</td>';
+                            resultTableHtml += '<td>' + this.collegeName + '</td>';
+                            resultTableHtml += '<td>' + this.areaName + '</td>';
+                            resultTableHtml += '<td>' + this.batchName + '</td>';
+                            resultTableHtml += '<td>' + this.collegeType + '</td>';
+                            resultTableHtml += '<td>' + this.enrollCount + '</td>';
+                            resultTableHtml += '<td>' + this.collegeRanking + '</td>';
+                            resultTableHtml += '<td>' + this.gaiLv + '</td>';
+                            resultTableHtml += '</tr>';
+                        });
+                        resultTableHtml += '</tbody>';
+                        resultTableHtml += '</table>';
+                        $('div#resultTableContainer').html(resultTableHtml);
+                    } else {
+                        $('div#resultTableContainer').html('<span>无预测结果</span>');
+                    }
                 }
             });
         }
