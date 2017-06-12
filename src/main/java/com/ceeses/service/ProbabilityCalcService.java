@@ -248,7 +248,7 @@ public class ProbabilityCalcService {
                     ProbabilityCalcRequest queryTarget = new ProbabilityCalcRequest();
                     BeanUtils.copyProperties(probabilityCalcRequest,queryTarget);
                     //查固定学校
-                    queryTarget.setTargetSchool(probabilityCalaDTOMap.get(resultIndex).getCollegeCode());
+                    queryTarget.setCollegeCode(probabilityCalaDTOMap.get(resultIndex).getCollegeCode());
                     queryTarget.setYear(yearIndex);
                     queryTarget.setRanking(1);
                     List<CollegeEnrollHistory> enrollHistories = lnyxlqtjDao.queryCollegeEnrollHistory(queryTarget);
@@ -266,16 +266,16 @@ public class ProbabilityCalcService {
                         probabilityCalaDTOMap.get(resultIndex).getYxRankingMap().put(yearIndex,
                                 lnyxmc);
                     } else {
-                        //某院校存在招生计划,但是考不上
+                        //某院校存在招生计划,但是考不上,后续会处理
                         Lnyxmc lnyxmc = new Lnyxmc();
                         lnyxmc.setYear(yearIndex);
-                        lnyxmc.setAvgGrade(-1f);
-                        lnyxmc.setAvgRanking(-1f);
-                        lnyxmc.setEnrollCunt(-1);
-                        lnyxmc.setHighGrade(-1f);
-                        lnyxmc.setHighRanking(-1f);
-                        lnyxmc.setLowGrade(-1f);
-                        lnyxmc.setLowRanking(-1f);
+                        lnyxmc.setAvgGrade(enrollHistories.get(0).getAvg_grade());
+                        lnyxmc.setAvgRanking(enrollHistories.get(0).getAvg_ranking());
+                        lnyxmc.setEnrollCunt(enrollHistories.get(0).getEnroll_count());
+                        lnyxmc.setHighGrade(enrollHistories.get(0).getHigh_grade());
+                        lnyxmc.setHighRanking(enrollHistories.get(0).getHigh_ranking());
+                        lnyxmc.setLowGrade(enrollHistories.get(0).getLow_grade());
+                        lnyxmc.setLowRanking(enrollHistories.get(0).getLow_ranking());
                         probabilityCalaDTOMap.get(resultIndex).getYxRankingMap().put(yearIndex,
                                 lnyxmc);
                     }
@@ -302,9 +302,6 @@ public class ProbabilityCalcService {
                         lnyxmc.setGaiLv((lnyxmc.getLowRanking() - probabilityCalcRequest.getRanking())/
                                 (lnyxmc.getLowRanking() - lnyxmc.getHighRanking()));
                     }
-                }
-                if (lnyxmc.getEnrollCunt() == -1){
-                    lnyxmc.setGaiLv(0d);
                 }
             }
         }
@@ -591,7 +588,7 @@ public class ProbabilityCalcService {
                     ProbabilityCalcRequest queryTarget = new ProbabilityCalcRequest();
                     BeanUtils.copyProperties(probabilityCalcRequest,queryTarget);
                     //查固定学校
-                    queryTarget.setTargetSchool(probabilityCalaDTOMap.get(resultIndex).getCollegeCode());
+                    queryTarget.setCollegeCode(probabilityCalaDTOMap.get(resultIndex).getCollegeCode());
                     queryTarget.setYear(yearIndex);
                     queryTarget.setRanking(1);
                     List<CollegeEnrollHistory> enrollHistories = lnyxlqtjDao.queryCollegeEnrollHistory(queryTarget);
@@ -612,13 +609,13 @@ public class ProbabilityCalcService {
                         //某院校存在招生计划,但是考不上
                         Lnyxmc lnyxmc = new Lnyxmc();
                         lnyxmc.setYear(yearIndex);
-                        lnyxmc.setAvgGrade(-1f);
-                        lnyxmc.setAvgRanking(-1f);
-                        lnyxmc.setEnrollCunt(-1);
-                        lnyxmc.setHighGrade(-1f);
-                        lnyxmc.setHighRanking(-1f);
-                        lnyxmc.setLowGrade(-1f);
-                        lnyxmc.setLowRanking(-1f);
+                        lnyxmc.setAvgGrade(enrollHistories.get(0).getAvg_grade());
+                        lnyxmc.setAvgRanking(enrollHistories.get(0).getAvg_ranking());
+                        lnyxmc.setEnrollCunt(enrollHistories.get(0).getEnroll_count());
+                        lnyxmc.setHighGrade(enrollHistories.get(0).getHigh_grade());
+                        lnyxmc.setHighRanking(enrollHistories.get(0).getHigh_ranking());
+                        lnyxmc.setLowGrade(enrollHistories.get(0).getLow_grade());
+                        lnyxmc.setLowRanking(enrollHistories.get(0).getLow_ranking());
                         probabilityCalaDTOMap.get(resultIndex).getYxRankingMap().put(yearIndex,
                                 lnyxmc);
                     }
@@ -657,7 +654,7 @@ public class ProbabilityCalcService {
                         ProbabilityCalcRequest queryTarget = new ProbabilityCalcRequest();
                         BeanUtils.copyProperties(probabilityCalcRequest, queryTarget);
                         //查固定学校的固定专业
-                        queryTarget.setTargetSchool(probabilityCalaDTOMap.get(resultIndex).getCollegeCode());
+                        queryTarget.setCollegeCode(probabilityCalaDTOMap.get(resultIndex).getCollegeCode());
                         queryTarget.setYear(yearIndex);
                         queryTarget.setRanking(1);
                         queryTarget.setTargetMajor(majorName);
@@ -679,14 +676,14 @@ public class ProbabilityCalcService {
                         } else {
                             //某专业存在招生计划,但是考不上
                             Lnzymc lnzymc = new Lnzymc();
-                            lnzymc.setLowGrade(-1f);
-                            lnzymc.setAvgGrade(-1f);
-                            lnzymc.setHighGrade(-1f);
-                            lnzymc.setHighRanking(-1f);
-                            lnzymc.setLowRanking(-1f);
-                            lnzymc.setAvgRanking(-1f);
+                            lnzymc.setLowGrade(enrollHistories.get(0).getZy_low_grade());
+                            lnzymc.setAvgGrade(enrollHistories.get(0).getZy_avg_grade());
+                            lnzymc.setHighGrade(enrollHistories.get(0).getZy_high_grade());
+                            lnzymc.setHighRanking(enrollHistories.get(0).getZy_high_ranking());
+                            lnzymc.setLowRanking(enrollHistories.get(0).getZy_low_ranking());
+                            lnzymc.setAvgRanking(enrollHistories.get(0).getZy_avg_ranking());
                             lnzymc.setMajorName(majorName);
-                            lnzymc.setEnrollCunt(-1);
+                            lnzymc.setEnrollCunt(enrollHistories.get(0).getZy_enroll_count());
                             lnzymc.setYear(yearIndex);
                             probabilityCalaDTOMap.get(resultIndex).getMajorEnrollDTOMap().get(majorName)
                                     .getLnzymcMap().put(yearIndex,lnzymc);
@@ -715,9 +712,6 @@ public class ProbabilityCalcService {
                         lnyxmc.setGaiLv((lnyxmc.getLowRanking() - probabilityCalcRequest.getRanking())/
                                 (lnyxmc.getLowRanking() - lnyxmc.getHighRanking()));
                     }
-                }
-                if (lnyxmc.getEnrollCunt() == -1){
-                    lnyxmc.setGaiLv(0d);
                 }
             }
         }
@@ -782,10 +776,7 @@ public class ProbabilityCalcService {
                                     (lnzymc.getLowRanking() - lnzymc.getHighRanking()));
                         }
                     }
-                    //某年考不上
-                    if (lnzymc.getEnrollCunt() == -1){
-                        lnzymc.setGaiLv(0d);
-                    }
+                    //某年考不上已经包含在上面计算逻辑中了
                 }
 
             }
