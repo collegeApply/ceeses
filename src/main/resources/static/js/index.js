@@ -4,7 +4,7 @@
  */
 
 var areas = [
-    '北京', '贵州', '河南', '青海', '内蒙古', '新疆', '西藏'
+    '北京', '广东', '山东', '江苏', '河南', '上海', '河北', '浙江', '陕西', '湖南', '重庆', '福建', '天津', '云南', '四川', '广西', '安徽', '海南', '江西', '湖北', '山西', '辽宁', '台湾', '黑龙江', '内蒙古', '香港', '澳门', '贵州', '甘肃', '青海', '新疆', '西藏', '吉林', '宁夏'
 ];
 
 var $searchConditionsContainer = $('#searchConditionsContainer');
@@ -56,20 +56,20 @@ $(function () {
                             resultTableHtml += '<td>' + this.collegeName + '</td>';
                             resultTableHtml += '<td>' + this.areaName + '</td>';
                             resultTableHtml += '<td>' + this.batchName + '</td>';
-                            resultTableHtml += '<td>' + this.collegeType + '</td>';
-                            resultTableHtml += '<td>' + this.collegeRanking + '</td>';
+                            resultTableHtml += '<td>' + (this.collegeType == null ? '' : this.collegeType) + '</td>';
+                            resultTableHtml += '<td>' + (this.collegeRanking == null ? '' : this.collegeRanking) + '</td>';
                             if (this.yxRankingMap) {
                                 for (var year in this.yxRankingMap) {
                                     resultTableHtml += '<td>最高名次: ' + this.yxRankingMap[year].highRanking + '<br>最低名次: ' + this.yxRankingMap[year].lowRanking + '<br>招生计划: ';
-                                    if (this.yxRankingMap[year].highRanking == 0) {
+                                    if (this.yxRankingMap[year].enrollCunt == 0) {
                                         resultTableHtml += '无招生计划';
                                     } else {
-                                        resultTableHtml += this.yxRankingMap[year].highRanking;
+                                        resultTableHtml += this.yxRankingMap[year].enrollCunt;
                                     }
                                     resultTableHtml += '</td>';
                                 }
                             }
-                            resultTableHtml += '<td>' + this.gaiLv + '</td>';
+                            resultTableHtml += '<td>' + (Math.round(this.gaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
                             resultTableHtml += '<td><a class="btn btn-primary btn-xs" onclick="getTargetCollegeWithMajor(\'' + this.collegeCode + '\')">专业详情</a></td>';
                             resultTableHtml += '</tr>';
                         });
@@ -131,16 +131,16 @@ function getTargetCollegeWithMajor(collegeCode) {
                     resultTableHtml += '<td>' + probabilityCalaDTO.collegeCode + '</td>';
                     resultTableHtml += '<td>' + probabilityCalaDTO.collegeName + '</td>';
                     resultTableHtml += '<td>' + probabilityCalaDTO.batchName + '</td>';
-                    resultTableHtml += '<td>' + probabilityCalaDTO.collegeType + '</td>';
+                    resultTableHtml += '<td>' + (probabilityCalaDTO.collegeType == null ? '' : probabilityCalaDTO.collegeType) + '</td>';
                     resultTableHtml += '<td>' + major + '</td>';
                     for (var year in majorEnrollDTOMap[major].lnzymcMap) {
                         resultTableHtml += '<td>'
                             + '最高名次: ' + majorEnrollDTOMap[major].lnzymcMap[year].highRanking + '<br>'
-                            + '最低名次: '+ majorEnrollDTOMap[major].lnzymcMap[year].highRanking + '<br>'
-                            + '招生计划: '+ majorEnrollDTOMap[major].lnzymcMap[year].highRanking
+                            + '最低名次: ' + majorEnrollDTOMap[major].lnzymcMap[year].lowRanking + '<br>'
+                            + '招生计划: ' + majorEnrollDTOMap[major].lnzymcMap[year].enrollCunt
                             + '</td>';
                     }
-                    resultTableHtml += '<td>' + majorEnrollDTOMap[major].gaiLv + '</td>';
+                    resultTableHtml += '<td>' + (Math.round(majorEnrollDTOMap[major].gaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
                     resultTableHtml += '</tr>';
                 }
                 resultTableHtml += '</tbody>';
