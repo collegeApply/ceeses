@@ -20,16 +20,16 @@ $(function () {
     $searchConditionsContainer.find('button[name=searchBtn]').click(function () {
         if (validateForm()) {
             $.ajax({
-                url: 'lnfsdxq/test',
+                url: 'lnfsdxq/getTargetColleges',
                 type: 'POST',
                 cache: false,
                 dataType: 'json',
                 async: false,
                 data: extractForm(),
                 success: function (result) {
-                    console.info(result);
                     if (result && result.probabilityCalaDTOs && result.probabilityCalaDTOs.length > 0) {
                         var resultTableHtml = '<table class="table table-striped">';
+                        resultTableHtml += '<caption style="text-align: center;font-size: 16px;font-weight: bold">目标院校历年录取数据分析及2017录取概率预测报告</caption>';
                         resultTableHtml += '<thead>';
                         resultTableHtml += '<tr>';
                         resultTableHtml += '<th>序号</th>';
@@ -37,10 +37,15 @@ $(function () {
                         resultTableHtml += '<th>院校名称</th>';
                         resultTableHtml += '<th>省/市</th>';
                         resultTableHtml += '<th>批次</th>';
-                        resultTableHtml += '<th>高校类型</th>';
-                        resultTableHtml += '<th>招生计划</th>';
+                        resultTableHtml += '<th>高校类别</th>';
                         resultTableHtml += '<th>全国排名</th>';
+                        if (result.probabilityCalaDTOs[0].yxRankingMap) {
+                            for (var year in result.probabilityCalaDTOs[0].yxRankingMap) {
+                                resultTableHtml += '<th>' + year + '年录取情况</th>';
+                            }
+                        }
                         resultTableHtml += '<th>录取概率</th>';
+                        resultTableHtml += '<th>操作</th>';
                         resultTableHtml += '</tr>';
                         resultTableHtml += '</thead>';
                         resultTableHtml += '<tbody>';
@@ -52,9 +57,20 @@ $(function () {
                             resultTableHtml += '<td>' + this.areaName + '</td>';
                             resultTableHtml += '<td>' + this.batchName + '</td>';
                             resultTableHtml += '<td>' + this.collegeType + '</td>';
-                            resultTableHtml += '<td>' + this.enrollCount + '</td>';
                             resultTableHtml += '<td>' + this.collegeRanking + '</td>';
+                            if (this.yxRankingMap) {
+                                for (var year in this.yxRankingMap) {
+                                    resultTableHtml += '<td>最高名次: ' + this.yxRankingMap[year].highRanking + '<br>最低名次: ' + this.yxRankingMap[year].lowRanking + '<br>招生计划: ';
+                                    if (this.yxRankingMap[year].highRanking == 0) {
+                                        resultTableHtml += '无招生计划';
+                                    } else {
+                                        resultTableHtml += this.yxRankingMap[year].highRanking;
+                                    }
+                                    resultTableHtml += '</td>';
+                                }
+                            }
                             resultTableHtml += '<td>' + this.gaiLv + '</td>';
+                            resultTableHtml += '<td><a class="btn btn-primary btn-xs" onclick="getTargetCollegeWithMajor(\'' + this.collegeCode + '\')">专业详情</a></td>';
                             resultTableHtml += '</tr>';
                         });
                         resultTableHtml += '</tbody>';
@@ -72,6 +88,70 @@ $(function () {
         resetSearchConditions();
     });
 });
+
+function getTargetCollegeWithMajor(collegeCode) {
+    var requestForm = extractForm();
+    requestForm['collegeCode'] = collegeCode;
+    $.ajax({
+        url: 'lnfsdxq/getTargetCollegeWithMajor',
+        type: 'POST',
+        cache: false,
+        dataType: 'json',
+        async: false,
+        data: requestForm,
+        success: function (result) {
+            if (result && result.probabilityCalaDTOs && result.probabilityCalaDTOs.length > 0) {
+                var probabilityCalaDTO = result.probabilityCalaDTOs[0];
+                var majorEnrollDTOMap = probabilityCalaDTO.majorEnrollDTOMap;
+                var resultTableHtml = '<table class="table table-striped">';
+                resultTableHtml += '<caption style="text-align: center;font-size: 16px;font-weight: bold">' + probabilityCalaDTO.collegeName + '专业历年录取数据分析及2017录取概率预测报告</caption>';
+                resultTableHtml += '<thead>';
+                resultTableHtml += '<tr>';
+                resultTableHtml += '<th>序号</th>';
+                resultTableHtml += '<th>院校代码</th>';
+                resultTableHtml += '<th>院校名称</th>';
+                resultTableHtml += '<th>批次</th>';
+                resultTableHtml += '<th>高校类别</th>';
+                resultTableHtml += '<th>专业名称</th>';
+                for (var major in  majorEnrollDTOMap) {
+                    for (var year in majorEnrollDTOMap[major].lnzymcMap) {
+                        resultTableHtml += '<th>' + year + '年录取情况</th>';
+                    }
+                    break;
+                }
+                resultTableHtml += '<th>录取概率</th>';
+                resultTableHtml += '</tr>';
+                resultTableHtml += '</thead>';
+                resultTableHtml += '<tbody>';
+                var i = 0;
+                for (var major in  majorEnrollDTOMap) {
+                    i++;
+                    resultTableHtml += '<tr>';
+                    resultTableHtml += '<td>' + i + '</td>';
+                    resultTableHtml += '<td>' + probabilityCalaDTO.collegeCode + '</td>';
+                    resultTableHtml += '<td>' + probabilityCalaDTO.collegeName + '</td>';
+                    resultTableHtml += '<td>' + probabilityCalaDTO.batchName + '</td>';
+                    resultTableHtml += '<td>' + probabilityCalaDTO.collegeType + '</td>';
+                    resultTableHtml += '<td>' + major + '</td>';
+                    for (var year in majorEnrollDTOMap[major].lnzymcMap) {
+                        resultTableHtml += '<td>'
+                            + '最高名次: ' + majorEnrollDTOMap[major].lnzymcMap[year].highRanking + '<br>'
+                            + '最低名次: '+ majorEnrollDTOMap[major].lnzymcMap[year].highRanking + '<br>'
+                            + '招生计划: '+ majorEnrollDTOMap[major].lnzymcMap[year].highRanking
+                            + '</td>';
+                    }
+                    resultTableHtml += '<td>' + majorEnrollDTOMap[major].gaiLv + '</td>';
+                    resultTableHtml += '</tr>';
+                }
+                resultTableHtml += '</tbody>';
+                resultTableHtml += '</table>';
+                $('div#detailResultTableContainer').html(resultTableHtml);
+            } else {
+                $('div#detailResultTableContainer').html('<span>无预测结果</span>');
+            }
+        }
+    });
+}
 
 /**
  * 重置搜索条件

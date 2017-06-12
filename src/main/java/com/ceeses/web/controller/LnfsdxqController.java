@@ -45,13 +45,27 @@ public class LnfsdxqController extends BaseController {
     @Autowired
     ProbabilityCalcService probabilityCalcService;
 
-    @RequestMapping("/test")
+    @RequestMapping("/getTargetColleges")
     @ResponseBody
-    public ProbabilityCalaResponse test(ProbabilityCalcRequest probabilityCalcRequest) throws IOException {
+    public ProbabilityCalaResponse getTargetColleges(ProbabilityCalcRequest probabilityCalcRequest) throws IOException {
         probabilityCalcRequest.setYear(2016);
         ProbabilityCalaResponse response = null;
         try {
             response = probabilityCalcService.getTargetColleges(probabilityCalcRequest);
+        } catch (Exception e) {
+            LOGGER.error("失败", e);
+        }
+
+        return response;
+    }
+
+    @RequestMapping("/getTargetCollegeWithMajor")
+    @ResponseBody
+    public ProbabilityCalaResponse getTargetCollegeWithMajor(ProbabilityCalcRequest probabilityCalcRequest) {
+        probabilityCalcRequest.setYear(2016);
+        ProbabilityCalaResponse response = null;
+        try {
+            response = probabilityCalcService.getTargetCollegeWithMajor(probabilityCalcRequest);
         } catch (Exception e) {
             LOGGER.error("失败", e);
         }
