@@ -71,42 +71,16 @@ $(function () {
                                 }
                             }
                             resultTableHtml += '<td>' + (Math.round(this.gaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
-                            resultTableHtml += '<td><a class="btn btn-primary btn-xs" onclick="getTargetCollegeWithMajor(\'' + this.collegeCode + '\')">专业详情</a></td>';
+                            resultTableHtml += '<td><a class="btn btn-primary btn-xs" onclick="showMajorDetails(\'' + this.collegeCode + '\', this)">查看专业详情</a></td>';
                             resultTableHtml += '</tr>';
                         });
                         resultTableHtml += '</tbody>';
                         resultTableHtml += '</table>';
-                        var $resultTableContainer = $('div#resultTableContainer');
-                        $resultTableContainer.html(resultTableHtml);
+                        $('div#resultTableContainer').html(resultTableHtml);
 
-                        var $resultTable = $resultTableContainer.children('table');
-                        var resultTableHeadHeight = $resultTable.children('caption').height() + $resultTable.children('thead').height();
-                        var $scrollHeader = $resultTable.clone();
-                        // $scrollHeader.children("tbody").css('display', 'none');
-                        $resultTableContainer.before('<div id="shelter" style="display: none;"></div>');//复制的表格所在的容器
-                        $scrollHeader.appendTo('#shelter');
-                        var $shelter = $("#shelter");
-                        $shelter.css({
-                            'height': resultTableHeadHeight + 16,
-                            'width': $resultTable.width(),
-                            'position': 'fixed',
-                            'top': '0',
-                            'overflow': 'hidden',
-                            'margin': '0 auto'
-                        });
-                        $shelter.find('table').css({'background-color': 'white'});
-                        $shelter.find('table caption').css({'background-color': 'white'});
-                        $shelter.find('table thead').css({'background-color': 'white'});
-                        $(window).scroll(function () {
-                            var scrollTop = document.documentElement.scrollTop - ($resultTable.offset().top + resultTableHeadHeight + 16);//判断是否到达窗口顶部
-                            if (scrollTop > 0) {
-                                $shelter.show();
-                            } else {
-                                $shelter.hide();
-                            }
-                        });
+                        fixTableHead();
                     } else {
-                        $resultTableContainer.html('<span>无预测结果</span>');
+                        $('div#resultTableContainer').html('<span>无预测结果</span>');
                     }
                     $('#tipModel').modal("hide");
                 }
@@ -119,66 +93,80 @@ $(function () {
     });
 });
 
-function getTargetCollegeWithMajor(collegeCode) {
-    var requestForm = extractForm();
-    requestForm['collegeCode'] = collegeCode;
-    $.ajax({
-        url: 'lnfsdxq/getTargetCollegeWithMajor',
-        type: 'POST',
-        cache: false,
-        dataType: 'json',
-        async: false,
-        data: requestForm,
-        success: function (result) {
-            if (result && result.probabilityCalaDTOs && result.probabilityCalaDTOs.length > 0) {
-                var probabilityCalaDTO = result.probabilityCalaDTOs[0];
-                var majorEnrollDTOMap = probabilityCalaDTO.majorEnrollDTOMap;
-                var resultTableHtml = '<table class="table table-striped">';
-                resultTableHtml += '<caption style="text-align: center;font-size: 16px;font-weight: bold">' + probabilityCalaDTO.collegeName + '专业历年录取数据分析及2017录取概率预测报告</caption>';
-                resultTableHtml += '<thead>';
-                resultTableHtml += '<tr>';
-                resultTableHtml += '<th>序号</th>';
-                resultTableHtml += '<th>院校代码</th>';
-                resultTableHtml += '<th>院校名称</th>';
-                resultTableHtml += '<th>批次</th>';
-                resultTableHtml += '<th>高校类别</th>';
-                resultTableHtml += '<th>专业名称</th>';
-                for (var major in  majorEnrollDTOMap) {
-                    for (var year in majorEnrollDTOMap[major].lnzymcMap) {
-                        resultTableHtml += '<th>' + year + '年录取情况</th>';
+function showMajorDetails(collegeCode, obj) {
+    if ($(obj).text() == '查看专业详情') {
+        var requestForm = extractForm();
+        requestForm['collegeCode'] = collegeCode;
+        $.ajax({
+            url: 'lnfsdxq/getTargetCollegeWithMajor',
+            type: 'POST',
+            cache: false,
+            dataType: 'json',
+            async: false,
+            data: requestForm,
+            success: function (result) {
+                if (result && result.probabilityCalaDTOs && result.probabilityCalaDTOs.length > 0) {
+                    var probabilityCalaDTO = result.probabilityCalaDTOs[0];
+                    var majorEnrollDTOMap = probabilityCalaDTO.majorEnrollDTOMap;
+                    var resultTableHtml = '';
+                    for (var major in  majorEnrollDTOMap) {
+                        resultTableHtml += '<tr class="major-item-' + collegeCode + '">';
+                        resultTableHtml += '<td></td>';
+                        resultTableHtml += '<td></td>';
+                        resultTableHtml += '<td></td>';
+                        resultTableHtml += '<td></td>';
+                        resultTableHtml += '<td>' + probabilityCalaDTO.batchName + '</td>';
+                        resultTableHtml += '<td>' + (probabilityCalaDTO.collegeType == null ? '' : probabilityCalaDTO.collegeType) + '</td>';
+                        resultTableHtml += '<td>' + major + '</td>';
+                        for (var year in majorEnrollDTOMap[major].lnzymcMap) {
+                            resultTableHtml += '<td>'
+                                + '最高名次: ' + majorEnrollDTOMap[major].lnzymcMap[year].highRanking + '<br>'
+                                + '最低名次: ' + majorEnrollDTOMap[major].lnzymcMap[year].lowRanking + '<br>'
+                                + '招生计划: ' + majorEnrollDTOMap[major].lnzymcMap[year].enrollCunt
+                                + '</td>';
+                        }
+                        resultTableHtml += '<td>' + (Math.round(majorEnrollDTOMap[major].gaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
+                        resultTableHtml += '<td></td>';
+                        resultTableHtml += '</tr>';
                     }
-                    break;
+                    $(obj).parent().parent().after(resultTableHtml);
+                    $(obj).text('收起专业详情');
                 }
-                resultTableHtml += '<th>录取概率</th>';
-                resultTableHtml += '</tr>';
-                resultTableHtml += '</thead>';
-                resultTableHtml += '<tbody>';
-                var i = 0;
-                for (var major in  majorEnrollDTOMap) {
-                    i++;
-                    resultTableHtml += '<tr>';
-                    resultTableHtml += '<td>' + i + '</td>';
-                    resultTableHtml += '<td>' + probabilityCalaDTO.collegeCode + '</td>';
-                    resultTableHtml += '<td>' + probabilityCalaDTO.collegeName + '</td>';
-                    resultTableHtml += '<td>' + probabilityCalaDTO.batchName + '</td>';
-                    resultTableHtml += '<td>' + (probabilityCalaDTO.collegeType == null ? '' : probabilityCalaDTO.collegeType) + '</td>';
-                    resultTableHtml += '<td>' + major + '</td>';
-                    for (var year in majorEnrollDTOMap[major].lnzymcMap) {
-                        resultTableHtml += '<td>'
-                            + '最高名次: ' + majorEnrollDTOMap[major].lnzymcMap[year].highRanking + '<br>'
-                            + '最低名次: ' + majorEnrollDTOMap[major].lnzymcMap[year].lowRanking + '<br>'
-                            + '招生计划: ' + majorEnrollDTOMap[major].lnzymcMap[year].enrollCunt
-                            + '</td>';
-                    }
-                    resultTableHtml += '<td>' + (Math.round(majorEnrollDTOMap[major].gaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
-                    resultTableHtml += '</tr>';
-                }
-                resultTableHtml += '</tbody>';
-                resultTableHtml += '</table>';
-                $('div#detailResultTableContainer').html(resultTableHtml);
-            } else {
-                $('div#detailResultTableContainer').html('<span>无预测结果</span>');
             }
+        });
+    } else {
+        $(obj).parent().parent().parent().find('tr.major-item-' + collegeCode).remove();
+        $(obj).text('查看专业详情');
+    }
+    fixTableHead();
+}
+
+// 向下滚动页面时固定预测结果表格表头
+function fixTableHead() {
+    var $resultTableContainer = $('div#resultTableContainer');
+    var $resultTable = $resultTableContainer.children('table');
+    var resultTableHeadHeight = $resultTable.children('caption').height() + $resultTable.children('thead').height();
+    var $scrollHeader = $resultTable.clone();
+    var $shelter = $("#shelter");
+    $shelter.empty();
+    $scrollHeader.appendTo('#shelter');
+    $shelter.css({
+        'height': resultTableHeadHeight + 16,
+        'width': $resultTable.width(),
+        'position': 'fixed',
+        'top': '0',
+        'overflow': 'hidden',
+        'margin': '0 auto'
+    });
+    $shelter.find('table').css({'background-color': 'white'});
+    $shelter.find('table caption').css({'background-color': 'white'});
+    $shelter.find('table thead').css({'background-color': 'white'});
+    $(window).scroll(function () {
+        var scrollTop = document.documentElement.scrollTop - ($resultTable.offset().top + resultTableHeadHeight + 16);//判断是否到达窗口顶部
+        if (scrollTop > 0) {
+            $shelter.show();
+        } else {
+            $shelter.hide();
         }
     });
 }
