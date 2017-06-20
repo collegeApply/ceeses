@@ -19,6 +19,7 @@ $(function () {
 
     $searchConditionsContainer.find('button[name=searchBtn]').click(function () {
         if (validateForm()) {
+            $('#tipModel').modal("show");
             $.ajax({
                 url: 'lnfsdxq/getTargetColleges',
                 type: 'POST',
@@ -54,7 +55,7 @@ $(function () {
                             resultTableHtml += '<td>' + (index + 1) + '</td>';
                             resultTableHtml += '<td>' + this.collegeCode + '</td>';
                             resultTableHtml += '<td>' + this.collegeName + '</td>';
-                            resultTableHtml += '<td>' + this.areaName + '</td>';
+                            resultTableHtml += '<td>' + (this.areaName == null ? '' : this.areaName) + '</td>';
                             resultTableHtml += '<td>' + this.batchName + '</td>';
                             resultTableHtml += '<td>' + (this.collegeType == null ? '' : this.collegeType) + '</td>';
                             resultTableHtml += '<td>' + (this.collegeRanking == null ? '' : this.collegeRanking) + '</td>';
@@ -79,6 +80,7 @@ $(function () {
                     } else {
                         $('div#resultTableContainer').html('<span>无预测结果</span>');
                     }
+                    $('#tipModel').modal("hide");
                 }
             });
         }
