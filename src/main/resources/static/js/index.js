@@ -76,9 +76,37 @@ $(function () {
                         });
                         resultTableHtml += '</tbody>';
                         resultTableHtml += '</table>';
-                        $('div#resultTableContainer').html(resultTableHtml);
+                        var $resultTableContainer = $('div#resultTableContainer');
+                        $resultTableContainer.html(resultTableHtml);
+
+                        var $resultTable = $resultTableContainer.children('table');
+                        var resultTableHeadHeight = $resultTable.children('caption').height() + $resultTable.children('thead').height();
+                        var $scrollHeader = $resultTable.clone();
+                        // $scrollHeader.children("tbody").css('display', 'none');
+                        $resultTableContainer.before('<div id="shelter" style="display: none;"></div>');//复制的表格所在的容器
+                        $scrollHeader.appendTo('#shelter');
+                        var $shelter = $("#shelter");
+                        $shelter.css({
+                            'height': resultTableHeadHeight + 16,
+                            'width': $resultTable.width(),
+                            'position': 'fixed',
+                            'top': '0',
+                            'overflow': 'hidden',
+                            'margin': '0 auto'
+                        });
+                        $shelter.find('table').css({'background-color': 'white'});
+                        $shelter.find('table caption').css({'background-color': 'white'});
+                        $shelter.find('table thead').css({'background-color': 'white'});
+                        $(window).scroll(function () {
+                            var scrollTop = document.documentElement.scrollTop - ($resultTable.offset().top + resultTableHeadHeight + 16);//判断是否到达窗口顶部
+                            if (scrollTop > 0) {
+                                $shelter.show();
+                            } else {
+                                $shelter.hide();
+                            }
+                        });
                     } else {
-                        $('div#resultTableContainer').html('<span>无预测结果</span>');
+                        $resultTableContainer.html('<span>无预测结果</span>');
                     }
                     $('#tipModel').modal("hide");
                 }
