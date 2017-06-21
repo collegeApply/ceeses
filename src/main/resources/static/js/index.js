@@ -164,7 +164,7 @@ function fixTableHead() {
     $shelter.find('table caption').css({'background-color': 'white'});
     $shelter.find('table thead').css({'background-color': 'white'});
     $(window).scroll(function () {
-        var scrollTop = document.documentElement.scrollTop - ($resultTable.offset().top + resultTableHeadHeight + 16);//判断是否到达窗口顶部
+        var scrollTop = document.documentElement.scrollTop | document.body.scrollTop - ($resultTable.offset().top + resultTableHeadHeight + 16);//判断是否到达窗口顶部
         if (scrollTop > 0) {
             $shelter.show();
         } else {
