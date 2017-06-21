@@ -15,4 +15,12 @@ public interface LnyxlqqkDao {
      * @param lnyxlqqks 历年院校录取情况列表
      */
     void bulkSave(List<Lnyxlqqk> lnyxlqqks);
+
+    /**
+     * 查询符合条件的历年院校录取情况
+     *
+     * @param lnyxlqqk 查询条件
+     * @return 历年院校录取情况
+     */
+    List<Lnyxlqqk> query(Lnyxlqqk lnyxlqqk);
 }

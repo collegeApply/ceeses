@@ -2,91 +2,122 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ceeses.dao.mapper.LnyxlqtjMapper">
 
-
+    <resultMap id="lnyxlqtjMap" type="com.ceeses.model.Lnyxlqtj">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="year" column="year" jdbcType="INTEGER"/>
+        <result property="collegeCode" column="college_code" jdbcType="VARCHAR"/>
+        <result property="collegeName" column="college_name" jdbcType="VARCHAR"/>
+        <result property="batchCode" column="batch_code" jdbcType="VARCHAR"/>
+        <result property="category" column="category" jdbcType="VARCHAR"/>
+        <result property="enrollCount" column="enroll_count" jdbcType="VARCHAR"/>
+        <result property="highGrade" column="low_grade" jdbcType="NUMERIC"/>
+        <result property="lowGrade" column="high_grade" jdbcType="NUMERIC"/>
+        <result property="avgGrade" column="avg_grade" jdbcType="NUMERIC"/>
+        <result property="highRanking" column="high_ranking" jdbcType="INTEGER"/>
+        <result property="lowRanking" column="low_ranking" jdbcType="INTEGER"/>
+        <result property="avgRanking" column="avg_ranking" jdbcType="NUMERIC"/>
+    </resultMap>
 
     <insert id="batchSaveLnyxlqtj">
         INSERT INTO `t_lnyxlqtj` (`year`, `college_code`, `college_name`, `batch_code`,
         `category`, `enroll_count`, `high_grade`, `low_grade`, `avg_grade`,
         `high_ranking`, `low_ranking`, `avg_ranking`)
         VALUES
-	    <foreach collection="list" item="lnyxlqtj" separator=",">
+        <foreach collection="list" item="lnyxlqtj" separator=",">
             (#{lnyxlqtj.year}, #{lnyxlqtj.collegeCode}, #{lnyxlqtj.collegeName}, #{lnyxlqtj.batchCode},
-            #{lnyxlqtj.category}, #{lnyxlqtj.enrollCount}, #{lnyxlqtj.highGrade}, #{lnyxlqtj.lowGrade}, #{lnyxlqtj.avgGrade},
+            #{lnyxlqtj.category}, #{lnyxlqtj.enrollCount}, #{lnyxlqtj.highGrade}, #{lnyxlqtj.lowGrade},
+            #{lnyxlqtj.avgGrade},
             #{lnyxlqtj.highRanking}, #{lnyxlqtj.lowRanking}, #{lnyxlqtj.avgRanking})
         </foreach>
-	</insert>
+    </insert>
 
+    <update id="update" parameterType="com.ceeses.model.Lnyxlqtj">
+        UPDATE `t_lnyxlqtj` SET `avg_grade` = #{avgGrade}, `avg_ranking` = #{avgRanking}
+        WHERE `id` = #{id};
+    </update>
 
-    <select id="queryCollegeEnrollHistory" resultType="com.ceeses.dto.CollegeEnrollHistory" parameterType="com.ceeses.dto.ProbabilityCalcRequest">
+    <select id="queryByPage" resultMap="lnyxlqtjMap">
+        SELECT `id`, `year`, `college_code`, `college_name`, `batch_code`, `category`, `enroll_count`, `high_grade`,
+        `low_grade`, `avg_grade`, `high_ranking`, `low_ranking`, `avg_ranking`
+        FROM `t_lnyxlqtj`
+        LIMIT #{offset}, #{limit};
+    </select>
 
-         SELECT
-	       ci.`area`,
-	       ci.`email`,
-	       ci.`type`,
-	       ci.`ranking`,
+    <select id="count" resultType="integer">
+        SELECT COUNT(*)
+        FROM `t_lnyxlqtj`;
+    </select>
 
-	       yx.college_code,
-	       yx.college_name,
-	       yx.batch_code,
-	       yx.`category`,
-	       yx.`high_ranking`,
-	       yx.`avg_ranking`,
-	       yx.`low_ranking`,
-	       yx.`high_grade`,
-	       yx.`avg_grade`,
-	       yx.`low_grade`,
-	       yx.`enroll_count`,
-	       zy.`major_name`,
-	       zy.`high_ranking` as zy_high_ranking,
-	       zy.`avg_ranking` as zy_avg_ranking,
-	       zy.`low_ranking` as zy_low_ranking,
-	       zy.`high_grade` as zy_high_grade,
-	       zy.`avg_grade` as zy_avg_grade,
-	       zy.`low_grade` as zy_low_grade,
-	       zy.`enroll_count` as zy_enroll_count
+    <select id="queryCollegeEnrollHistory" resultType="com.ceeses.dto.CollegeEnrollHistory"
+            parameterType="com.ceeses.dto.ProbabilityCalcRequest">
+        SELECT
+        ci.`area`,
+        ci.`email`,
+        ci.`type`,
+        ci.`ranking`,
+
+        yx.college_code,
+        yx.college_name,
+        yx.batch_code,
+        yx.`category`,
+        yx.`high_ranking`,
+        yx.`avg_ranking`,
+        yx.`low_ranking`,
+        yx.`high_grade`,
+        yx.`avg_grade`,
+        yx.`low_grade`,
+        yx.`enroll_count`,
+        zy.`major_name`,
+        zy.`high_ranking` as zy_high_ranking,
+        zy.`avg_ranking` as zy_avg_ranking,
+        zy.`low_ranking` as zy_low_ranking,
+        zy.`high_grade` as zy_high_grade,
+        zy.`avg_grade` as zy_avg_grade,
+        zy.`low_grade` as zy_low_grade,
+        zy.`enroll_count` as zy_enroll_count
         FROM
-    	    t_lnyxlqtj yx LEFT JOIN t_lnzylqtj zy ON yx.`college_name` = zy.`college_name`
-    	        and yx.`batch_code` = zy.`batch_code` and yx.`category` = zy.`category`
-    	    Left join t_college_info ci on yx.college_name = ci.name
-    	where
-		1=1
-		<if test="year !=null">
-			and yx.year = #{year}
-			and zy.`year`= #{year}
-		</if>
+        t_lnyxlqtj yx LEFT JOIN t_lnzylqtj zy ON yx.`college_name` = zy.`college_name`
+        and yx.`batch_code` = zy.`batch_code` and yx.`category` = zy.`category`
+        Left join t_college_info ci on yx.college_name = ci.name
+        where
+        1=1
+        <if test="year !=null">
+            and yx.year = #{year}
+            and zy.`year`= #{year}
+        </if>
 
-		<if test="ranking !=null">
-			<![CDATA[
+        <if test="ranking !=null">
+            <![CDATA[
 				AND yx.low_ranking >= #{ranking}
 			]]>
-		</if>
+        </if>
 
-		<if test="targetSchool !=null and targetSchool !='' ">
-			AND yx.college_name LIKE concat('%',#{targetSchool},'%')
-		</if>
+        <if test="targetSchool !=null and targetSchool !='' ">
+            AND yx.college_name LIKE concat('%',#{targetSchool},'%')
+        </if>
 
-		<if test="collegeCode !=null  and collegeCode !=''">
-			AND yx.college_code = #{collegeCode}
-		</if>
+        <if test="collegeCode !=null  and collegeCode !=''">
+            AND yx.college_code = #{collegeCode}
+        </if>
 
-		<if test="category !=null and category !=''">
-			and yx.category = #{category}
-		</if>
+        <if test="category !=null and category !=''">
+            and yx.category = #{category}
+        </if>
 
-		<if test="batch !=null and batch != ''">
-			and yx.batch_code = #{batch}
-		</if>
+        <if test="batch !=null and batch != ''">
+            and yx.batch_code = #{batch}
+        </if>
 
-		<if test="areaName !=null and areaName != ''">
-			and ci.`area` = #{areaName}
-		</if>
+        <if test="areaName !=null and areaName != ''">
+            and ci.`area` = #{areaName}
+        </if>
 
-		<if test="targetMajor !=null and targetMajor != ''">
-			<![CDATA[
+        <if test="targetMajor !=null and targetMajor != ''">
+            <![CDATA[
 				and zy.`low_ranking` >= #{ranking}
 			]]>
-			AND zy.major_name LIKE concat('%',#{targetMajor},'%')
-		</if>
+            AND zy.major_name LIKE concat('%',#{targetMajor},'%')
+        </if>
 
     </select>
 

@@ -23,4 +23,9 @@ public class LnyxlqqkDaoImpl implements LnyxlqqkDao {
             lnyxlqqkMapper.bulkSave(lnyxlqqks);
         }
     }
+
+    @Override
+    public List<Lnyxlqqk> query(Lnyxlqqk lnyxlqqk) {
+        return lnyxlqqkMapper.query(lnyxlqqk);
+    }
 }

@@ -2,21 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ceeses.dao.mapper.LnyxlqqkMapper">
 
-    <!--<resultMap id="lnyxlqqkMap" type="Lnyxlqqk">-->
-        <!--<id property="id" column="id" jdbcType="INTEGER"/>-->
-        <!--<result property="year" column="year" javaType="INTEGER"/>-->
-        <!--<result property="volunteerNo" column="volunteer_no" javaType="INTEGER"/>-->
-        <!--<result property="batchCode" column="batch_code" javaType="VARCHAR"/>-->
-        <!--<result property="studentGender" column="student_gender" javaType="VARCHAR"/>-->
-        <!--<result property="categoryName" column="category_name" javaType="VARCHAR"/>-->
-        <!--<result property="areaName" column="area_name" javaType="VARCHAR"/>-->
-        <!--<result property="areaCode" column="area_code" javaType="VARCHAR"/>-->
-        <!--<result property="schoolName" column="school_name" javaType="VARCHAR"/>-->
-        <!--<result property="major" column="major" javaType="VARCHAR"/>-->
-        <!--<result property="score" column="score" javaType="NUMBER"/>-->
-        <!--<result property="ranking" column="ranking" javaType="INTEGER"/>-->
-        <!--<result property="castArchiveUnitName" column="cast_archive_unit_name" javaType="VARCHAR"/>-->
-    <!--</resultMap>-->
+    <resultMap id="lnyxlqqkMap" type="com.ceeses.model.Lnyxlqqk">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="year" column="year" jdbcType="INTEGER"/>
+        <result property="volunteerNo" column="volunteer_no" jdbcType="INTEGER"/>
+        <result property="batchCode" column="batch_code" jdbcType="VARCHAR"/>
+        <result property="studentGender" column="student_gender" jdbcType="VARCHAR"/>
+        <result property="categoryName" column="category_name" jdbcType="VARCHAR"/>
+        <result property="areaName" column="area_name" jdbcType="VARCHAR"/>
+        <result property="areaCode" column="area_code" jdbcType="VARCHAR"/>
+        <result property="schoolName" column="school_name" jdbcType="VARCHAR"/>
+        <result property="major" column="major" jdbcType="VARCHAR"/>
+        <result property="score" column="score" jdbcType="NUMERIC"/>
+        <result property="ranking" column="ranking" jdbcType="NUMERIC"/>
+        <result property="castArchiveUnitName" column="cast_archive_unit_name" jdbcType="VARCHAR"/>
+    </resultMap>
 
     <insert id="bulkSave">
 	    INSERT INTO `t_lnyxlqqk`(`year`, `volunteer_no`, `batch_code`, `student_gender`, `category_name`, `area_name`,
@@ -28,4 +28,10 @@
         </foreach>
 	</insert>
 
+    <select id="query" parameterType="com.ceeses.model.Lnyxlqqk" resultMap="lnyxlqqkMap">
+        SELECT `id`, `year`, `volunteer_no`, `batch_code`, `student_gender`, `category_name`, `area_name`, `area_code`,
+        `school_name`, `major`, `score`, `ranking`, `cast_archive_unit_name`
+        FROM `t_lnyxlqqk`
+        WHERE `year` = #{year} AND `school_name` = #{schoolName}
+    </select>
 </mapper>
