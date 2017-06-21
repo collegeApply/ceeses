@@ -4,12 +4,13 @@
     <title>高考分数评估系统-欢迎您</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="bootstrap/css/yeti-bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="select2/css/select2.min.css" rel="stylesheet" media="screen">
+    <link href="select2/css/select2-bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/index.css" rel="stylesheet" media="screen">
 </head>
 <body>
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-inverse">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
@@ -33,11 +34,10 @@
 <div class="container">
     <div class="content-container">
         <div class="row">
-            <div class="panel panel-info">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h4 class="panel-title">请您如实填写如下信息，以便我们为您做出更精确的预测</h4>
+                    请您如实填写如下信息，以便我们为您做出更精确的预测
                 </div>
-
                 <div class="panel-body">
                     <div id="searchConditionsContainer">
                         <div class="row">
@@ -58,9 +58,9 @@
                                     <input type="text" class="form-control input-sm" name="ranking"
                                            placeholder="输入分数名次">
                                 </div>
-                                <div class="form-group pull-left" style="width: 160px;">
+                                <div class="form-group pull-left" style="width: 160px">
                                     <label>科别</label>
-                                    <select class="form-control" name="category">
+                                    <select class="form-control input-sm" name="category" style="font-size: 12px">
                                         <option value="理工">理工</option>
                                         <option value="文史">文史</option>
                                     </select>
@@ -110,7 +110,7 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <div style="text-align: center;">
-                                    <button class="btn btn-danger btn-sm" name="resetSearchConditionBtn"
+                                    <button class="btn btn-default btn-sm" name="resetSearchConditionBtn"
                                             style="margin-right: 50px;">
                                         <i class="glyphicon glyphicon-trash"></i>重新填写
                                     </button>
@@ -127,7 +127,7 @@
         <div class="row">
             <div class="panel panel-success">
                 <div class="panel-heading">
-                    <h4 class="panel-title">预测结果</h4>
+                    预测结果
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -160,6 +160,7 @@
 <script src="js/jquery-3.2.1.min.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <script src="select2/js/select2.min.js"></script>
+<script src="select2/js/i18n/zh-CN.js"></script>
 <script src="bootbox/4.4.0/bootbox.min.js"></script>
 <script src="js/index.js"></script>
 </body>

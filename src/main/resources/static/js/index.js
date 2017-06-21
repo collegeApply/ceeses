@@ -3,6 +3,8 @@
  * Created on 2017/6/11.
  */
 
+$.fn.select2.defaults.set("theme", "bootstrap");
+
 var areas = [
     '北京', '广东', '山东', '江苏', '河南', '上海', '河北', '浙江', '陕西', '湖南', '重庆', '福建', '天津', '云南', '四川', '广西', '安徽', '海南', '江西', '湖北', '山西', '辽宁', '台湾', '黑龙江', '内蒙古', '香港', '澳门', '贵州', '甘肃', '青海', '新疆', '西藏', '吉林', '宁夏'
 ];
@@ -182,6 +184,7 @@ function resetSearchConditions() {
 function initCategorySelect() {
     $searchConditionsContainer.find('select[name=category]').select2({
         placeholder: '请选择科别',
+        language: 'zh-CN',
         allowClear: true
     });
     $searchConditionsContainer.find('select[name=category]').val('').trigger('change');
@@ -190,6 +193,7 @@ function initCategorySelect() {
 function initBatchSelect() {
     $searchConditionsContainer.find('select[name=batch]').select2({
         placeholder: '请选择批次',
+        language: 'zh-CN',
         allowClear: true
     });
     $searchConditionsContainer.find('select[name=batch]').val('').trigger('change');
@@ -202,6 +206,7 @@ function initAreaSelect() {
     });
     $searchConditionsContainer.find('select[name=areaName]').select2({
         placeholder: '请选择省/市',
+        language: 'zh-CN',
         allowClear: true
     });
     $searchConditionsContainer.find('select[name=areaName]').change(function () {
@@ -214,6 +219,7 @@ function initAreaSelect() {
 function initSchoolSelect() {
     $searchConditionsContainer.find('select[name=targetSchool]').select2({
         placeholder: '请选择院校',
+        language: 'zh-CN',
         allowClear: true
     });
     $.ajax({
