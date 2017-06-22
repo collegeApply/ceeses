@@ -9,6 +9,7 @@ import com.ceeses.utils.CommonConstans;
 import com.ceeses.utils.ExcelUtil;
 import com.ceeses.web.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -80,9 +81,9 @@ public class LnfsdxqController extends BaseController {
 
         String path = this.getClass().getResource("/").getFile();
 
-        //初始化传入的文件
+        //初始化传入的文件，将传入参数修改成绝对路径
         if (null != fileName && !"".equals(fileName)) {
-            String filePath = path + "/" + fileName;
+            String filePath = fileName;
             excelUtil.initLnfsdxq(filePath);
         } else {//初始化默认理工和文科历史数据
             String wkFilePath = path + "/lnfsd_wk.xlsx";
@@ -94,6 +95,17 @@ public class LnfsdxqController extends BaseController {
 
         return new JsonResult();
     }
+
+    @RequestMapping("/calcGradeAndRanking")
+    @ResponseBody
+    public JsonResult calcGradeAndRanking(Integer year) throws IOException {
+        if (StringUtils.isEmpty(year)){
+            year = 2017;
+        }
+        probabilityCalcService.calcGradeAndRanking(year);
+        return new JsonResult();
+    }
+
 
     @RequestMapping("/initLnskfs")
     @ResponseBody

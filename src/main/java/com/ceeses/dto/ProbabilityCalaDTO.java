@@ -18,12 +18,19 @@ public class ProbabilityCalaDTO {
     private String enrollCount;
     private String collegeRanking;
 
+    /**
+     * 针对界面，每年的Lnyxmc数据已经包含招生计划、线差数据、名次数据三部分信息，
+     */
     //主键使年份，展示的使每年的录取情况
+    //针对每个院校会补充17年的预测数据
     private Map<Integer, Lnyxmc> yxRankingMap;
 
-    //最终计算出某院校的录取概率
+    //最终计算出某院校的录取概率，位次法预测的概率
     //专业应该是跟院校平级的
     private double gaiLv;
+
+    //线差法预测的概率
+    private double xcfGaiLv;
 
     //主键专业名称包含每个年份某个专业的录取概率
     private Map<String, MajorEnrollDTO> majorEnrollDTOMap;
@@ -122,5 +129,13 @@ public class ProbabilityCalaDTO {
 
     public void setMajorEnrollDTOMap(Map<String, MajorEnrollDTO> majorEnrollDTOMap) {
         this.majorEnrollDTOMap = majorEnrollDTOMap;
+    }
+
+    public double getXcfGaiLv() {
+        return xcfGaiLv;
+    }
+
+    public void setXcfGaiLv(double xcfGaiLv) {
+        this.xcfGaiLv = xcfGaiLv;
     }
 }

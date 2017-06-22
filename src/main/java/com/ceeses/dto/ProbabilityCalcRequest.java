@@ -17,7 +17,7 @@ public class ProbabilityCalcRequest {
     private String category;
 
     //以下可选
-    private Integer batch;
+    private String batch;
     private String areaName;
     private String targetSchool;
     private String targetMajor;
@@ -72,11 +72,11 @@ public class ProbabilityCalcRequest {
         this.ranking = ranking;
     }
 
-    public Integer getBatch() {
+    public String getBatch() {
         return batch;
     }
 
-    public void setBatch(Integer batch) {
+    public void setBatch(String batch) {
         this.batch = batch;
     }
 

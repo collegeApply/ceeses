@@ -19,6 +19,12 @@ public class Lnzymc {
     private Float LowGrade;
     private Float avgGrade;
 
+    //标准省控线，用于计算线差，highGrade-standardGrade 为最高线差
+    //LowGrade-standardGrade 为最低线差
+    //avgGrade-standardGrade 为平均线差
+    //页面展示时用到
+    private Float standardGrade;
+
     private double gaiLv = 0.0d;
 
 
@@ -101,5 +107,14 @@ public class Lnzymc {
 
     public void setGaiLv(double gaiLv) {
         this.gaiLv = gaiLv;
+    }
+
+
+    public Float getStandardGrade() {
+        return standardGrade;
+    }
+
+    public void setStandardGrade(Float standardGrade) {
+        this.standardGrade = standardGrade;
     }
 }
