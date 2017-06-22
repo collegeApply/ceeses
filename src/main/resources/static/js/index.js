@@ -14,8 +14,6 @@ var $searchConditionsContainer = $('#searchConditionsContainer');
 $(function () {
     acceptIntegerOnly($searchConditionsContainer.find('input[name=grade]'));
     acceptIntegerOnly($searchConditionsContainer.find('input[name=ranking]'));
-    initCategorySelect();
-    initBatchSelect();
     initAreaSelect();
     initSchoolSelect();
 
@@ -38,7 +36,7 @@ $(function () {
                         resultTableHtml += '<th>序号</th>';
                         resultTableHtml += '<th>院校代码</th>';
                         resultTableHtml += '<th>院校名称</th>';
-                        resultTableHtml += '<th>省/市</th>';
+                        resultTableHtml += '<th>省市</th>';
                         resultTableHtml += '<th>批次</th>';
                         resultTableHtml += '<th>高校类别</th>';
                         resultTableHtml += '<th>全国排名</th>';
@@ -65,7 +63,7 @@ $(function () {
                                 for (var year in this.yxRankingMap) {
                                     resultTableHtml += '<td>最高名次: ' + this.yxRankingMap[year].highRanking + '<br>最低名次: ' + this.yxRankingMap[year].lowRanking + '<br>招生计划: ';
                                     if (this.yxRankingMap[year].enrollCunt == 0) {
-                                        resultTableHtml += '无招生计划';
+                                        resultTableHtml += '无';
                                     } else {
                                         resultTableHtml += this.yxRankingMap[year].enrollCunt;
                                     }
@@ -181,24 +179,6 @@ function resetSearchConditions() {
     $searchConditionsContainer.find('select').val('').trigger('change');
 }
 
-function initCategorySelect() {
-    $searchConditionsContainer.find('select[name=category]').select2({
-        placeholder: '请选择科别',
-        language: 'zh-CN',
-        allowClear: true
-    });
-    $searchConditionsContainer.find('select[name=category]').val('').trigger('change');
-}
-
-function initBatchSelect() {
-    $searchConditionsContainer.find('select[name=batch]').select2({
-        placeholder: '请选择批次',
-        language: 'zh-CN',
-        allowClear: true
-    });
-    $searchConditionsContainer.find('select[name=batch]').val('').trigger('change');
-}
-
 function initAreaSelect() {
     var areaOptionsHtml = '';
     $.each(areas, function () {
@@ -244,27 +224,27 @@ function initSchoolSelect() {
 
 function validateForm() {
     if (!$searchConditionsContainer.find('input[name=name]').val()) {
-        bootbox.alert("请输入您的姓名");
+        bootbox.alert("请输入姓名");
+        return false;
+    }
+
+    if (!$searchConditionsContainer.find('input[name=examRegCode]').val()) {
+        bootbox.alert("请输入准考证号");
         return false;
     }
 
     if (!$searchConditionsContainer.find('input[name=grade]').val()) {
-        bootbox.alert("请输入您的考试分数");
+        bootbox.alert("请输入高考分数");
         return false;
     }
 
     if (!$searchConditionsContainer.find('input[name=ranking]').val()) {
-        bootbox.alert("请输入您的分数名次");
-        return false;
-    }
-
-    if (!$searchConditionsContainer.find('select[name=category]').val()) {
-        bootbox.alert("请选择您的科别");
+        bootbox.alert("请输入分数名次");
         return false;
     }
 
     if (!$searchConditionsContainer.find('select[name=batch]').val()) {
-        bootbox.alert("请选择您的意向批次");
+        bootbox.alert("请选择批次");
         return false;
     }
 
@@ -274,6 +254,7 @@ function validateForm() {
 function extractForm() {
     var requestForm = {};
     requestForm['name'] = $searchConditionsContainer.find('input[name=name]').val();
+    requestForm['examRegCode'] = $searchConditionsContainer.find('input[name=examRegCode]').val();
     requestForm['grade'] = $searchConditionsContainer.find('input[name=grade]').val();
     requestForm['ranking'] = $searchConditionsContainer.find('input[name=ranking]').val();
     requestForm['category'] = $searchConditionsContainer.find('select[name=category]').val();
@@ -281,6 +262,8 @@ function extractForm() {
     requestForm['areaName'] = $searchConditionsContainer.find('select[name=areaName]').val();
     requestForm['targetSchool'] = $searchConditionsContainer.find('select[name=targetSchool]').val();
     requestForm['targetMajor'] = $searchConditionsContainer.find('input[name=targetMajor]').val();
+    requestForm['algorithmType'] = $searchConditionsContainer.find('select[name=algorithmType]').val();
+    requestForm['sortedType'] = $searchConditionsContainer.find('select[name=sortedType]').val();
     return requestForm;
 }
 

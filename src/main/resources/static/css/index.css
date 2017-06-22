@@ -62,3 +62,9 @@ table td {
 .select2-container--bootstrap .select2-search--dropdown .select2-search__field {
     border-radius: 0;
 }
+
+.container {
+    width: 80%;
+    min-width: 1200px;
+    max-width: 1800px;
+}

@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>高考分数评估系统-欢迎您</title>
+    <title>高考录取预测系统-欢迎您</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="bootstrap/css/yeti-bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="select2/css/select2.min.css" rel="stylesheet" media="screen">
     <link href="select2/css/select2-bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="css/index.css" rel="stylesheet" media="screen">
+    <link rel="shortcut icon" href="images/favicon.ico">
 </head>
 <body>
 <nav class="navbar navbar-inverse">
@@ -20,11 +21,11 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">高考分数评估系统</a>
+            <a class="navbar-brand" href="#">高考录取预测系统</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">录取预测</a></li>
+                <li class="active"><a href="">录取预测</a></li>
                 <li><a href="#about">了解我们</a></li>
                 <li><a href="#contact">联系我们</a></li>
             </ul>
@@ -42,32 +43,33 @@
                     <div id="searchConditionsContainer">
                         <div class="row">
                             <div class="col-xs-12">
-                                <div class="form-group pull-left" style="width: 100px;">
-                                    <label style="margin-top: 34px">必填信息（<span style="color: red;">*</span>）:</label>
-                                </div>
                                 <div class="form-group pull-left" style="width: 160px;">
-                                    <label>姓名</label>
+                                    <label>姓名<span style="color: red;">*</span></label>
                                     <input type="text" class="form-control input-sm" name="name" placeholder="输入您的姓名">
                                 </div>
                                 <div class="form-group pull-left" style="width: 160px;">
-                                    <label>考试分数</label>
+                                    <label>准考证号<span style="color: red;">*</span></label>
+                                    <input type="text" class="form-control input-sm" name="examRegCode" placeholder="输入准考证号">
+                                </div>
+                                <div class="form-group pull-left" style="width: 160px;">
+                                    <label>高考分数<span style="color: red;">*</span></label>
                                     <input type="text" class="form-control input-sm" name="grade" placeholder="输入考试分数">
                                 </div>
                                 <div class="form-group pull-left" style="width: 160px;">
-                                    <label>分数名次</label>
+                                    <label>分数名次<span style="color: red;">*</span></label>
                                     <input type="text" class="form-control input-sm" name="ranking"
                                            placeholder="输入分数名次">
                                 </div>
                                 <div class="form-group pull-left" style="width: 160px">
-                                    <label>科别</label>
+                                    <label>科别<span style="color: red;">*</span></label>
                                     <select class="form-control input-sm" name="category" style="font-size: 12px">
                                         <option value="理工">理工</option>
                                         <option value="文史">文史</option>
                                     </select>
                                 </div>
-                                <div class="form-group pull-left" style="width: 160px;">
-                                    <label>意向批次</label>
-                                    <select class="form-control" name="batch">
+                                <div class="form-group pull-left" style="width: 120px;">
+                                    <label>意向批次<span style="color: red;">*</span></label>
+                                    <select class="form-control" name="batch" style="font-size: 12px">
                                         <option value="" selected>请选择批次</option>
                                         <option value="1">提前本科</option>
                                         <option value="2">第一批本科</option>
@@ -89,9 +91,6 @@
                         </div>
                         <div class="row">
                             <div class="col-xs-12">
-                                <div class="form-group pull-left" style="width: 100px;">
-                                    <label style="margin-top: 34px">选填信息（<span style="color: black;">*</span>）:</label>
-                                </div>
                                 <div class="form-group pull-left" style="width: 160px;">
                                     <label>院校所在省市</label>
                                     <select class="form-control" name="areaName"></select>
@@ -100,10 +99,25 @@
                                     <label>目标院校</label>
                                     <select class="form-control" name="targetSchool"></select>
                                 </div>
-                                <div class="form-group pull-left" style="width: 260px;">
+                                <div class="form-group pull-left" style="width: 180px;">
                                     <label>目标专业</label>
                                     <input type="text" class="form-control input-sm" name="targetMajor"
                                            placeholder="输入目标专业">
+                                </div>
+                                <div class="form-group pull-left" style="width: 140px">
+                                    <label>预测算法</label>
+                                    <select class="form-control input-sm" name="algorithmType" style="font-size: 12px">
+                                        <option value="1">位次法</option>
+                                        <option value="2">线差法</option>
+                                        <option value="3" selected>位次法与线差法</option>
+                                    </select>
+                                </div>
+                                <div class="form-group pull-left" style="width: 100px">
+                                    <label>排序方式</label>
+                                    <select class="form-control input-sm" name="sortedType" style="font-size: 12px">
+                                        <option value="1">录取概率</option>
+                                        <option value="2">学校排名</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
