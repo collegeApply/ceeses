@@ -2,6 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ceeses.dao.mapper.LnzylqtjMapper">
 
+    <resultMap id="lnzylqtjMap" type="com.ceeses.model.Lnzylqtj">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="year" column="year" jdbcType="INTEGER"/>
+        <result property="collegeEnrollId" column="college_enroll_id" jdbcType="INTEGER"/>
+        <result property="collegeName" column="college_name" jdbcType="VARCHAR"/>
+        <result property="majorName" column="major_name" jdbcType="VARCHAR"/>
+        <result property="batchCode" column="batch_code" jdbcType="VARCHAR"/>
+        <result property="category" column="category" jdbcType="VARCHAR"/>
+        <result property="enrollCount" column="enroll_count" jdbcType="VARCHAR"/>
+        <result property="highGrade" column="low_grade" jdbcType="NUMERIC"/>
+        <result property="lowGrade" column="high_grade" jdbcType="NUMERIC"/>
+        <result property="avgGrade" column="avg_grade" jdbcType="NUMERIC"/>
+        <result property="highRanking" column="high_ranking" jdbcType="INTEGER"/>
+        <result property="lowRanking" column="low_ranking" jdbcType="INTEGER"/>
+        <result property="avgRanking" column="avg_ranking" jdbcType="NUMERIC"/>
+    </resultMap>
+
     <insert id="batchSaveLnzylqtj">
         INSERT INTO `t_lnzylqtj` (`year`, `college_enroll_id`, `college_name`, `major_name`,
         `batch_code`, `category`, `enroll_count`, `high_grade`,
@@ -16,4 +33,20 @@
         </foreach>
 	</insert>
 
+    <update id="update" parameterType="com.ceeses.model.Lnzylqtj">
+        UPDATE `t_lnzylqtj` SET `avg_grade` = #{avgGrade}, `avg_ranking` = #{avgRanking}
+        WHERE `id` = #{id};
+    </update>
+
+    <select id="queryByPage" resultMap="lnzylqtjMap">
+        SELECT `id`, `year`, `college_enroll_id`, `college_name`, `major_name`, `batch_code`, `category`,
+        `enroll_count`, `high_grade`, `low_grade`, `avg_grade`, `high_ranking`, `low_ranking`, `avg_ranking`
+        FROM `t_lnzylqtj`
+        LIMIT #{offset}, #{limit};
+    </select>
+
+    <select id="count" resultType="integer">
+        SELECT COUNT(*)
+        FROM `t_lnzylqtj`;
+    </select>
 </mapper>

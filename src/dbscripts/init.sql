@@ -8,16 +8,17 @@ CREATE TABLE `t_lnyxlqqk`(
   `category_name` VARCHAR(64) NOT NULL COMMENT '科别名称（文史，理工等）',
   `area_name` VARCHAR(32) NOT NULL COMMENT '地区名称',
   `area_code` CHAR(2) NULL COMMENT '地区编码',
-  `school_name` VARCHAR(200) NOT NULL COMMENT '录取院校名称',
-  `major` VARCHAR(512) NOT NULL COMMENT '录取专业',
+  `school_name` VARCHAR(100) NOT NULL COMMENT '录取院校名称',
+  `major` VARCHAR(100) NOT NULL COMMENT '录取专业',
   `score` SMALLINT(3) NOT NULL COMMENT '分数',
   `ranking` INT(11) NOT NULL COMMENT '当前分数排名',
   `cast_archive_unit_name` VARCHAR(256) NOT NULL COMMENT '投档单位名称',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年院校录取情况，所有招录信息汇总';
 
-ALTER TABLE `t_lnyxlqqk` MODIFY `school_name` VARCHAR(2) NOT NULL COMMENT '录取院校名称';
-ALTER TABLE `t_lnyxlqqk` ADD INDEX `idx_lnyxlqqk_year_school_name`(`year`, `school_name`);
+ALTER TABLE `t_lnyxlqqk` MODIFY `major` VARCHAR(100) NOT NULL COMMENT '录取专业';
+ALTER TABLE `t_lnyxlqqk` MODIFY `school_name` VARCHAR(100) NOT NULL COMMENT '录取院校名称';
+ALTER TABLE `t_lnyxlqqk` ADD INDEX `idx_lnyxlqqk_year_school_major`(`year`, `school_name`, `major`);
 
 -- 历年分数段信息统计表
 CREATE TABLE `t_lnfsdxq` (
