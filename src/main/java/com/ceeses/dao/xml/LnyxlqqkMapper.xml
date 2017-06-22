@@ -32,6 +32,15 @@
         SELECT `id`, `year`, `volunteer_no`, `batch_code`, `student_gender`, `category_name`, `area_name`, `area_code`,
         `school_name`, `major`, `score`, `ranking`, `cast_archive_unit_name`
         FROM `t_lnyxlqqk`
-        WHERE `year` = #{year} AND `school_name` = #{schoolName}
+        WHERE TRUE
+        <if test="year != null">
+            AND `year` = #{year}
+        </if>
+        <if test="schoolName != null">
+            AND `school_name` = #{schoolName}
+        </if>
+        <if test="major != null">
+            AND `major` = #{major}
+        </if>
     </select>
 </mapper>

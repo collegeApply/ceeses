@@ -1,6 +1,7 @@
 package com.ceeses.web.controller;
 
 import com.ceeses.service.LnyxlqtjService;
+import com.ceeses.service.LnzylqtjService;
 import com.ceeses.web.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,11 @@ public class ResolveDataController extends BaseController {
      */
     @Autowired
     private LnyxlqtjService lnyxlqtjService;
+    /**
+     * 历年专业录取统计服务
+     */
+    @Autowired
+    private LnzylqtjService lnzylqtjService;
 
     /**
      * 处理历年院校录取统计
@@ -30,6 +36,7 @@ public class ResolveDataController extends BaseController {
     @RequestMapping("/lnyxlqtj")
     @ResponseBody
     public JsonResult resolveLnyxlqtj() {
+        LOGGER.info("处理历年院校录取统计");
         JsonResult result = new JsonResult();
         try {
             long startTime = System.currentTimeMillis();
@@ -40,6 +47,30 @@ public class ResolveDataController extends BaseController {
             result.setCode(JsonResult.ResultCode.FAILED);
             result.setMsg("处理历年院校录取统计失败");
             LOGGER.error("处理历年院校录取统计失败", e);
+        }
+
+        return result;
+    }
+
+    /**
+     * 处理历年专业录取统计
+     *
+     * @return 结果
+     */
+    @RequestMapping("/lnzylqtj")
+    @ResponseBody
+    public JsonResult resolveLnzylqtj() {
+        LOGGER.info("处理历年专业录取统计");
+        JsonResult result = new JsonResult();
+        try {
+            long startTime = System.currentTimeMillis();
+            lnzylqtjService.resolveAverage();
+            result.setMsg("处理历年专业录取统计成功");
+            LOGGER.info("处理历年专业录取统计成功， 耗时: {}ms", System.currentTimeMillis() - startTime);
+        } catch (Exception e) {
+            result.setCode(JsonResult.ResultCode.FAILED);
+            result.setMsg("处理历年专业录取统计失败");
+            LOGGER.error("处理历年专业录取统计失败", e);
         }
 
         return result;
