@@ -25,8 +25,12 @@ public class ProbabilityCalcRequest {
     //院校查询出后单独查询专业时用
     private String collegeCode;
 
-    //排序方式1：录取概率高优先，2：学校排名高优先，3：非第一志愿多优先
+    //排序方式1：录取概率高优先，2：学校排名高优先
     private Integer sortedType = 1;
+
+    //查询算法,可以同时选个两种算法
+    //1:位次法，2:线差法，3:两种皆有
+    private String algorithmType;
 
     public Integer getYear() {
         return year;
@@ -125,6 +129,14 @@ public class ProbabilityCalcRequest {
         this.collegeCode = collegeCode;
     }
 
+    public String getAlgorithmType() {
+        return algorithmType;
+    }
+
+    public void setAlgorithmType(String algorithmType) {
+        this.algorithmType = algorithmType;
+    }
+
     @Override
     public String toString() {
         return "ProbabilityCalcRequest{" +
@@ -139,7 +151,8 @@ public class ProbabilityCalcRequest {
                 ", targetSchool='" + targetSchool + '\'' +
                 ", targetMajor='" + targetMajor + '\'' +
                 ", collegeCode='" + collegeCode + '\'' +
-                ", sortedType=" + sortedType +
+                ", sortedType=" + sortedType + '\'' +
+                ", algorithmType=" + algorithmType +
                 '}';
     }
 }
