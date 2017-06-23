@@ -2,8 +2,10 @@ package com.ceeses.utils;
 
 import com.ceeses.model.Lnskfsx;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Created by zhaoshan on 2017/6/4.
@@ -23,26 +25,98 @@ public class CommonConstans {
 
     // 省控线数据如下：
     // 1-5分别代表:本科一批，本科二批，本科三批，专科一批，专科二批
+    //省控线增加：6.省内预科，7.贫困定向一本，8.贫困定向二本
     public static final Map<String,String> batchAndSkxMap = new HashMap<>();
 
     static {
-
-        batchAndSkxMap.put("1","1");
-
-
-
+        //key是批次，value是省控线值
+        //1,8,A,H,Z需特殊处理
+        batchAndSkxMap.put("2","1");
+        batchAndSkxMap.put("3","2");
+        batchAndSkxMap.put("4","3");
+        batchAndSkxMap.put("5","6");
+        batchAndSkxMap.put("6","4");
+        batchAndSkxMap.put("7","4");
+        batchAndSkxMap.put("9","4");
+        batchAndSkxMap.put("B","1");
+        batchAndSkxMap.put("C","2");
+        batchAndSkxMap.put("D","3");
+        batchAndSkxMap.put("E","4");
+        batchAndSkxMap.put("F","4");
     }
 
     /**
-     * 据年份，分数查询出控制线，用控制线计算线差
+     * 据年份，批次。分数查询出控制线，用控制线计算线差
      * 这是个蛋疼的方法。。。
      * @param year
      * @param grade
      * @param batchCode
      * @return
      */
-    public  static String getKzxByGrade(Integer year, Float grade, String batchCode){
+    public static Integer getKzxByGrade(Integer year, Float grade, String batchCode, String category){
 
-        return "";
+        //自主招生
+        if ("Z".equals(batchCode)){
+            return 0;
+        }
+
+        if (!"1".equals(batchCode) && !"8".equals(batchCode) && !"A".equals(batchCode) &&
+                !"H".equals(batchCode)){
+            String kzxCode = batchAndSkxMap.get(batchCode);
+            if (lnskfsxMap.containsKey(year + "_" + kzxCode + "_" + category)){
+                return lnskfsxMap.get(year + "_" + kzxCode + "_" + category).getGrade();
+            } else {
+                return 0;
+            }
+        }
+
+        TreeSet<Lnskfsx> sortedSet = new TreeSet(new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                Lnskfsx h1 = (Lnskfsx) o1;
+                Lnskfsx h2 = (Lnskfsx) o2;
+                if (h1.getGrade() > h2.getGrade()) {
+                    return -1;
+                }
+                if (h1.getGrade() < h2.getGrade()) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        //这三种特殊情况时候
+        if ("1".equals(batchCode) || "8".equals(batchCode) || "A".equals(batchCode)) {
+            for (Lnskfsx lnskfsx : CommonConstans.lnskfsxMap.values()) {
+                if (lnskfsx.getYear().equals(year) && lnskfsx.getCategory().equals(category) &&
+                        !"7".equals(lnskfsx.getCategory())  &&  !"8".equals(lnskfsx.getCategory())) {
+                    sortedSet.add(lnskfsx);
+                }
+            }
+            for (Lnskfsx fxs : sortedSet){
+                //拿到的第一个小于你当前分数的就是你分数对应的批次线
+                if (fxs.getGrade() < grade){
+                    return fxs.getGrade();
+                }
+            }
+        }
+        sortedSet.clear();
+
+        //贫困定向这种特殊情况时候处理,之排序处理7,8两个分数线，分别对应贫困定向的一本和二本
+        if ("H".equals(batchCode)) {
+            for (Lnskfsx lnskfsx : CommonConstans.lnskfsxMap.values()) {
+                if (lnskfsx.getYear().equals(year) && lnskfsx.getCategory().equals(category) &&
+                        "7".equals(lnskfsx.getCategory())  &&  "8".equals(lnskfsx.getCategory())) {
+                    sortedSet.add(lnskfsx);
+                }
+            }
+            for (Lnskfsx fxs : sortedSet){
+                //拿到的第一个小于你当前分数的就是你分数对应的批次线
+                if (fxs.getGrade() < grade){
+                    return fxs.getGrade();
+                }
+            }
+        }
+
+        return 0;
     }
 }

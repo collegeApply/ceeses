@@ -25,6 +25,11 @@ public class ProbabilityCalaDTO {
     //针对每个院校会补充17年的预测数据
     private Map<Integer, Lnyxmc> yxRankingMap;
 
+    /**
+     * 主键是年份，当前专业的志愿号等信息
+     */
+    private Map<Integer,String> volunteerInfoMap;
+
     //最终计算出某院校的录取概率，位次法预测的概率
     //专业应该是跟院校平级的
     private double gaiLv;
@@ -129,6 +134,14 @@ public class ProbabilityCalaDTO {
 
     public void setMajorEnrollDTOMap(Map<String, MajorEnrollDTO> majorEnrollDTOMap) {
         this.majorEnrollDTOMap = majorEnrollDTOMap;
+    }
+
+    public Map<Integer, String> getVolunteerInfoMap() {
+        return volunteerInfoMap;
+    }
+
+    public void setVolunteerInfoMap(Map<Integer, String> volunteerInfoMap) {
+        this.volunteerInfoMap = volunteerInfoMap;
     }
 
     public double getXcfGaiLv() {
