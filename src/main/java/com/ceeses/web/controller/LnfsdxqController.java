@@ -1,13 +1,20 @@
 package com.ceeses.web.controller;
 
-import com.ceeses.dao.*;
+import com.ceeses.dao.CollegeInfoDao;
+import com.ceeses.dao.LnfsdxqDao;
+import com.ceeses.dao.LnskfsxDao;
+import com.ceeses.dao.LnyxlqtjDao;
+import com.ceeses.dao.LnzylqtjDao;
 import com.ceeses.dto.ProbabilityCalaResponse;
 import com.ceeses.dto.ProbabilityCalcRequest;
 import com.ceeses.model.Lnskfsx;
+import com.ceeses.model.QueryRecord;
 import com.ceeses.service.ProbabilityCalcService;
+import com.ceeses.service.QueryRecordService;
 import com.ceeses.utils.CommonConstans;
 import com.ceeses.utils.ExcelUtil;
 import com.ceeses.web.result.JsonResult;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +30,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/lnfsdxq")
 public class LnfsdxqController extends BaseController {
-
-
     @Autowired
     private ExcelUtil excelUtil;
 
@@ -45,14 +50,21 @@ public class LnfsdxqController extends BaseController {
 
     @Autowired
     ProbabilityCalcService probabilityCalcService;
+    /**
+     * 查询记录服务
+     */
+    @Autowired
+    private QueryRecordService queryRecordService;
 
     @RequestMapping("/getTargetColleges")
     @ResponseBody
     public ProbabilityCalaResponse getTargetColleges(ProbabilityCalcRequest probabilityCalcRequest) throws IOException {
         probabilityCalcRequest.setYear(2016);
+        QueryRecord record = covertToQueryRecord(probabilityCalcRequest);
         ProbabilityCalaResponse response = null;
         try {
             response = probabilityCalcService.getTargetColleges(probabilityCalcRequest);
+            queryRecordService.save(record);
         } catch (Exception e) {
             LOGGER.error("失败", e);
         }
@@ -99,7 +111,7 @@ public class LnfsdxqController extends BaseController {
     @RequestMapping("/calcGradeAndRanking")
     @ResponseBody
     public JsonResult calcGradeAndRanking(Integer year) throws IOException {
-        if (StringUtils.isEmpty(year)){
+        if (StringUtils.isEmpty(year)) {
             year = 2017;
         }
         probabilityCalcService.calcGradeAndRanking(year);
@@ -156,5 +168,11 @@ public class LnfsdxqController extends BaseController {
         return new JsonResult();
     }
 
-
+    private QueryRecord covertToQueryRecord(ProbabilityCalcRequest request) {
+        QueryRecord record = new QueryRecord();
+        BeanUtils.copyProperties(request, record);
+        record.setSortedType(String.valueOf(request.getSortedType()));
+        record.setBatch(CommonConstans.batchMap.get(request.getBatch()));
+        return record;
+    }
 }

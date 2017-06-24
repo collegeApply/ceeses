@@ -146,6 +146,25 @@ ALTER TABLE t_lnzylqtj ADD INDEX zy_low_rank_index (`low_ranking`);
 ALTER TABLE t_lnyxlqtj ADD INDEX yx_year_index (`year`);
 ALTER TABLE t_lnzylqtj ADD INDEX zy_year_index (`year`);
 
+-- 查询记录表
+DROP TABLE IF EXISTS `t_query_record`;
+CREATE TABLE `t_query_record` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `student_name` VARCHAR(64) NOT NULL COMMENT '学生姓名',
+  `exam_reg_code` VARCHAR(32) NOT NULL COMMENT '准考证号',
+  `grade` SMALLINT(4) NOT NULL COMMENT '高考分数',
+  `ranking` INT(11) NOT NULL COMMENT '分数名次',
+  `category` VARCHAR(8) NOT NULL COMMENT '科别',
+  `batch` VARCHAR(32) NOT NULL COMMENT '批次',
+  `area_name` VARCHAR(32) COMMENT '院校所在省市',
+  `target_school` VARCHAR(128) COMMENT '目标院校',
+  `target_major` VARCHAR(128) COMMENT '目标专业',
+  `algorithm_type` VARCHAR(8) COMMENT '预测算法，1表示位次法，2表示线差法，3表示位次法与线差法',
+  `sorted_type` VARCHAR(8) COMMENT '排序方式，1表示录取概率，2表示学校排名',
+  `query_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '查询时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='查询记录表';
+
 -- 省控线直接初始化进去
 INSERT INTO `t_lnskfxs` (`year`, `batch`, `category`, `grade`)
 VALUES
