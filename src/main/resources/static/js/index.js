@@ -75,44 +75,49 @@ $(function () {
                             resultTableHtml += '<td rowspan="3">' + this.collegeName + '</td>';
                             resultTableHtml += '<td rowspan="3">' + (this.areaName == null ? '' : this.areaName) + '</td>';
                             resultTableHtml += '<td rowspan="3">' + this.batchName + '</td>';
-                            resultTableHtml += '<td rowspan="3">' + (this.collegeType == null ? '' : this.collegeType) + '</td>';
+                            resultTableHtml += '<td rowspan="3">' + (this.collegeType == null ? '其它' : this.collegeType) + '</td>';
                             resultTableHtml += '<td rowspan="3">' + (this.collegeRanking == null ? '' : this.collegeRanking) + '</td>';
                             // 第一行
                             for (var year in this.yxRankingMap) {
                                 resultTableHtml += '<td rowspan="3">' + this.yxRankingMap[year].enrollCunt + '</td>';
                             }
                             for (var year in this.yxRankingMap) {
-                                resultTableHtml += '<td>' + (this.yxRankingMap[year].standardGrade - this.yxRankingMap[year].highGrade) + '</td>';
+                                resultTableHtml += '<td>' + Math.round(this.yxRankingMap[year].highGrade - this.yxRankingMap[year].standardGrade).toFixed(1) + '</td>';
                             }
                             resultTableHtml += '<td rowspan="3">' + (Math.round(this.xcfGaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
                             for (var year in this.yxRankingMap) {
                                 resultTableHtml += '<td>' + this.yxRankingMap[year].highRanking + '</td>';
                             }
                             resultTableHtml += '<td rowspan="3">' + (Math.round(this.gaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
-                            // for (var year in this.volunteerInfoMap) {
-                            //     resultTableHtml += '<td rowspan="3">' + this.volunteerInfoMap[year] + '</td>';
-                            // }
-                            for (var i = 0; i < years.length; i++) {
-                                resultTableHtml += '<td rowspan="3"></td>';
+                            for (var year in this.volunteerInfoMap) {
+                                var volunteerInfo = '';
+                                if (this.volunteerInfoMap[year]) {
+                                    var volunteerInfoItems = this.volunteerInfoMap[year].split('--');
+                                    for (var j = 0; j < volunteerInfoItems.length; j++) {
+                                        volunteerInfo += volunteerInfoItems[j] + '--<br>'
+                                    }
+                                    volunteerInfo = volunteerInfo.substring(0, volunteerInfo.length - 6);
+                                }
+                                resultTableHtml += '<td rowspan="3">' + volunteerInfo + '</td>';
                             }
                             resultTableHtml += '<td rowspan="3"><a class="btn btn-primary btn-xs" onclick="showMajorDetails(\'' + this.collegeCode + '\', this)">查看专业详情</a></td>';
                             resultTableHtml += '</tr>';
                             // 第二行
                             resultTableHtml += '<tr>';
                             for (var i = 0; i < years.length; i++) {
-                                resultTableHtml += '<th>' + (this.yxRankingMap[years[i]].standardGrade - this.yxRankingMap[years[i]].avgGrade) + '</th>';
+                                resultTableHtml += '<td>' + Math.round(this.yxRankingMap[years[i]].avgGrade - this.yxRankingMap[years[i]].standardGrade).toFixed(1) + '</td>';
                             }
                             for (i = 0; i < years.length; i++) {
-                                resultTableHtml += '<th>' + this.yxRankingMap[years[i]].avgRanking + '</th>';
+                                resultTableHtml += '<td>' + Math.ceil(this.yxRankingMap[years[i]].avgRanking) + '</td>';
                             }
                             resultTableHtml += '</tr>';
                             // 第三行
                             resultTableHtml += '<tr>';
                             for (i = 0; i < years.length; i++) {
-                                resultTableHtml += '<th>' + (this.yxRankingMap[years[i]].standardGrade - this.yxRankingMap[years[i]].LowGrade) + '</th>';
+                                resultTableHtml += '<td>' + Math.round(this.yxRankingMap[years[i]].lowGrade - this.yxRankingMap[years[i]].standardGrade).toFixed(1) + '</td>';
                             }
                             for (i = 0; i < years.length; i++) {
-                                resultTableHtml += '<th>' + this.yxRankingMap[years[i]].LowRanking + '</th>';
+                                resultTableHtml += '<td>' + this.yxRankingMap[years[i]].lowRanking + '</td>';
                             }
                             resultTableHtml += '</tr>';
                         });
@@ -137,6 +142,7 @@ $(function () {
 
 function showMajorDetails(collegeCode, obj) {
     if ($(obj).text() == '查看专业详情') {
+        $('#tipModel').modal("show");
         var requestForm = extractForm();
         requestForm['collegeCode'] = collegeCode;
         $.ajax({
@@ -155,7 +161,7 @@ function showMajorDetails(collegeCode, obj) {
                         resultTableHtml += '<tr class="major-item-' + collegeCode + '">';
                         resultTableHtml += '<td rowspan="3" colspan="4"></td>';
                         resultTableHtml += '<td rowspan="3">' + probabilityCalaDTO.batchName + '</td>';
-                        resultTableHtml += '<td rowspan="3">' + (probabilityCalaDTO.collegeType == null ? '' : probabilityCalaDTO.collegeType) + '</td>';
+                        resultTableHtml += '<td rowspan="3">' + (probabilityCalaDTO.collegeType == null ? '其它' : probabilityCalaDTO.collegeType) + '</td>';
                         resultTableHtml += '<td rowspan="3">' + major + '</td>';
 
                         var lnzymcMap = majorEnrollDTOMap[major].lnzymcMap;
@@ -164,43 +170,49 @@ function showMajorDetails(collegeCode, obj) {
                             resultTableHtml += '<td rowspan="3">' + lnzymcMap[year].enrollCunt + '</td>';
                         }
                         for (var year in lnzymcMap) {
-                            resultTableHtml += '<td>' + (lnzymcMap[year].standardGrade - lnzymcMap[year].highGrade) + '</td>';
+                            resultTableHtml += '<td>' + Math.round(lnzymcMap[year].highGrade - lnzymcMap[year].standardGrade).toFixed(1) + '</td>';
                         }
-                        resultTableHtml += '<td rowspan="3">' + (Math.round(majorEnrollDTOMap[major].xcfGaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
+                        resultTableHtml += '<td rowspan="3">' + (Math.round(probabilityCalaDTO.xcfGaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
                         for (var year in lnzymcMap) {
                             resultTableHtml += '<td>' + lnzymcMap[year].highRanking + '</td>';
                         }
                         resultTableHtml += '<td rowspan="3">' + (Math.round(majorEnrollDTOMap[major].gaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
-                        // for (var year in this.volunteerInfoMap) {
-                        //     resultTableHtml += '<td rowspan="3">' + this.volunteerInfoMap[year] + '</td>';
-                        // }
-                        for (var year in lnzymcMap) {
-                            resultTableHtml += '<td rowspan="3"></td>';
+                        for (var year in majorEnrollDTOMap[major]) {
+                            var volunteerInfo = '';
+                            if (majorEnrollDTOMap[major].volunteerInfoMap[year]) {
+                                var volunteerInfoItems = majorEnrollDTOMap[major].volunteerInfoMap[year].split('--');
+                                for (var j = 0; j < volunteerInfoItems.length; j++) {
+                                    volunteerInfo += volunteerInfoItems[j] + '--<br>'
+                                }
+                                volunteerInfo = volunteerInfo.substring(0, volunteerInfo.length - 6);
+                            }
+                            resultTableHtml += '<td rowspan="3">' + volunteerInfo + '</td>';
                         }
                         resultTableHtml += '<td rowspan="3"></td>';
                         resultTableHtml += '</tr>';
                         // 第二行
                         resultTableHtml += '<tr class="major-item-' + collegeCode + '">';
                         for (var year in lnzymcMap) {
-                            resultTableHtml += '<td>' + (lnzymcMap[year].standardGrade - lnzymcMap[year].avgGrade) + '</td>';
+                            resultTableHtml += '<td>' + Math.round(lnzymcMap[year].avgGrade - lnzymcMap[year].standardGrade).toFixed(1) + '</td>';
                         }
                         for (var year in lnzymcMap) {
-                            resultTableHtml += '<td>' + lnzymcMap[year].avgRanking + '</td>';
+                            resultTableHtml += '<td>' + Math.ceil(lnzymcMap[year].avgRanking) + '</td>';
                         }
                         resultTableHtml += '</tr>';
                         // 第三行
                         resultTableHtml += '<tr class="major-item-' + collegeCode + '">';
                         for (var year in lnzymcMap) {
-                            resultTableHtml += '<td>' + (lnzymcMap[year].standardGrade - lnzymcMap[year].LowGrade) + '</td>';
+                            resultTableHtml += '<td>' + Math.round(lnzymcMap[year].lowGrade - lnzymcMap[year].standardGrade).toFixed(1) + '</td>';
                         }
                         for (var year in lnzymcMap) {
-                            resultTableHtml += '<td>' + lnzymcMap[year].LowRanking + '</td>';
+                            resultTableHtml += '<td>' + lnzymcMap[year].lowRanking + '</td>';
                         }
                         resultTableHtml += '</tr>';
                     }
                     $(obj).parent().parent().next().next().after(resultTableHtml);
                     $(obj).text('收起专业详情');
                 }
+                $('#tipModel').modal("hide");
             }
         });
     } else {
@@ -221,7 +233,7 @@ function showTableHead() {
     $shelter.empty();
     $scrollHeader.appendTo('#shelter');
     $shelter.css({
-        'height': resultTableHeadHeight + 16,
+        'height': resultTableHeadHeight + 18,
         'width': $resultTable.width(),
         'position': 'fixed',
         'top': '0',
