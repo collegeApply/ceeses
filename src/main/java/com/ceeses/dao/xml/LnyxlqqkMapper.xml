@@ -39,6 +39,12 @@
         <if test="schoolName != null">
             AND `school_name` = #{schoolName}
         </if>
+        <if test="batchCode != null">
+            AND `batch_code` = #{batchCode}
+        </if>
+        <if test="categoryName != null">
+            AND `category_name` = #{categoryName}
+        </if>
         <if test="major != null">
             AND `major` = #{major}
         </if>

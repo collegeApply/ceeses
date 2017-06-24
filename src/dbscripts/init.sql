@@ -19,6 +19,7 @@ CREATE TABLE `t_lnyxlqqk`(
 ALTER TABLE `t_lnyxlqqk` MODIFY `major` VARCHAR(100) NOT NULL COMMENT '录取专业';
 ALTER TABLE `t_lnyxlqqk` MODIFY `school_name` VARCHAR(100) NOT NULL COMMENT '录取院校名称';
 ALTER TABLE `t_lnyxlqqk` ADD INDEX `idx_lnyxlqqk_year_school_major`(`year`, `school_name`, `major`);
+ALTER TABLE `t_lnyxlqqk` ADD INDEX `idx_lnyxlqqk`(`year`, `school_name`, `batch_code`, `category_name`, `major`);
 
 -- 历年分数段信息统计表
 CREATE TABLE `t_lnfsdxq` (

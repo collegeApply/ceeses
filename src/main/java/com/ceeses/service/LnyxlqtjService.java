@@ -53,6 +53,14 @@ public class LnyxlqtjService {
                     Lnyxlqqk param = new Lnyxlqqk();
                     param.setYear(lnyxlqtj.getYear());
                     param.setSchoolName(lnyxlqtj.getCollegeName());
+                    param.setBatchCode(lnyxlqtj.getBatchCode());
+                    String categoryName = "";
+                    if ("文史".equals(lnyxlqtj.getCategory())) {
+                        categoryName = "1";
+                    } else if ("理工".equals(lnyxlqtj.getCategory())) {
+                        categoryName = "5";
+                    }
+                    param.setCategoryName(categoryName);
                     List<Lnyxlqqk> lnyxlqqks = lnyxlqqkDao.query(param);
                     float avgGrade = 0.0f;
                     float avgRanking = 0.0f;
