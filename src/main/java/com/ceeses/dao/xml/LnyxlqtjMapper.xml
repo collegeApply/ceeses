@@ -93,7 +93,7 @@
         </if>
 
         <if test="targetSchool !=null and targetSchool !='' ">
-            AND yx.college_name LIKE concat('%',#{targetSchool},'%')
+            AND yx.college_name = #{targetSchool}
         </if>
 
         <if test="collegeCode !=null  and collegeCode !=''">

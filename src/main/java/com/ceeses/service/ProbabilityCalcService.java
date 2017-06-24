@@ -42,76 +42,8 @@ public class ProbabilityCalcService {
     @Autowired
     LnyxlqqkDao lnyxlqqkDao;
 
-    /**
-     * 根据年份，成绩，科类计算能达到的批次，只计算需要预估的年份比如2017
-     * 返回当前批次对应的分数线
-     * @param year
-     * @param grade
-     * @return
-     */
-    private String getBatch(Integer year, Integer grade, String category){
-        String batchResult = "";
-        //倒序
-        TreeSet sortedSet = new TreeSet(new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                Lnskfsx h1 = (Lnskfsx) o1;
-                Lnskfsx h2 = (Lnskfsx) o2;
-                if (h1.getGrade() > h2.getGrade()) {
-                    return -1;
-                }
-                if (h1.getGrade() < h2.getGrade()) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-
-        if (category.equals("文史")){
-            category = "1";
-        } else if (category.equals("理工")){
-            category = "5";
-        }
-
-        //查询省控线,忽略贫困定向这两个线
-        for (Lnskfsx lnskfsx : CommonConstans.lnskfsxMap.values()){
-            if (lnskfsx.getYear().equals(year)  && lnskfsx.getCategory().equals(category) &&
-                    !"7".equals(lnskfsx.getCategory()) && !"8".equals(lnskfsx.getCategory())){
-                sortedSet.add(lnskfsx);
-            }
-        }
-
-        for (Object obj : sortedSet){
-            Lnskfsx hg = (Lnskfsx) obj;
-            //拿到的第一个小于你当前分数的就是你分数对应的批次线
-            if (hg.getGrade() < grade){
-                batchResult = hg.getBatch();
-                break;
-            }
-        }
-        return batchResult;
-    }
-
-    /**
-     * 这里的批次只有本科一批二批三批专科等
-     * 根据年份，批次，科类，当年名次 + 分数段表，首先得出达到这个科类的人数
-     * 根据某年科类人数，当年名次，计算出历年映射的名次
-     */
-    private Integer getTotalRanking(Integer year, Integer grade, String category){
-        Lnfsdxq lnfsdxq = new Lnfsdxq();
-        lnfsdxq.setYear(year);
-        lnfsdxq.setTotalGrade(grade);
-        if (category.equals("1")){
-            lnfsdxq.setCategory("文科");
-        }
-        if (category.equals("5")){
-            lnfsdxq.setCategory("理科");
-        }
-        //对应年份达到某个批次的总人数
-        Integer total = lnfsdxqDao.queryCountByGrade(lnfsdxq);
-        return total;
-    }
-
+    @Autowired
+    DataInitService dataInitService;
 
     /**
      * 根据历年映射的名次，得出满足条件的院校
@@ -125,7 +57,7 @@ public class ProbabilityCalcService {
 
         //计算过去多少年的数据
         int calcYears = 3;
-
+        Integer currentYear = probabilityCalcRequest.getYear();
         //默认只模拟计算15年之后的数据
         if (probabilityCalcRequest.getYear() < 2015) {
             response.setResult(false);
@@ -133,17 +65,28 @@ public class ProbabilityCalcService {
             return response;
         }
 
+        //以下是三个初始化动作，以备查询前未初始化
         if (CommonConstans.lnskfsxMap.isEmpty()){
             List<Lnskfsx> lnskfsxes = lnskfsxDao.queryLnskfsx(null);
             for (Lnskfsx lnskfsx: lnskfsxes) {
                 CommonConstans.lnskfsxMap.put(lnskfsx.getYear()+"_" + lnskfsx.getBatch() + "_" +lnskfsx.getCategory(),
                         lnskfsx);
             }
+            LOGGER.info("初始化历年省控分数线完成");
+        }
+
+        if (CommonConstans.volunteerMap.isEmpty()){
+            dataInitService.initVolunteerInfos(currentYear - 4);
+            LOGGER.info("初始化志愿号数据完成");
+        }
+
+        if (CommonConstans.dnyxlqycMap.isEmpty()){
+            dataInitService.initCurrentGradeAndRanking(currentYear);
+            LOGGER.info("初始化当年预测的分数和名次线完成");
         }
 
         LOGGER.info("查询请求参数：" + probabilityCalcRequest.toString());
         //1.根据分数获取当年批次
-        Integer currentYear = probabilityCalcRequest.getYear();
         String batch = this.getBatch(currentYear, probabilityCalcRequest.getGrade(),
                 probabilityCalcRequest.getCategory());
         LOGGER.info("根据分数计算当前批次：{}" , batch);
@@ -216,7 +159,7 @@ public class ProbabilityCalcService {
             probabilityCalaDTOMap.get(resultIndex).setYxRankingMap(new HashMap<Integer, Lnyxmc>());
 
             for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
-                initCollegeGailv(probabilityCalaDTOMap,yearIndex,lnyxmcMap,resultIndex,
+                completeCollegeInfo(probabilityCalaDTOMap,yearIndex,lnyxmcMap,resultIndex,
                         probabilityCalcRequest,fsxBatch,category);
             }
 
@@ -225,69 +168,9 @@ public class ProbabilityCalcService {
 
         LOGGER.info("组装完成，开始计算概率");
         //5.开始计算概率
-        //5.1先计算院校招生概率
-        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
-            //5.1.1先只计算存在招生计划的
-            for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
-                if (lnyxmc.getEnrollCunt() > 0){
-                    if(mappingRanking.get(lnyxmc.getYear()) < lnyxmc.getHighRanking()){
-                        lnyxmc.setGaiLv(1d);
-                    } else if (mappingRanking.get(lnyxmc.getYear()) > lnyxmc.getLowRanking()){
-                        lnyxmc.setGaiLv(0d);
-                    } else {
-                        lnyxmc.setGaiLv((lnyxmc.getLowRanking() - mappingRanking.get(lnyxmc.getYear()))/
-                                (lnyxmc.getLowRanking() - lnyxmc.getHighRanking()));
-                    }
-                }
-            }
-        }
-        LOGGER.info("院校概率：完成计算存在招生计划的和未被录取的");
-        //5.1.2先院校找出一个基准概率，如果当年无录取计划的，设置为该基准概率
-        Map<String,Double> defaultGailv = new HashMap<>();
-        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
-            //计算一个默认概率
-            for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
-                if (lnyxmc.getGaiLv() > 0.0d ){
-                    defaultGailv.put(calaDTO.getCollegeCode() + "_" + calaDTO.getBatchCode() + "_" + calaDTO.getCategory(),
-                            lnyxmc.getGaiLv());
-                    break;
-                }
-            }
-        }
-        LOGGER.info("院校概率：查询并构造基础概率");
-        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
-            //5.1.3处理无招生计划的
-            for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
-                if (lnyxmc.getEnrollCunt() == 0){
-                    if (defaultGailv.containsKey(calaDTO.getCollegeCode() + "_" +
-                            calaDTO.getBatchCode() + "_" + calaDTO.getCategory())) {
-                        lnyxmc.setGaiLv(defaultGailv.get(calaDTO.getCollegeCode() + "_" +
-                                calaDTO.getBatchCode() + "_" + calaDTO.getCategory()));
-                    } else {
-                        lnyxmc.setGaiLv(0.0d);
-                    }
-                }
-            }
-        }
-        LOGGER.info("院校概率：完成无招生计划院校的概率设置");
-        //5.1.4对概率按年份加权,可能查过去2年或者过去3年
-        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
-            List<Double> gailv = new ArrayList<>();
-            for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
-                gailv.add(calaDTO.getYxRankingMap().get(yearIndex).getGaiLv());
-            }
-            if (gailv.size() == 2){
-                calaDTO.setGaiLv(gailv.get(0) * 0.6 + gailv.get(1)* 0.4);
-            }
-            if (gailv.size() == 3){
-                calaDTO.setGaiLv(gailv.get(0) * 0.5 + gailv.get(1)* 0.3 + gailv.get(2)* 0.2);
-            }
-        }
-
-        LOGGER.info("院校概率：完成加权概率计算");
+        calcCollegeGailv(probabilityCalaDTOMap,mappingRanking,currentYear,calcYears);
 
         //6.获取非第一志愿录取率，排序方式为3时用
-
 
         //7.排序可能有三种，按院校排名，按总录取概率，按非第一志愿录取率
         List<ProbabilityCalaDTO> calcDTOList = new ArrayList<>(probabilityCalaDTOMap.values());
@@ -301,10 +184,6 @@ public class ProbabilityCalcService {
             sortYxByRanking(calcDTOList);
         }
 
-        if (CommonConstans.volunteerMap.isEmpty()){
-            this.initVolunteerInfos(currentYear - 4);
-        }
-
 
         for (ProbabilityCalaDTO calaDTO : calcDTOList){
             for (Integer year : calaDTO.getYxRankingMap().keySet()){
@@ -312,6 +191,25 @@ public class ProbabilityCalcService {
                         "_" + calaDTO.getBatchCode() + "_" + category;
                 calaDTO.getVolunteerInfoMap().put(year, CommonConstans.volunteerMap.get(key));
             }
+            calaDTO.getVolunteerInfoMap().put(currentYear,"");
+        }
+
+
+
+        for (ProbabilityCalaDTO calaDTO : calcDTOList){
+            String yxKey = calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_" + category;
+            Dnyxlqyc dnyxlqyc = CommonConstans.dnyxlqycMap.get(yxKey);
+            Lnyxmc lnyxmc = new Lnyxmc();
+            lnyxmc.setYear(currentYear);
+            lnyxmc.setAvgGrade(dnyxlqyc.getAvgGrade());
+            lnyxmc.setAvgRanking(dnyxlqyc.getAvgRanking());
+            lnyxmc.setEnrollCunt(0);
+            lnyxmc.setHighGrade(dnyxlqyc.getHighGrade());
+            lnyxmc.setHighRanking((float)dnyxlqyc.getHighRanking());
+            lnyxmc.setLowGrade(dnyxlqyc.getLowGrade());
+            lnyxmc.setLowRanking((float)dnyxlqyc.getLowRanking());
+            lnyxmc.setStandardGrade(CommonConstans.getFsxGrade(currentYear,fsxBatch,category));
+            calaDTO.getYxRankingMap().put(currentYear,lnyxmc);
         }
 
         response.setProbabilityCalaDTOs(calcDTOList);
@@ -320,39 +218,6 @@ public class ProbabilityCalcService {
     }
 
 
-
-    public void initVolunteerInfos(Integer startYear){
-        CommonConstans.volunteerMap.clear();
-        CommonConstans.volunteerMajorMap.clear();
-        VolunteerRequest volunteerRequest = new VolunteerRequest();
-        volunteerRequest.setStartYear(startYear);
-        List<VolunteerInfo>  volunteerInfos = lnyxlqqkDao.queryVolunteerInfo(volunteerRequest);
-        for (VolunteerInfo volunteerInfo : volunteerInfos){
-            String key = volunteerInfo.getCollegeName() + "_" + volunteerInfo.getYear() +
-                    "_" + volunteerInfo.getBatchCode() + "_" + volunteerInfo.getCategoryName();
-            String volInfo = volunteerInfo.getVolunteer() + ":" + volunteerInfo.getVolunteerCount();
-            if (CommonConstans.volunteerMap.containsKey(key)){
-                CommonConstans.volunteerMap.put(key,CommonConstans.volunteerMap.get(key) + "--" + volInfo);
-            } else {
-                CommonConstans.volunteerMap.put(key,volInfo);
-            }
-        }
-
-        List<VolunteerInfo>  volunteerMajorInfos = lnyxlqqkDao.queryVolunteerInfoWithMajor(volunteerRequest);
-        for (VolunteerInfo volunteerInfo : volunteerMajorInfos){
-            String key = volunteerInfo.getCollegeName() + "_" + volunteerInfo.getYear() +
-                    "_" + volunteerInfo.getBatchCode() + "_" + volunteerInfo.getCategoryName() +
-                    "_" + volunteerInfo.getMajor();
-            String volInfo = volunteerInfo.getVolunteer() + ":" + volunteerInfo.getVolunteerCount();
-            if (CommonConstans.volunteerMajorMap.containsKey(key)){
-                CommonConstans.volunteerMajorMap.put(key,CommonConstans.volunteerMajorMap.get(key) + "--" + volInfo);
-            } else {
-                CommonConstans.volunteerMajorMap.put(key,volInfo);
-            }
-        }
-
-        System.out.println(CommonConstans.volunteerMap.size());
-    }
 
     /**
      * 根据历年映射的名次，得出满足条件的院校
@@ -368,6 +233,8 @@ public class ProbabilityCalcService {
         //计算过去多少年的数据
         int calcYears = 3;
 
+        Integer currentYear = probabilityCalcRequest.getYear();
+
         //默认只模拟计算15年之后的数据
         if (probabilityCalcRequest.getYear() < 2015) {
             response.setResult(false);
@@ -375,17 +242,28 @@ public class ProbabilityCalcService {
             return response;
         }
 
+        //以下是三个初始化动作，以备查询前未初始化
         if (CommonConstans.lnskfsxMap.isEmpty()){
             List<Lnskfsx> lnskfsxes = lnskfsxDao.queryLnskfsx(null);
             for (Lnskfsx lnskfsx: lnskfsxes) {
                 CommonConstans.lnskfsxMap.put(lnskfsx.getYear()+"_" + lnskfsx.getBatch() + "_" +lnskfsx.getCategory(),
                         lnskfsx);
             }
+            LOGGER.info("初始化历年省控分数线完成");
+        }
+
+        if (CommonConstans.volunteerMap.isEmpty()){
+            dataInitService.initVolunteerInfos(currentYear - 4);
+            LOGGER.info("初始化志愿号数据完成");
+        }
+
+        if (CommonConstans.dnyxlqycMap.isEmpty()){
+            dataInitService.initCurrentGradeAndRanking(currentYear);
+            LOGGER.info("初始化当年预测的分数和名次线完成");
         }
 
         LOGGER.info("查询请求参数：" + probabilityCalcRequest.toString());
         //1.根据分数获取当年批次
-        Integer currentYear = probabilityCalcRequest.getYear();
         String batch = this.getBatch(currentYear, probabilityCalcRequest.getGrade(),
                 probabilityCalcRequest.getCategory());
         LOGGER.info("根据分数计算当前批次：{}" , batch);
@@ -448,6 +326,8 @@ public class ProbabilityCalcService {
             BeanUtils.copyProperties(probabilityCalcRequest,queryTarget);
             queryTarget.setYear(yearIndex);
             queryTarget.setRanking((int)indexRanking);
+            queryTarget.setTargetSchool(queryTarget.getCollegeCode());
+            queryTarget.setCollegeCode(null);
             //TODO 需做批次转换，客户使用时候，统一转成16年的批次编号，输入参数转回当年，输出参数设置Map时候转回16年
             LOGGER.info("开始查询并初始化年份{}的录取数据", yearIndex);
             List<CollegeEnrollHistory> enrollHistories = lnyxlqtjDao.queryCollegeEnrollHistory(queryTarget);
@@ -457,17 +337,17 @@ public class ProbabilityCalcService {
                 this.initCollegeInfoMap(probabilityCalaDTOMap,enrollHistory,lnyxmcMap,yearIndex,fsxBatch,category);
 
                 //记录院校所录取的专业列表
-                if (!schoolMajorMap.keySet().contains(enrollHistory.getCollege_code() + "_" +
+                if (!schoolMajorMap.keySet().contains(enrollHistory.getCollege_name() + "_" +
                         enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory())){
-                    schoolMajorMap.put(enrollHistory.getCollege_code() + "_" +
+                    schoolMajorMap.put(enrollHistory.getCollege_name() + "_" +
                             enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory(), new ArrayList<String>());
                 }
 
-                schoolMajorMap.get(enrollHistory.getCollege_code() + "_" + enrollHistory.getBatch_code() +
+                schoolMajorMap.get(enrollHistory.getCollege_name() + "_" + enrollHistory.getBatch_code() +
                         "_" + enrollHistory.getCategory()).add(enrollHistory.getMajor_name());
 
                 //获取到已设置的院校录取情况，添加专业录取情况
-                if (!allMajorMap.keySet().contains(yearIndex + "_" + enrollHistory.getCollege_code() + "_" +
+                if (!allMajorMap.keySet().contains(yearIndex + "_" + enrollHistory.getCollege_name() + "_" +
                         enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory() +
                         enrollHistory.getMajor_name())){
                     Lnzymc lnzymc = new Lnzymc();
@@ -482,7 +362,7 @@ public class ProbabilityCalcService {
                     lnzymc.setYear(yearIndex);
                     lnzymc.setStandardGrade(CommonConstans.getFsxGrade(yearIndex,fsxBatch,category));
 
-                    allMajorMap.put(yearIndex + "_" + enrollHistory.getCollege_code() + "_" +
+                    allMajorMap.put(yearIndex + "_" + enrollHistory.getCollege_name() + "_" +
                             enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory() + "_" +
                             enrollHistory.getMajor_name(), lnzymc);
                 }
@@ -501,7 +381,7 @@ public class ProbabilityCalcService {
 
             for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
                 //如果记录存在
-                initCollegeGailv(probabilityCalaDTOMap,yearIndex,lnyxmcMap,resultIndex,
+                completeCollegeInfo(probabilityCalaDTOMap,yearIndex,lnyxmcMap,resultIndex,
                         probabilityCalcRequest,fsxBatch,category);
             }
 
@@ -535,7 +415,8 @@ public class ProbabilityCalcService {
                         ProbabilityCalcRequest queryTarget = new ProbabilityCalcRequest();
                         BeanUtils.copyProperties(probabilityCalcRequest, queryTarget);
                         //查固定学校的固定专业
-                        queryTarget.setCollegeCode(probabilityCalaDTOMap.get(resultIndex).getCollegeCode());
+                        queryTarget.setTargetSchool(probabilityCalaDTOMap.get(resultIndex).getCollegeName());
+                        queryTarget.setCollegeCode(null);
                         queryTarget.setYear(yearIndex);
                         queryTarget.setRanking(1);
                         queryTarget.setTargetMajor(majorName);
@@ -583,66 +464,7 @@ public class ProbabilityCalcService {
 
         LOGGER.info("组装完成，开始计算概率");
         //5.开始计算概率
-        //5.1先计算院校招生概率
-        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
-            //5.1.1先只计算存在招生计划的
-            for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
-                if (lnyxmc.getEnrollCunt() > 0){
-                    if(mappingRanking.get(lnyxmc.getYear()) < lnyxmc.getHighRanking()){
-                        lnyxmc.setGaiLv(1d);
-                    } else if (mappingRanking.get(lnyxmc.getYear()) > lnyxmc.getLowRanking()){
-                        lnyxmc.setGaiLv(0d);
-                    } else {
-                        lnyxmc.setGaiLv((lnyxmc.getLowRanking() - mappingRanking.get(lnyxmc.getYear()))/
-                                (lnyxmc.getLowRanking() - lnyxmc.getHighRanking()));
-                    }
-                }
-            }
-        }
-        LOGGER.info("院校概率：完成计算存在招生计划的和未被录取的");
-        //5.1.2先院校找出一个基准概率，如果当年无录取计划的，设置为该基准概率
-        Map<String,Double> defaultGailv = new HashMap<>();
-        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
-            //计算一个默认概率
-            for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
-                if (lnyxmc.getGaiLv() > 0.0d ){
-                    defaultGailv.put(calaDTO.getCollegeCode() + "_" + calaDTO.getBatchCode() + "_" + calaDTO.getCategory(),
-                            lnyxmc.getGaiLv());
-                    break;
-                }
-            }
-        }
-        LOGGER.info("院校概率：查询并构造基础概率");
-        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
-            //5.1.3处理无招生计划的
-            for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
-                if (lnyxmc.getEnrollCunt() == 0){
-                    if (defaultGailv.containsKey(calaDTO.getCollegeCode() + "_" +
-                            calaDTO.getBatchCode() + "_" + calaDTO.getCategory())) {
-                        lnyxmc.setGaiLv(defaultGailv.get(calaDTO.getCollegeCode() + "_" +
-                                calaDTO.getBatchCode() + "_" + calaDTO.getCategory()));
-                    } else {
-                        lnyxmc.setGaiLv(0.0d);
-                    }
-                }
-            }
-        }
-        LOGGER.info("院校概率：完成无招生计划院校的概率设置");
-        //5.1.4对概率按年份加权,可能查过去2年或者过去3年
-        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
-            List<Double> gailv = new ArrayList<>();
-            for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
-                gailv.add(calaDTO.getYxRankingMap().get(yearIndex).getGaiLv());
-            }
-            if (gailv.size() == 2){
-                calaDTO.setGaiLv(gailv.get(0) * 0.6 + gailv.get(1)* 0.4);
-            }
-            if (gailv.size() == 3){
-                calaDTO.setGaiLv(gailv.get(0) * 0.5 + gailv.get(1)* 0.3 + gailv.get(2)* 0.2);
-            }
-        }
-
-        LOGGER.info("院校概率：完成加权概率计算");
+        calcCollegeGailv(probabilityCalaDTOMap,mappingRanking,currentYear,calcYears);
 
         //5.2先计算专业招生概率
         for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
@@ -675,7 +497,7 @@ public class ProbabilityCalcService {
                 for (Lnzymc lnzymc : enrollDTO.getValue().getLnzymcMap().values()){
                     boolean flag = false;
                     if (lnzymc.getGaiLv() > 0.0d){
-                        defaultZyGailv.put(calaDTO.getCollegeCode() + "_" + calaDTO.getBatchCode() + "_"
+                        defaultZyGailv.put(calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_"
                                 + calaDTO.getCategory() + "_" + enrollDTO.getKey(), lnzymc.getGaiLv());
                         flag = true;
                     }
@@ -693,11 +515,11 @@ public class ProbabilityCalcService {
             for (Map.Entry<String, MajorEnrollDTO> enrollDTO: calaDTO.getMajorEnrollDTOMap().entrySet()) {
                 for (Lnzymc lnzymc : enrollDTO.getValue().getLnzymcMap().values()) {
                     if (lnzymc.getEnrollCunt() == 0) {
-                        if (!defaultZyGailv.containsKey(calaDTO.getCollegeCode() + "_" + calaDTO.getBatchCode() + "_"
+                        if (!defaultZyGailv.containsKey(calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_"
                                 + calaDTO.getCategory() + "_" + enrollDTO.getKey())){
                             lnzymc.setGaiLv(0.0d);
                         } else {
-                            lnzymc.setGaiLv(defaultZyGailv.get(calaDTO.getCollegeCode() + "_" + calaDTO.getBatchCode() + "_"
+                            lnzymc.setGaiLv(defaultZyGailv.get(calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_"
                                     + calaDTO.getCategory() + "_" + enrollDTO.getKey()));
                         }
                     }
@@ -741,17 +563,30 @@ public class ProbabilityCalcService {
         }
 
 
-        if (CommonConstans.volunteerMap.isEmpty()){
-            this.initVolunteerInfos(currentYear - 4);
-        }
-
-
         for (ProbabilityCalaDTO calaDTO : calcDTOList){
             for (Integer year : calaDTO.getYxRankingMap().keySet()){
                 String key = calaDTO.getCollegeName() + "_" + year +
                         "_" + calaDTO.getBatchCode() + "_" + category;
                 calaDTO.getVolunteerInfoMap().put(year, CommonConstans.volunteerMap.get(key));
             }
+            calaDTO.getVolunteerInfoMap().put(currentYear,"");
+        }
+
+
+        for (ProbabilityCalaDTO calaDTO : calcDTOList){
+            String yxKey = calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_" + category;
+            Dnyxlqyc dnyxlqyc = CommonConstans.dnyxlqycMap.get(yxKey);
+            Lnyxmc lnyxmc = new Lnyxmc();
+            lnyxmc.setYear(currentYear);
+            lnyxmc.setAvgGrade(dnyxlqyc.getAvgGrade());
+            lnyxmc.setAvgRanking(dnyxlqyc.getAvgRanking());
+            lnyxmc.setEnrollCunt(0);
+            lnyxmc.setHighGrade(dnyxlqyc.getHighGrade());
+            lnyxmc.setHighRanking((float)dnyxlqyc.getHighRanking());
+            lnyxmc.setLowGrade(dnyxlqyc.getLowGrade());
+            lnyxmc.setLowRanking((float)dnyxlqyc.getLowRanking());
+            lnyxmc.setStandardGrade(CommonConstans.getFsxGrade(currentYear,fsxBatch,category));
+            calaDTO.getYxRankingMap().put(currentYear,lnyxmc);
         }
 
         for (ProbabilityCalaDTO calaDTO : calcDTOList){
@@ -761,7 +596,29 @@ public class ProbabilityCalcService {
                             "_" + calaDTO.getBatchCode() + "_" + category + "_" + enrollDTO.getKey();
                     enrollDTO.getValue().getVolunteerInfoMap().put(year, CommonConstans.volunteerMajorMap.get(key));
                 }
+                enrollDTO.getValue().getVolunteerInfoMap().put(currentYear,"");
             }
+        }
+
+        for (ProbabilityCalaDTO calaDTO : calcDTOList){
+            for (Map.Entry<String, MajorEnrollDTO> enrollDTO : calaDTO.getMajorEnrollDTOMap().entrySet()){
+                String zyKey = calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_" +
+                        category + "_" + enrollDTO.getKey();
+                Dnzylqyc dnzylqyc = CommonConstans.dnzylqycMap.get(zyKey);
+                Lnzymc lnzymc = new Lnzymc();
+                lnzymc.setMajorName(enrollDTO.getKey());
+                lnzymc.setYear(currentYear);
+                lnzymc.setAvgGrade(dnzylqyc.getAvgGrade());
+                lnzymc.setAvgRanking(dnzylqyc.getAvgRanking());
+                lnzymc.setEnrollCunt(0);
+                lnzymc.setHighGrade(dnzylqyc.getHighGrade());
+                lnzymc.setHighRanking((float)dnzylqyc.getHighRanking());
+                lnzymc.setLowGrade(dnzylqyc.getLowGrade());
+                lnzymc.setLowRanking((float)dnzylqyc.getLowRanking());
+                lnzymc.setStandardGrade(CommonConstans.getFsxGrade(currentYear,fsxBatch,category));
+                enrollDTO.getValue().getLnzymcMap().put(currentYear,lnzymc);
+            }
+
         }
 
         response.setProbabilityCalaDTOs(calcDTOList);
@@ -770,13 +627,22 @@ public class ProbabilityCalcService {
     }
 
 
+    /**
+     * 初始化院校初始数据
+     * @param probabilityCalaDTOMap
+     * @param enrollHistory
+     * @param lnyxmcMap
+     * @param yearIndex
+     * @param fsxBatch
+     * @param category
+     */
     private  void initCollegeInfoMap(Map<String,ProbabilityCalaDTO> probabilityCalaDTOMap,CollegeEnrollHistory enrollHistory,
                                      Map<String, Lnyxmc> lnyxmcMap, Integer yearIndex,String fsxBatch, String category){
         //填充院校信息大Map
-        if (!probabilityCalaDTOMap.keySet().contains(enrollHistory.getCollege_code() + "_" +
+        if (!probabilityCalaDTOMap.keySet().contains(enrollHistory.getCollege_name() + "_" +
                 enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory())){
             ProbabilityCalaDTO calaDTO = new ProbabilityCalaDTO();
-            calaDTO.setCollegeCode(enrollHistory.getCollege_code());
+            calaDTO.setCollegeCode(enrollHistory.getCollege_name());
             calaDTO.setAreaName(enrollHistory.getArea());
             calaDTO.setBatchCode(enrollHistory.getBatch_code());
             calaDTO.setCollegeType(enrollHistory.getType());
@@ -785,11 +651,11 @@ public class ProbabilityCalcService {
             calaDTO.setCollegeName(enrollHistory.getCollege_name());
             calaDTO.setCategory(enrollHistory.getCategory());
             calaDTO.setCollegeRanking(enrollHistory.getRanking());
-            probabilityCalaDTOMap.put(enrollHistory.getCollege_code() + "_" +
+            probabilityCalaDTOMap.put(enrollHistory.getCollege_name() + "_" +
                     enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory(),calaDTO);
         }
 
-        if (!lnyxmcMap.keySet().contains(yearIndex + "_" + enrollHistory.getCollege_code() + "_" +
+        if (!lnyxmcMap.keySet().contains(yearIndex + "_" + enrollHistory.getCollege_name() + "_" +
                 enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory())){
             Lnyxmc lnyxmc = new Lnyxmc();
             lnyxmc.setYear(yearIndex);
@@ -801,14 +667,23 @@ public class ProbabilityCalcService {
             lnyxmc.setLowGrade(enrollHistory.getLow_grade());
             lnyxmc.setLowRanking(enrollHistory.getLow_ranking());
             lnyxmc.setStandardGrade(CommonConstans.getFsxGrade(yearIndex,fsxBatch,category));
-            lnyxmcMap.put(yearIndex + "_" + enrollHistory.getCollege_code() + "_" +
+            lnyxmcMap.put(yearIndex + "_" + enrollHistory.getCollege_name() + "_" +
                     enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory(), lnyxmc);
 
         }
     }
 
-
-    private void initCollegeGailv(Map<String,ProbabilityCalaDTO> probabilityCalaDTOMap,Integer yearIndex,Map<String, Lnyxmc> lnyxmcMap,
+    /**
+     * 完善初始化院校数据
+     * @param probabilityCalaDTOMap
+     * @param yearIndex
+     * @param lnyxmcMap
+     * @param resultIndex
+     * @param probabilityCalcRequest
+     * @param fsxBatch
+     * @param category
+     */
+    private void completeCollegeInfo(Map<String,ProbabilityCalaDTO> probabilityCalaDTOMap,Integer yearIndex,Map<String, Lnyxmc> lnyxmcMap,
                                   String resultIndex,ProbabilityCalcRequest probabilityCalcRequest,
                                   String fsxBatch, String category){
         //如果记录存在
@@ -820,7 +695,8 @@ public class ProbabilityCalcService {
             ProbabilityCalcRequest queryTarget = new ProbabilityCalcRequest();
             BeanUtils.copyProperties(probabilityCalcRequest,queryTarget);
             //查固定学校
-            queryTarget.setCollegeCode(probabilityCalaDTOMap.get(resultIndex).getCollegeCode());
+            queryTarget.setTargetSchool(probabilityCalaDTOMap.get(resultIndex).getCollegeName());
+            queryTarget.setCollegeCode(null);
             queryTarget.setYear(yearIndex);
             queryTarget.setRanking(1);
             List<CollegeEnrollHistory> enrollHistories = lnyxlqtjDao.queryCollegeEnrollHistory(queryTarget);
@@ -857,7 +733,81 @@ public class ProbabilityCalcService {
         }
     }
 
+    /**
+     * 计算院校录取概率的方法
+     * @param probabilityCalaDTOMap
+     * @param mappingRanking
+     * @param currentYear
+     * @param calcYears
+     */
+    private void calcCollegeGailv(Map<String,ProbabilityCalaDTO> probabilityCalaDTOMap,
+                                        Map<Integer, Double> mappingRanking,Integer currentYear,Integer calcYears){
+        //5.1先计算院校招生概率
+        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
+            //5.1.1先只计算存在招生计划的
+            for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
+                if (lnyxmc.getEnrollCunt() > 0){
+                    if(mappingRanking.get(lnyxmc.getYear()) < lnyxmc.getHighRanking()){
+                        lnyxmc.setGaiLv(1d);
+                    } else if (mappingRanking.get(lnyxmc.getYear()) > lnyxmc.getLowRanking()){
+                        lnyxmc.setGaiLv(0d);
+                    } else {
+                        lnyxmc.setGaiLv((lnyxmc.getLowRanking() - mappingRanking.get(lnyxmc.getYear()))/
+                                (lnyxmc.getLowRanking() - lnyxmc.getHighRanking()));
+                    }
+                }
+            }
+        }
+        LOGGER.info("院校概率：完成计算存在招生计划的和未被录取的");
+        //5.1.2先院校找出一个基准概率，如果当年无录取计划的，设置为该基准概率
+        Map<String,Double> defaultGailv = new HashMap<>();
+        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
+            //计算一个默认概率
+            for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
+                if (lnyxmc.getGaiLv() > 0.0d ){
+                    defaultGailv.put(calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_" + calaDTO.getCategory(),
+                            lnyxmc.getGaiLv());
+                    break;
+                }
+            }
+        }
+        LOGGER.info("院校概率：查询并构造基础概率");
+        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
+            //5.1.3处理无招生计划的
+            for (Lnyxmc lnyxmc : calaDTO.getYxRankingMap().values()) {
+                if (lnyxmc.getEnrollCunt() == 0){
+                    if (defaultGailv.containsKey(calaDTO.getCollegeName() + "_" +
+                            calaDTO.getBatchCode() + "_" + calaDTO.getCategory())) {
+                        lnyxmc.setGaiLv(defaultGailv.get(calaDTO.getCollegeName() + "_" +
+                                calaDTO.getBatchCode() + "_" + calaDTO.getCategory()));
+                    } else {
+                        lnyxmc.setGaiLv(0.0d);
+                    }
+                }
+            }
+        }
+        LOGGER.info("院校概率：完成无招生计划院校的概率设置");
+        //5.1.4对概率按年份加权,可能查过去2年或者过去3年
+        for (ProbabilityCalaDTO calaDTO : probabilityCalaDTOMap.values()){
+            List<Double> gailv = new ArrayList<>();
+            for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
+                gailv.add(calaDTO.getYxRankingMap().get(yearIndex).getGaiLv());
+            }
+            if (gailv.size() == 2){
+                calaDTO.setGaiLv(gailv.get(0) * 0.6 + gailv.get(1)* 0.4);
+            }
+            if (gailv.size() == 3){
+                calaDTO.setGaiLv(gailv.get(0) * 0.5 + gailv.get(1)* 0.3 + gailv.get(2)* 0.2);
+            }
+        }
 
+        LOGGER.info("院校概率：完成加权概率计算");
+    }
+
+    /**
+     * 用录取概率排序
+     * @param calcDTOList
+     */
     private void sortYxByGailv(List<ProbabilityCalaDTO> calcDTOList) {
 
         Collections.sort(calcDTOList, new Comparator() {
@@ -877,6 +827,11 @@ public class ProbabilityCalcService {
 
     }
 
+
+    /**
+     * 用院校排名方式排序
+     * @param calcDTOList
+     */
     private void sortYxByRanking(List<ProbabilityCalaDTO> calcDTOList){
         Collections.sort(calcDTOList , new Comparator() {
             @Override
@@ -909,48 +864,73 @@ public class ProbabilityCalcService {
 
 
     /**
-     * 根据历年数据预测当年--17年--分数和名次
-     * 可以传入年份
-     * 此预测需用到最新的分数线，17年数据必须17年分数线出来后能计算，根据分数线差计算
-     * 名次可根据历年名次计算，分数线是根据差值预测
-     * @param currentYear 需预测的年份，2016用来模拟，2017真实计算
+     * 根据年份，成绩，科类计算能达到的批次，只计算需要预估的年份比如2017
+     * 返回当前批次对应的分数线
+     * @param year
+     * @param grade
+     * @return
      */
-    public void calcGradeAndRanking(Integer currentYear){
+    private String getBatch(Integer year, Integer grade, String category){
+        String batchResult = "";
+        //倒序
+        TreeSet sortedSet = new TreeSet(new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                Lnskfsx h1 = (Lnskfsx) o1;
+                Lnskfsx h2 = (Lnskfsx) o2;
+                if (h1.getGrade() > h2.getGrade()) {
+                    return -1;
+                }
+                if (h1.getGrade() < h2.getGrade()) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
 
-        Integer calcYears = 3;
-
-        //主键：年份+院校+批次+科类
-        Map<String, Lnyxmc> lnyxmcMap = new HashMap<>();
-
-        //先存储所有历年出现过的专业的统计，主键年份+院校+批次+科类+专业
-        //后续根据年份计算
-        Map<String,Lnzymc> allMajorMap = new HashMap<>();
-
-        //存储 院校+批次+科类
-        Set<String> collegeKeys = new HashSet<>();
-
-        //存储 院校+批次+科类+专业
-        Set<String> majorKeys = new HashSet<>();
-
-        //需存储数据库的当年预测信息
-        List<Dnyxlqyc> dnyxlqycs = new ArrayList<>();
-
-        //需存数据库的当年预测信息
-        List<Dnzylqyc> dnzylqycs = new ArrayList<>();
-
-        List<CollegeEnrollHistory> enrollHistories = new ArrayList<>();
-        for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ) {
-            ProbabilityCalcRequest queryTarget = new ProbabilityCalcRequest();
-            queryTarget.setYear(yearIndex);
-            enrollHistories.addAll(lnyxlqtjDao.queryCollegeEnrollHistory(queryTarget));
-            LOGGER.info("当前年份{}，数据查询完毕" , yearIndex);
+        if (category.equals("文史")){
+            category = "1";
+        } else if (category.equals("理工")){
+            category = "5";
         }
 
-        System.out.println(enrollHistories.size());
+        //查询省控线,忽略贫困定向这两个线
+        for (Lnskfsx lnskfsx : CommonConstans.lnskfsxMap.values()){
+            if (lnskfsx.getYear().equals(year)  && lnskfsx.getCategory().equals(category) &&
+                    !"7".equals(lnskfsx.getCategory()) && !"8".equals(lnskfsx.getCategory())){
+                sortedSet.add(lnskfsx);
+            }
+        }
 
+        for (Object obj : sortedSet){
+            Lnskfsx hg = (Lnskfsx) obj;
+            //拿到的第一个小于你当前分数的就是你分数对应的批次线
+            if (hg.getGrade() < grade){
+                batchResult = hg.getBatch();
+                break;
+            }
+        }
+        return batchResult;
+    }
 
-
-
+    /**
+     * 这里的批次只有本科一批二批三批专科等
+     * 根据年份，批次，科类，当年名次 + 分数段表，首先得出达到这个科类的人数
+     * 根据某年科类人数，当年名次，计算出历年映射的名次
+     */
+    private Integer getTotalRanking(Integer year, Integer grade, String category){
+        Lnfsdxq lnfsdxq = new Lnfsdxq();
+        lnfsdxq.setYear(year);
+        lnfsdxq.setTotalGrade(grade);
+        if (category.equals("1")){
+            lnfsdxq.setCategory("文科");
+        }
+        if (category.equals("5")){
+            lnfsdxq.setCategory("理科");
+        }
+        //对应年份达到某个批次的总人数
+        Integer total = lnfsdxqDao.queryCountByGrade(lnfsdxq);
+        return total;
     }
 
 }

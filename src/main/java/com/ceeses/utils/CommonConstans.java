@@ -1,5 +1,7 @@
 package com.ceeses.utils;
 
+import com.ceeses.model.Dnyxlqyc;
+import com.ceeses.model.Dnzylqyc;
 import com.ceeses.model.Lnskfsx;
 
 import java.util.Comparator;
@@ -140,6 +142,10 @@ public class CommonConstans {
     public static Map<String,String> volunteerMap = new HashMap<>();
 
     public static Map<String,String> volunteerMajorMap = new HashMap<>();
+
+    public static Map<String,Dnyxlqyc> dnyxlqycMap = new HashMap<>();
+
+    public static Map<String,Dnzylqyc> dnzylqycMap = new HashMap<>();
 
 
     public static float getFsxGrade(Integer yearIndex,String fsxBatch, String category){
