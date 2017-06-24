@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceeses.dao.mapper.QueryRecordMapper">
+
+    <resultMap id="queryRecordMap" type="com.ceeses.model.QueryRecord">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="studentName" column="student_name" jdbcType="VARCHAR"/>
+        <result property="examRegCode" column="exam_reg_code" jdbcType="VARCHAR"/>
+        <result property="grade" column="grade" jdbcType="INTEGER"/>
+        <result property="ranking" column="ranking" jdbcType="INTEGER"/>
+        <result property="category" column="category" jdbcType="VARCHAR"/>
+        <result property="batch" column="batch" jdbcType="VARCHAR"/>
+        <result property="areaName" column="area_name" jdbcType="VARCHAR"/>
+        <result property="targetSchool" column="target_school" jdbcType="VARCHAR"/>
+        <result property="targetMajor" column="target_major" jdbcType="VARCHAR"/>
+        <result property="algorithmType" column="algorithm_type" jdbcType="VARCHAR"/>
+        <result property="sortedType" column="sorted_type" jdbcType="VARCHAR"/>
+        <result property="queryTime" column="query_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="save" parameterType="com.ceeses.model.QueryRecord">
+        INSERT INTO `t_query_record` (`student_name`, `exam_reg_code`, `grade`, `ranking`, `category`, `batch`,
+        `area_name`, `target_school`, `target_major`, `algorithm_type`, `sorted_type`)
+        VALUE (#{studentName}, #{examRegCode}, #{grade}, #{ranking}, #{category}, #{batch},
+        #{areaName}, #{targetSchool}, #{targetMajor}, #{algorithmType}, #{sortedType});
+    </insert>
+
+</mapper>

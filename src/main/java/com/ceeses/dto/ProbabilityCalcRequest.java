@@ -8,7 +8,7 @@ public class ProbabilityCalcRequest {
 
     //以下必填
     private Integer year;
-    private String name;
+    private String studentName;
     private String examRegCode;
     private Integer grade;
     //名次
@@ -40,12 +40,12 @@ public class ProbabilityCalcRequest {
         this.year = year;
     }
 
-    public String getName() {
-        return name;
+    public String getStudentName() {
+        return studentName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
     }
 
     public String getExamRegCode() {
@@ -141,18 +141,18 @@ public class ProbabilityCalcRequest {
     public String toString() {
         return "ProbabilityCalcRequest{" +
                 "year=" + year +
-                ", name='" + name + '\'' +
+                ", studentName='" + studentName + '\'' +
                 ", examRegCode='" + examRegCode + '\'' +
                 ", grade=" + grade +
                 ", ranking=" + ranking +
                 ", category='" + category + '\'' +
-                ", batch=" + batch +
+                ", batch='" + batch + '\'' +
                 ", areaName='" + areaName + '\'' +
                 ", targetSchool='" + targetSchool + '\'' +
                 ", targetMajor='" + targetMajor + '\'' +
                 ", collegeCode='" + collegeCode + '\'' +
-                ", sortedType=" + sortedType + '\'' +
-                ", algorithmType=" + algorithmType +
+                ", sortedType=" + sortedType +
+                ", algorithmType='" + algorithmType + '\'' +
                 '}';
     }
 }

@@ -293,7 +293,7 @@ function initSchoolSelect() {
 }
 
 function validateForm() {
-    if (!$searchConditionsContainer.find('input[name=name]').val()) {
+    if (!$searchConditionsContainer.find('input[name=studentName]').val()) {
         bootbox.alert("请输入姓名");
         return false;
     }
@@ -323,7 +323,7 @@ function validateForm() {
 
 function extractForm() {
     var requestForm = {};
-    requestForm['name'] = $searchConditionsContainer.find('input[name=name]').val();
+    requestForm['studentName'] = $searchConditionsContainer.find('input[name=studentName]').val();
     requestForm['examRegCode'] = $searchConditionsContainer.find('input[name=examRegCode]').val();
     requestForm['grade'] = $searchConditionsContainer.find('input[name=grade]').val();
     requestForm['ranking'] = $searchConditionsContainer.find('input[name=ranking]').val();
