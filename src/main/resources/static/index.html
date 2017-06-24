@@ -33,123 +33,121 @@
     </div>
 </nav>
 <div class="container">
-    <div class="content-container">
-        <div class="row">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    请您如实填写如下信息，以便我们为您做出更精确的预测
-                </div>
-                <div class="panel-body">
-                    <div id="searchConditionsContainer">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <div class="form-group pull-left" style="width: 160px;">
-                                    <label>姓名<span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control input-sm" name="name" placeholder="输入您的姓名">
-                                </div>
-                                <div class="form-group pull-left" style="width: 160px;">
-                                    <label>准考证号<span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control input-sm" name="examRegCode" placeholder="输入准考证号">
-                                </div>
-                                <div class="form-group pull-left" style="width: 160px;">
-                                    <label>高考分数<span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control input-sm" name="grade" placeholder="输入考试分数">
-                                </div>
-                                <div class="form-group pull-left" style="width: 160px;">
-                                    <label>分数名次<span style="color: red;">*</span></label>
-                                    <input type="text" class="form-control input-sm" name="ranking"
-                                           placeholder="输入分数名次">
-                                </div>
-                                <div class="form-group pull-left" style="width: 160px">
-                                    <label>科别<span style="color: red;">*</span></label>
-                                    <select class="form-control input-sm" name="category" style="font-size: 12px">
-                                        <option value="理工">理工</option>
-                                        <option value="文史">文史</option>
-                                    </select>
-                                </div>
-                                <div class="form-group pull-left" style="width: 120px;">
-                                    <label>意向批次<span style="color: red;">*</span></label>
-                                    <select class="form-control" name="batch" style="font-size: 12px">
-                                        <option value="" selected>请选择批次</option>
-                                        <option value="1">提前本科</option>
-                                        <option value="2">第一批本科</option>
-                                        <option value="3">第二批本科</option>
-                                        <option value="4">第三批本科</option>
-                                        <option value="5">省内预科</option>
-                                        <option value="6">提前专科</option>
-                                        <option value="7">普通专科</option>
-                                        <option value="8">省内本科定向</option>
-                                        <option value="9">省内专科定向</option>
-                                        <option value="A">提前本科定向</option>
-                                        <option value="B">一本定向</option>
-                                        <option value="C">二本定向</option>
-                                        <option value="D">三本定向</option>
-                                        <option value="E">提前专科定向</option>
-                                    </select>
-                                </div>
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                预测条件
+            </div>
+            <div class="panel-body">
+                <div id="searchConditionsContainer">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group pull-left" style="width: 160px;">
+                                <label>姓名<span style="color: red;">*</span></label>
+                                <input type="text" class="form-control input-sm" name="name" placeholder="输入您的姓名">
+                            </div>
+                            <div class="form-group pull-left" style="width: 160px;">
+                                <label>准考证号<span style="color: red;">*</span></label>
+                                <input type="text" class="form-control input-sm" name="examRegCode" placeholder="输入准考证号">
+                            </div>
+                            <div class="form-group pull-left" style="width: 160px;">
+                                <label>高考分数<span style="color: red;">*</span></label>
+                                <input type="text" class="form-control input-sm" name="grade" placeholder="输入考试分数">
+                            </div>
+                            <div class="form-group pull-left" style="width: 160px;">
+                                <label>分数名次<span style="color: red;">*</span></label>
+                                <input type="text" class="form-control input-sm" name="ranking"
+                                       placeholder="输入分数名次">
+                            </div>
+                            <div class="form-group pull-left" style="width: 160px">
+                                <label>科别<span style="color: red;">*</span></label>
+                                <select class="form-control input-sm" name="category" style="font-size: 12px">
+                                    <option value="理工">理工</option>
+                                    <option value="文史">文史</option>
+                                </select>
+                            </div>
+                            <div class="form-group pull-left" style="width: 120px;">
+                                <label>意向批次<span style="color: red;">*</span></label>
+                                <select class="form-control" name="batch" style="font-size: 12px">
+                                    <option value="" selected>请选择批次</option>
+                                    <option value="1">提前本科</option>
+                                    <option value="2">第一批本科</option>
+                                    <option value="3">第二批本科</option>
+                                    <option value="4">第三批本科</option>
+                                    <option value="5">省内预科</option>
+                                    <option value="6">提前专科</option>
+                                    <option value="7">普通专科</option>
+                                    <option value="8">省内本科定向</option>
+                                    <option value="9">省内专科定向</option>
+                                    <option value="A">提前本科定向</option>
+                                    <option value="B">一本定向</option>
+                                    <option value="C">二本定向</option>
+                                    <option value="D">三本定向</option>
+                                    <option value="E">提前专科定向</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <div class="form-group pull-left" style="width: 160px;">
-                                    <label>院校所在省市</label>
-                                    <select class="form-control" name="areaName"></select>
-                                </div>
-                                <div class="form-group pull-left" style="width: 260px;">
-                                    <label>目标院校</label>
-                                    <select class="form-control" name="targetSchool"></select>
-                                </div>
-                                <div class="form-group pull-left" style="width: 180px;">
-                                    <label>目标专业</label>
-                                    <input type="text" class="form-control input-sm" name="targetMajor"
-                                           placeholder="输入目标专业">
-                                </div>
-                                <div class="form-group pull-left" style="width: 140px">
-                                    <label>预测算法</label>
-                                    <select class="form-control input-sm" name="algorithmType" style="font-size: 12px">
-                                        <option value="1">位次法</option>
-                                        <option value="2">线差法</option>
-                                        <option value="3" selected>位次法与线差法</option>
-                                    </select>
-                                </div>
-                                <div class="form-group pull-left" style="width: 100px">
-                                    <label>排序方式</label>
-                                    <select class="form-control input-sm" name="sortedType" style="font-size: 12px">
-                                        <option value="1">录取概率</option>
-                                        <option value="2">学校排名</option>
-                                    </select>
-                                </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group pull-left" style="width: 160px;">
+                                <label>院校所在省市</label>
+                                <select class="form-control" name="areaName"></select>
+                            </div>
+                            <div class="form-group pull-left" style="width: 260px;">
+                                <label>目标院校</label>
+                                <select class="form-control" name="targetSchool"></select>
+                            </div>
+                            <div class="form-group pull-left" style="width: 180px;">
+                                <label>目标专业</label>
+                                <input type="text" class="form-control input-sm" name="targetMajor"
+                                       placeholder="输入目标专业">
+                            </div>
+                            <div class="form-group pull-left" style="width: 140px">
+                                <label>预测算法</label>
+                                <select class="form-control input-sm" name="algorithmType" style="font-size: 12px">
+                                    <option value="1">位次法</option>
+                                    <option value="2">线差法</option>
+                                    <option value="3" selected>位次法与线差法</option>
+                                </select>
+                            </div>
+                            <div class="form-group pull-left" style="width: 100px">
+                                <label>排序方式</label>
+                                <select class="form-control input-sm" name="sortedType" style="font-size: 12px">
+                                    <option value="1">录取概率</option>
+                                    <option value="2">学校排名</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <div style="text-align: center;">
-                                    <button class="btn btn-default btn-sm" name="resetSearchConditionBtn"
-                                            style="margin-right: 50px;">
-                                        <i class="glyphicon glyphicon-trash"></i>重新填写
-                                    </button>
-                                    <button class="btn btn-primary btn-sm" name="searchBtn">
-                                        <i class="glyphicon glyphicon-cog"></i>开始预测
-                                    </button>
-                                </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div style="text-align: center;">
+                                <button class="btn btn-default btn-sm" name="resetSearchConditionBtn"
+                                        style="margin-right: 50px;">
+                                    <i class="glyphicon glyphicon-trash"></i>重新填写
+                                </button>
+                                <button class="btn btn-primary btn-sm" name="searchBtn">
+                                    <i class="glyphicon glyphicon-cog"></i>开始预测
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    预测结果
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div id="shelter" style="display: none;"></div>
-                            <div class="table-responsive" id="resultTableContainer">
-                                <span>无预测结果</span>
-                            </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                预测结果
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="shelter" style="display: none;"></div>
+                        <div class="table-responsive" id="resultTableContainer">
+                            <span>无预测结果</span>
                         </div>
                     </div>
                 </div>

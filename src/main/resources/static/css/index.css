@@ -1,13 +1,14 @@
-.content-container {
-    padding: 40px 15px;
-}
-
 .form-group {
     margin-right: 20px;
 }
 
+table th {
+    text-align: center!important;
+    vertical-align: middle!important;
+}
+
 table td {
-    vertical-align: middle;
+    vertical-align: middle!important;
 }
 
 .spin {
