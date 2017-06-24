@@ -1,5 +1,6 @@
 package com.ceeses.dto;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -20,7 +21,7 @@ public class MajorEnrollDTO {
     /**
      * 主键是年份，当前专业的志愿号等信息
      */
-    private Map<Integer,String> volunteerInfoMap;
+    private Map<Integer,String> volunteerInfoMap = new HashMap<>();
 
     public Map<Integer, Lnzymc> getLnzymcMap() {
         return lnzymcMap;

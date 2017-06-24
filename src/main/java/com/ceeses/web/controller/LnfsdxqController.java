@@ -107,6 +107,42 @@ public class LnfsdxqController extends BaseController {
     }
 
 
+    @RequestMapping("/testCalcSkx")
+    @ResponseBody
+    public JsonResult testCalcSkx() throws IOException {
+        System.out.println(CommonConstans.getBatchByGrade(2016,466,"1","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,435,"1","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,466,"2","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,434,"3","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,406,"4","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,406,"5","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,389,"5","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,288,"6","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,466,"7","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,466,"8","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,435,"8","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,303,"9","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,466,"A","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,435,"A","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,466,"B","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,433,"C","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,406,"D","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,323,"E","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,254,"F","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,445,"H","1"));
+        System.out.println(CommonConstans.getBatchByGrade(2016,416,"H","1"));
+        return new JsonResult();
+    }
+
+
+    @RequestMapping("/initVolunteerInfos")
+    @ResponseBody
+    public JsonResult initVolunteerInfos() throws IOException {
+        probabilityCalcService.initVolunteerInfos(2014);
+        return new JsonResult();
+    }
+
+
     @RequestMapping("/initLnskfs")
     @ResponseBody
     public JsonResult initLnskfs() throws IOException {

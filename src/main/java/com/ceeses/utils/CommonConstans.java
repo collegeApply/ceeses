@@ -1,6 +1,7 @@
 package com.ceeses.utils;
 
 import com.ceeses.model.Lnskfsx;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -51,22 +52,23 @@ public class CommonConstans {
      * @param year
      * @param grade
      * @param batchCode
+     * @param category
      * @return
      */
-    public static Integer getKzxByGrade(Integer year, Float grade, String batchCode, String category){
+    public static String getBatchByGrade(Integer year, Integer grade, String batchCode, String category){
 
         //自主招生
         if ("Z".equals(batchCode)){
-            return 0;
+            return "0";
         }
 
         if (!"1".equals(batchCode) && !"8".equals(batchCode) && !"A".equals(batchCode) &&
                 !"H".equals(batchCode)){
             String kzxCode = batchAndSkxMap.get(batchCode);
             if (lnskfsxMap.containsKey(year + "_" + kzxCode + "_" + category)){
-                return lnskfsxMap.get(year + "_" + kzxCode + "_" + category).getGrade();
+                return lnskfsxMap.get(year + "_" + kzxCode + "_" + category).getBatch();
             } else {
-                return 0;
+                return "0";
             }
         }
 
@@ -95,7 +97,7 @@ public class CommonConstans {
             for (Lnskfsx fxs : sortedSet){
                 //拿到的第一个小于你当前分数的就是你分数对应的批次线
                 if (fxs.getGrade() < grade){
-                    return fxs.getGrade();
+                    return fxs.getBatch();
                 }
             }
         }
@@ -105,18 +107,34 @@ public class CommonConstans {
         if ("H".equals(batchCode)) {
             for (Lnskfsx lnskfsx : CommonConstans.lnskfsxMap.values()) {
                 if (lnskfsx.getYear().equals(year) && lnskfsx.getCategory().equals(category) &&
-                        "7".equals(lnskfsx.getCategory())  &&  "8".equals(lnskfsx.getCategory())) {
+                        ("7".equals(lnskfsx.getCategory()) || "8".equals(lnskfsx.getCategory()))) {
                     sortedSet.add(lnskfsx);
                 }
             }
             for (Lnskfsx fxs : sortedSet){
                 //拿到的第一个小于你当前分数的就是你分数对应的批次线
                 if (fxs.getGrade() < grade){
-                    return fxs.getGrade();
+                    return fxs.getBatch();
                 }
             }
         }
 
-        return 0;
+        return "0";
+    }
+
+
+    public static Map<String,String> volunteerMap = new HashMap<>();
+
+    public static Map<String,String> volunteerMajorMap = new HashMap<>();
+
+
+    public static float getFsxGrade(Integer yearIndex,String fsxBatch, String category){
+
+        if (!CommonConstans.lnskfsxMap.containsKey(yearIndex + "_" +
+                fsxBatch + "_" + category)){
+            return 0.0f;
+        }
+        return (float)CommonConstans.lnskfsxMap.get(yearIndex + "_" +
+                fsxBatch + "_" + category).getGrade();
     }
 }

@@ -1,5 +1,6 @@
 package com.ceeses.dto;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class ProbabilityCalaDTO {
     /**
      * 主键是年份，当前专业的志愿号等信息
      */
-    private Map<Integer,String> volunteerInfoMap;
+    private Map<Integer,String> volunteerInfoMap = new HashMap<>();
 
     //最终计算出某院校的录取概率，位次法预测的概率
     //专业应该是跟院校平级的

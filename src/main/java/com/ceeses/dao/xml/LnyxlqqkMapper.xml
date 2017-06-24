@@ -43,4 +43,43 @@
             AND `major` = #{major}
         </if>
     </select>
+
+
+    <select id="queryVolunteerInfo"  resultType="com.ceeses.dto.VolunteerInfo" parameterType="com.ceeses.dto.VolunteerRequest">
+
+        select `year`,school_name as collegeName,category_name as categoryName,
+          batch_code as batchCode,volunteer_no as volunteer,
+          COUNT(volunteer_no) volunteerCount
+        from
+          t_lnyxlqqk
+        where
+          1=1
+          <![CDATA[
+            and `year` > #{startYear}
+          ]]>
+          /**and school_name= '南昌工学院'***/
+        GROUP BY
+          `year`,school_name,category_name,batch_code,volunteer_no
+
+    </select>
+
+
+    <select id="queryVolunteerInfoWithMajor"  resultType="com.ceeses.dto.VolunteerInfo" parameterType="com.ceeses.dto.VolunteerRequest">
+
+        select `year`,school_name as collegeName,category_name as categoryName,
+          batch_code as batchCode,major,volunteer_no as volunteer,
+          COUNT(volunteer_no) volunteerCount
+        from
+          t_lnyxlqqk
+        where
+          1=1
+          <![CDATA[
+            and `year` > #{startYear}
+          ]]>
+          /**and school_name= '南昌工学院'**/
+        GROUP BY
+          `year`,school_name,category_name,batch_code,major,volunteer_no
+
+    </select>
+
 </mapper>

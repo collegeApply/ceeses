@@ -1,5 +1,7 @@
 package com.ceeses.dao;
 
+import com.ceeses.dto.VolunteerInfo;
+import com.ceeses.dto.VolunteerRequest;
 import com.ceeses.model.Lnyxlqqk;
 
 import java.util.List;
@@ -23,4 +25,20 @@ public interface LnyxlqqkDao {
      * @return 历年院校录取情况
      */
     List<Lnyxlqqk> query(Lnyxlqqk lnyxlqqk);
+
+    /**
+     * 查询统计归并历年院校录取志愿号情况
+     * @param volunteerRequest
+     * @return
+     */
+    List<VolunteerInfo> queryVolunteerInfo(VolunteerRequest volunteerRequest);
+
+
+    /**
+     * 查询统计归并历年院校录取志愿号情况
+     * @param volunteerRequest
+     * @return
+     */
+    List<VolunteerInfo> queryVolunteerInfoWithMajor(VolunteerRequest volunteerRequest);
+
 }

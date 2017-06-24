@@ -1,5 +1,7 @@
 package com.ceeses.dao.mapper;
 
+import com.ceeses.dto.VolunteerInfo;
+import com.ceeses.dto.VolunteerRequest;
 import com.ceeses.model.Lnyxlqqk;
 
 import java.util.List;
@@ -23,4 +25,18 @@ public interface LnyxlqqkMapper {
      * @return 历年院校录取情况
      */
     List<Lnyxlqqk> query(Lnyxlqqk lnyxlqqk);
+
+    /**
+     * 查询统计归并的志愿号数据
+     * @param volunteerRequest
+     * @return
+     */
+    public List<VolunteerInfo> queryVolunteerInfo(VolunteerRequest volunteerRequest);
+
+    /**
+     * 查询统计归并的志愿号数据,带专业数据
+     * @param volunteerRequest
+     * @return
+     */
+    public List<VolunteerInfo> queryVolunteerInfoWithMajor(VolunteerRequest volunteerRequest);
 }

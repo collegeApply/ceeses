@@ -4,6 +4,7 @@ package com.ceeses.service;
 
 import com.ceeses.dao.LnfsdxqDao;
 import com.ceeses.dao.LnskfsxDao;
+import com.ceeses.dao.LnyxlqqkDao;
 import com.ceeses.dao.LnyxlqtjDao;
 import com.ceeses.dto.*;
 import com.ceeses.extractor.LnyxlqqkExtractor;
@@ -37,6 +38,9 @@ public class ProbabilityCalcService {
 
     @Autowired
     LnskfsxDao lnskfsxDao;
+
+    @Autowired
+    LnyxlqqkDao lnyxlqqkDao;
 
     /**
      * 根据年份，成绩，科类计算能达到的批次，只计算需要预估的年份比如2017
@@ -160,6 +164,11 @@ public class ProbabilityCalcService {
 
         LOGGER.info("当年该批次分数线：{}，通过此批次总人数{}" , currentGrade, currentTotal);
 
+        //获取当前省控分数线的批次，根据传入的批次做匹配
+        String fsxBatch = CommonConstans.getBatchByGrade(currentYear,probabilityCalcRequest.getGrade(),
+                probabilityCalcRequest.getBatch(),category);
+        LOGGER.info("根据前端页面获取批次所属的省控线的批次：{}" , fsxBatch);
+
         //主键：年份+院校+批次+科类，专业录取统计主键：年份+院校+批次+科类+专业
         Map<String, Lnyxmc> lnyxmcMap = new HashMap<>();
 
@@ -193,7 +202,8 @@ public class ProbabilityCalcService {
             LOGGER.info("开始查询并初始化年份{}的录取数据", yearIndex);
             List<CollegeEnrollHistory> enrollHistories = lnyxlqtjDao.queryCollegeEnrollHistory(queryTarget);
             for (CollegeEnrollHistory enrollHistory :enrollHistories){
-                initCollegeInfoMap(probabilityCalaDTOMap,enrollHistory,lnyxmcMap,yearIndex);
+                initCollegeInfoMap(probabilityCalaDTOMap,enrollHistory,lnyxmcMap,
+                        yearIndex,fsxBatch,category);
             }
 
             LOGGER.info("年份{}的原始数据查询并初始化完成",yearIndex);
@@ -206,7 +216,8 @@ public class ProbabilityCalcService {
             probabilityCalaDTOMap.get(resultIndex).setYxRankingMap(new HashMap<Integer, Lnyxmc>());
 
             for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
-                initCollegeGailv(probabilityCalaDTOMap,yearIndex,lnyxmcMap,resultIndex,probabilityCalcRequest);
+                initCollegeGailv(probabilityCalaDTOMap,yearIndex,lnyxmcMap,resultIndex,
+                        probabilityCalcRequest,fsxBatch,category);
             }
 
             LOGGER.info("处理院校{}： 的原始数据完成--end",probabilityCalaDTOMap.get(resultIndex).getCollegeName());
@@ -290,11 +301,58 @@ public class ProbabilityCalcService {
             sortYxByRanking(calcDTOList);
         }
 
+        if (CommonConstans.volunteerMap.isEmpty()){
+            this.initVolunteerInfos(currentYear - 4);
+        }
+
+
+        for (ProbabilityCalaDTO calaDTO : calcDTOList){
+            for (Integer year : calaDTO.getYxRankingMap().keySet()){
+                String key = calaDTO.getCollegeName() + "_" + year +
+                        "_" + calaDTO.getBatchCode() + "_" + category;
+                calaDTO.getVolunteerInfoMap().put(year, CommonConstans.volunteerMap.get(key));
+            }
+        }
+
         response.setProbabilityCalaDTOs(calcDTOList);
         response.setResult(true);
         return response;
     }
 
+
+
+    public void initVolunteerInfos(Integer startYear){
+        CommonConstans.volunteerMap.clear();
+        CommonConstans.volunteerMajorMap.clear();
+        VolunteerRequest volunteerRequest = new VolunteerRequest();
+        volunteerRequest.setStartYear(startYear);
+        List<VolunteerInfo>  volunteerInfos = lnyxlqqkDao.queryVolunteerInfo(volunteerRequest);
+        for (VolunteerInfo volunteerInfo : volunteerInfos){
+            String key = volunteerInfo.getCollegeName() + "_" + volunteerInfo.getYear() +
+                    "_" + volunteerInfo.getBatchCode() + "_" + volunteerInfo.getCategoryName();
+            String volInfo = volunteerInfo.getVolunteer() + ":" + volunteerInfo.getVolunteerCount();
+            if (CommonConstans.volunteerMap.containsKey(key)){
+                CommonConstans.volunteerMap.put(key,CommonConstans.volunteerMap.get(key) + "--" + volInfo);
+            } else {
+                CommonConstans.volunteerMap.put(key,volInfo);
+            }
+        }
+
+        List<VolunteerInfo>  volunteerMajorInfos = lnyxlqqkDao.queryVolunteerInfoWithMajor(volunteerRequest);
+        for (VolunteerInfo volunteerInfo : volunteerMajorInfos){
+            String key = volunteerInfo.getCollegeName() + "_" + volunteerInfo.getYear() +
+                    "_" + volunteerInfo.getBatchCode() + "_" + volunteerInfo.getCategoryName() +
+                    "_" + volunteerInfo.getMajor();
+            String volInfo = volunteerInfo.getVolunteer() + ":" + volunteerInfo.getVolunteerCount();
+            if (CommonConstans.volunteerMajorMap.containsKey(key)){
+                CommonConstans.volunteerMajorMap.put(key,CommonConstans.volunteerMajorMap.get(key) + "--" + volInfo);
+            } else {
+                CommonConstans.volunteerMajorMap.put(key,volInfo);
+            }
+        }
+
+        System.out.println(CommonConstans.volunteerMap.size());
+    }
 
     /**
      * 根据历年映射的名次，得出满足条件的院校
@@ -348,6 +406,11 @@ public class ProbabilityCalcService {
 
         LOGGER.info("当年该批次分数线：{}，通过此批次总人数{}" , currentGrade, currentTotal);
 
+        //获取当前省控分数线的批次，根据传入的批次做匹配
+        String fsxBatch = CommonConstans.getBatchByGrade(currentYear,probabilityCalcRequest.getGrade(),
+                probabilityCalcRequest.getBatch(),category);
+        LOGGER.info("根据前端页面获取批次所属的省控线的批次：{}" , fsxBatch);
+
         //主键：年份+院校+批次+科类，专业录取统计主键：年份+院校+批次+科类+专业
         Map<String, Lnyxmc> lnyxmcMap = new HashMap<>();
 
@@ -391,7 +454,7 @@ public class ProbabilityCalcService {
             for (CollegeEnrollHistory enrollHistory :enrollHistories){
 
                 //填充院校信息大Map
-                this.initCollegeInfoMap(probabilityCalaDTOMap,enrollHistory,lnyxmcMap,yearIndex);
+                this.initCollegeInfoMap(probabilityCalaDTOMap,enrollHistory,lnyxmcMap,yearIndex,fsxBatch,category);
 
                 //记录院校所录取的专业列表
                 if (!schoolMajorMap.keySet().contains(enrollHistory.getCollege_code() + "_" +
@@ -417,6 +480,8 @@ public class ProbabilityCalcService {
                     lnzymc.setMajorName(enrollHistory.getMajor_name());
                     lnzymc.setEnrollCunt(enrollHistory.getZy_enroll_count());
                     lnzymc.setYear(yearIndex);
+                    lnzymc.setStandardGrade(CommonConstans.getFsxGrade(yearIndex,fsxBatch,category));
+
                     allMajorMap.put(yearIndex + "_" + enrollHistory.getCollege_code() + "_" +
                             enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory() + "_" +
                             enrollHistory.getMajor_name(), lnzymc);
@@ -436,7 +501,8 @@ public class ProbabilityCalcService {
 
             for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
                 //如果记录存在
-                initCollegeGailv(probabilityCalaDTOMap,yearIndex,lnyxmcMap,resultIndex,probabilityCalcRequest);
+                initCollegeGailv(probabilityCalaDTOMap,yearIndex,lnyxmcMap,resultIndex,
+                        probabilityCalcRequest,fsxBatch,category);
             }
 
             LOGGER.info("处理院校{}： 的原始数据完成--end",probabilityCalaDTOMap.get(resultIndex).getCollegeName());
@@ -486,6 +552,7 @@ public class ProbabilityCalcService {
                             lnzymc.setMajorName(majorName);
                             lnzymc.setEnrollCunt(0);
                             lnzymc.setYear(yearIndex);
+                            lnzymc.setStandardGrade(0f);
                             probabilityCalaDTOMap.get(resultIndex).getMajorEnrollDTOMap().get(majorName)
                                     .getLnzymcMap().put(yearIndex,lnzymc);
                         } else {
@@ -499,6 +566,8 @@ public class ProbabilityCalcService {
                             lnzymc.setAvgRanking(enrollHistories.get(0).getZy_avg_ranking());
                             lnzymc.setMajorName(majorName);
                             lnzymc.setEnrollCunt(enrollHistories.get(0).getZy_enroll_count());
+                            lnzymc.setStandardGrade(CommonConstans.getFsxGrade(yearIndex,fsxBatch,category));
+
                             lnzymc.setYear(yearIndex);
                             probabilityCalaDTOMap.get(resultIndex).getMajorEnrollDTOMap().get(majorName)
                                     .getLnzymcMap().put(yearIndex,lnzymc);
@@ -671,6 +740,30 @@ public class ProbabilityCalcService {
             this.sortYxByRanking(calcDTOList);
         }
 
+
+        if (CommonConstans.volunteerMap.isEmpty()){
+            this.initVolunteerInfos(currentYear - 4);
+        }
+
+
+        for (ProbabilityCalaDTO calaDTO : calcDTOList){
+            for (Integer year : calaDTO.getYxRankingMap().keySet()){
+                String key = calaDTO.getCollegeName() + "_" + year +
+                        "_" + calaDTO.getBatchCode() + "_" + category;
+                calaDTO.getVolunteerInfoMap().put(year, CommonConstans.volunteerMap.get(key));
+            }
+        }
+
+        for (ProbabilityCalaDTO calaDTO : calcDTOList){
+            for (Map.Entry<String, MajorEnrollDTO> enrollDTO : calaDTO.getMajorEnrollDTOMap().entrySet()){
+                for (Integer year : enrollDTO.getValue().getLnzymcMap().keySet()){
+                    String key = calaDTO.getCollegeName() + "_" + year +
+                            "_" + calaDTO.getBatchCode() + "_" + category + "_" + enrollDTO.getKey();
+                    enrollDTO.getValue().getVolunteerInfoMap().put(year, CommonConstans.volunteerMajorMap.get(key));
+                }
+            }
+        }
+
         response.setProbabilityCalaDTOs(calcDTOList);
         response.setResult(true);
         return response;
@@ -678,7 +771,7 @@ public class ProbabilityCalcService {
 
 
     private  void initCollegeInfoMap(Map<String,ProbabilityCalaDTO> probabilityCalaDTOMap,CollegeEnrollHistory enrollHistory,
-                                     Map<String, Lnyxmc> lnyxmcMap, Integer yearIndex){
+                                     Map<String, Lnyxmc> lnyxmcMap, Integer yearIndex,String fsxBatch, String category){
         //填充院校信息大Map
         if (!probabilityCalaDTOMap.keySet().contains(enrollHistory.getCollege_code() + "_" +
                 enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory())){
@@ -705,8 +798,9 @@ public class ProbabilityCalcService {
             lnyxmc.setEnrollCunt(enrollHistory.getEnroll_count());
             lnyxmc.setHighGrade(enrollHistory.getHigh_grade());
             lnyxmc.setHighRanking(enrollHistory.getHigh_ranking());
-            lnyxmc.setLowGrade(enrollHistory.getLow_ranking());
+            lnyxmc.setLowGrade(enrollHistory.getLow_grade());
             lnyxmc.setLowRanking(enrollHistory.getLow_ranking());
+            lnyxmc.setStandardGrade(CommonConstans.getFsxGrade(yearIndex,fsxBatch,category));
             lnyxmcMap.put(yearIndex + "_" + enrollHistory.getCollege_code() + "_" +
                     enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory(), lnyxmc);
 
@@ -715,7 +809,8 @@ public class ProbabilityCalcService {
 
 
     private void initCollegeGailv(Map<String,ProbabilityCalaDTO> probabilityCalaDTOMap,Integer yearIndex,Map<String, Lnyxmc> lnyxmcMap,
-                                  String resultIndex,ProbabilityCalcRequest probabilityCalcRequest){
+                                  String resultIndex,ProbabilityCalcRequest probabilityCalcRequest,
+                                  String fsxBatch, String category){
         //如果记录存在
         if (lnyxmcMap.keySet().contains(yearIndex + "_" + resultIndex)){
             probabilityCalaDTOMap.get(resultIndex).getYxRankingMap().put(yearIndex,
@@ -740,6 +835,7 @@ public class ProbabilityCalcService {
                 lnyxmc.setHighRanking(0f);
                 lnyxmc.setLowGrade(0f);
                 lnyxmc.setLowRanking(0f);
+                lnyxmc.setStandardGrade(0f);
                 probabilityCalaDTOMap.get(resultIndex).getYxRankingMap().put(yearIndex,
                         lnyxmc);
             } else {
@@ -753,6 +849,7 @@ public class ProbabilityCalcService {
                 lnyxmc.setHighRanking(enrollHistories.get(0).getHigh_ranking());
                 lnyxmc.setLowGrade(enrollHistories.get(0).getLow_grade());
                 lnyxmc.setLowRanking(enrollHistories.get(0).getLow_ranking());
+                lnyxmc.setStandardGrade(CommonConstans.getFsxGrade(yearIndex,fsxBatch,category));
                 probabilityCalaDTOMap.get(resultIndex).getYxRankingMap().put(yearIndex,
                         lnyxmc);
             }
