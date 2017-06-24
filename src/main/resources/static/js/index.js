@@ -42,7 +42,7 @@ $(function () {
                         resultTableHtml += '<th rowspan="2">院校名称</th>';
                         resultTableHtml += '<th rowspan="2">省市</th>';
                         resultTableHtml += '<th rowspan="2">批次</th>';
-                        resultTableHtml += '<th rowspan="2">高校类别</th>';
+                        resultTableHtml += '<th rowspan="2">院校类别</th>';
                         resultTableHtml += '<th rowspan="2">全国排名</th>';
                         resultTableHtml += '<th colspan="' + years.length + '">招生计划</th>';
                         resultTableHtml += '<th colspan="' + years.length + '">线差数据</th>';
@@ -177,9 +177,10 @@ function showMajorDetails(collegeCode, obj) {
                             resultTableHtml += '<td>' + lnzymcMap[year].highRanking + '</td>';
                         }
                         resultTableHtml += '<td rowspan="3">' + (Math.round(majorEnrollDTOMap[major].gaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
-                        for (var year in majorEnrollDTOMap[major]) {
+                        for (var year in majorEnrollDTOMap[major].volunteerInfoMap) {
                             var volunteerInfo = '';
                             if (majorEnrollDTOMap[major].volunteerInfoMap[year]) {
+                                console.info(majorEnrollDTOMap[major].volunteerInfoMap[year])
                                 var volunteerInfoItems = majorEnrollDTOMap[major].volunteerInfoMap[year].split('--');
                                 for (var j = 0; j < volunteerInfoItems.length; j++) {
                                     volunteerInfo += volunteerInfoItems[j] + '--<br>'
@@ -342,6 +343,7 @@ function extractForm() {
     requestForm['category'] = $searchConditionsContainer.find('select[name=category]').val();
     requestForm['batch'] = $searchConditionsContainer.find('select[name=batch]').val();
     requestForm['areaName'] = $searchConditionsContainer.find('select[name=areaName]').val();
+    requestForm['schoolType'] = $searchConditionsContainer.find('select[name=schoolType]').val();
     requestForm['targetSchool'] = $searchConditionsContainer.find('select[name=targetSchool]').val();
     requestForm['targetMajor'] = $searchConditionsContainer.find('input[name=targetMajor]').val();
     requestForm['algorithmType'] = $searchConditionsContainer.find('select[name=algorithmType]').val();

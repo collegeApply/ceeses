@@ -19,6 +19,10 @@ public class ProbabilityCalcRequest {
     //以下可选
     private String batch;
     private String areaName;
+    /**
+     * 院校类别
+     */
+    private String schoolType;
     private String targetSchool;
     private String targetMajor;
 
@@ -72,6 +76,14 @@ public class ProbabilityCalcRequest {
         this.ranking = ranking;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public String getBatch() {
         return batch;
     }
@@ -86,6 +98,14 @@ public class ProbabilityCalcRequest {
 
     public void setAreaName(String areaName) {
         this.areaName = areaName;
+    }
+
+    public String getSchoolType() {
+        return schoolType;
+    }
+
+    public void setSchoolType(String schoolType) {
+        this.schoolType = schoolType;
     }
 
     public String getTargetSchool() {
@@ -104,12 +124,12 @@ public class ProbabilityCalcRequest {
         this.targetMajor = targetMajor;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCollegeCode() {
+        return collegeCode;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCollegeCode(String collegeCode) {
+        this.collegeCode = collegeCode;
     }
 
     public Integer getSortedType() {
@@ -118,15 +138,6 @@ public class ProbabilityCalcRequest {
 
     public void setSortedType(Integer sortedType) {
         this.sortedType = sortedType;
-    }
-
-
-    public String getCollegeCode() {
-        return collegeCode;
-    }
-
-    public void setCollegeCode(String collegeCode) {
-        this.collegeCode = collegeCode;
     }
 
     public String getAlgorithmType() {
@@ -148,6 +159,7 @@ public class ProbabilityCalcRequest {
                 ", category='" + category + '\'' +
                 ", batch='" + batch + '\'' +
                 ", areaName='" + areaName + '\'' +
+                ", schoolType='" + schoolType + '\'' +
                 ", targetSchool='" + targetSchool + '\'' +
                 ", targetMajor='" + targetMajor + '\'' +
                 ", collegeCode='" + collegeCode + '\'' +

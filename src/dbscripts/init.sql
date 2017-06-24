@@ -157,6 +157,7 @@ CREATE TABLE `t_query_record` (
   `category` VARCHAR(8) NOT NULL COMMENT '科别',
   `batch` VARCHAR(32) NOT NULL COMMENT '批次',
   `area_name` VARCHAR(32) COMMENT '院校所在省市',
+  `school_type` VARCHAR(8) COMMENT '院校类型',
   `target_school` VARCHAR(128) COMMENT '目标院校',
   `target_major` VARCHAR(128) COMMENT '目标专业',
   `algorithm_type` VARCHAR(8) COMMENT '预测算法，1表示位次法，2表示线差法，3表示位次法与线差法',

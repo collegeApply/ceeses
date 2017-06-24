@@ -42,6 +42,10 @@ public class QueryRecord {
      */
     private String areaName;
     /**
+     * 院校类别
+     */
+    private String schoolType;
+    /**
      * 目标院校
      */
     private String targetSchool;
@@ -124,6 +128,14 @@ public class QueryRecord {
 
     public void setAreaName(String areaName) {
         this.areaName = areaName;
+    }
+
+    public String getSchoolType() {
+        return schoolType;
+    }
+
+    public void setSchoolType(String schoolType) {
+        this.schoolType = schoolType;
     }
 
     public String getTargetSchool() {

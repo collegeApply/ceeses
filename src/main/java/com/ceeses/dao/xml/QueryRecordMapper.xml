@@ -11,6 +11,7 @@
         <result property="category" column="category" jdbcType="VARCHAR"/>
         <result property="batch" column="batch" jdbcType="VARCHAR"/>
         <result property="areaName" column="area_name" jdbcType="VARCHAR"/>
+        <result property="schoolType" column="school_type" jdbcType="VARCHAR"/>
         <result property="targetSchool" column="target_school" jdbcType="VARCHAR"/>
         <result property="targetMajor" column="target_major" jdbcType="VARCHAR"/>
         <result property="algorithmType" column="algorithm_type" jdbcType="VARCHAR"/>
@@ -20,9 +21,9 @@
 
     <insert id="save" parameterType="com.ceeses.model.QueryRecord">
         INSERT INTO `t_query_record` (`student_name`, `exam_reg_code`, `grade`, `ranking`, `category`, `batch`,
-        `area_name`, `target_school`, `target_major`, `algorithm_type`, `sorted_type`)
+        `area_name`, `school_type`, `target_school`, `target_major`, `algorithm_type`, `sorted_type`)
         VALUE (#{studentName}, #{examRegCode}, #{grade}, #{ranking}, #{category}, #{batch},
-        #{areaName}, #{targetSchool}, #{targetMajor}, #{algorithmType}, #{sortedType});
+        #{areaName}, #{schoolType}, #{targetSchool}, #{targetMajor}, #{algorithmType}, #{sortedType});
     </insert>
 
 </mapper>
