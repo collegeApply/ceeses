@@ -45,6 +45,7 @@ public class CommonConstans {
         batchMap.put("C", "二本定向");
         batchMap.put("D", "三本定向");
         batchMap.put("E", "提前专科定向");
+        batchMap.put("H", "贫困地区定向");
         //key是批次，value是省控线值
         //1,8,A,H,Z需特殊处理
         batchAndSkxMap.put("2", "1");
