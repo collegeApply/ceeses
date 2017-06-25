@@ -144,7 +144,7 @@ function showMajorDetails(collegeName, obj) {
     if ($(obj).text() == '查看专业详情') {
         $('#tipModel').modal("show");
         var requestForm = extractForm();
-        requestForm['collegeName'] = collegeName;
+        requestForm['targetSchool'] = collegeName;
         $.ajax({
             url: 'lnfsdxq/getTargetCollegeWithMajor',
             type: 'POST',
