@@ -1,12 +1,11 @@
 package com.ceeses.web.controller;
 
-import com.ceeses.extractor.CollegeInfoExtractor;
-import com.ceeses.extractor.LnyxlqqkExtractor;
-import com.ceeses.extractor.LnyxlqtjExtractor;
-import com.ceeses.extractor.LnzylqtjExtractor;
 import com.ceeses.http.model.HttpResponseInfo;
 import com.ceeses.http.util.HttpClientUtil;
 import com.ceeses.service.CollegeInfoService;
+import com.ceeses.service.LnyxlqqkService;
+import com.ceeses.service.LnyxlqtjService;
+import com.ceeses.service.LnzylqtjService;
 import com.ceeses.web.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,20 +24,20 @@ import java.util.Map;
 @RequestMapping("/extract")
 public class ExtractController extends BaseController {
     /**
-     * 历年院校录取情况信息提取器
+     * 历年院校录取情况服务
      */
     @Autowired
-    private LnyxlqqkExtractor lnyxlqqkExtractor;
+    private LnyxlqqkService lnyxlqqkService;
     /**
-     * 历年院校录取统计数据提取器
+     * 历年院校录取统计服务
      */
     @Autowired
-    private LnyxlqtjExtractor lnyxlqtjExtractor;
+    private LnyxlqtjService lnyxlqtjService;
     /**
-     * 历年专业录取统计数据提取器
+     * 历年专业录取统计服务
      */
     @Autowired
-    private LnzylqtjExtractor lnzylqtjExtractor;
+    private LnzylqtjService lnzylqtjService;
     /**
      * 院校信息服务
      */
@@ -49,7 +48,7 @@ public class ExtractController extends BaseController {
     @ResponseBody
     public JsonResult extractLnyxlqqk() throws IOException {
         login();
-        lnyxlqqkExtractor.extract();
+        lnyxlqqkService.extract();
         return new JsonResult();
     }
 
@@ -57,7 +56,7 @@ public class ExtractController extends BaseController {
     @ResponseBody
     public JsonResult extractLnyxlqtj() throws IOException {
         login();
-        lnyxlqtjExtractor.extract();
+        lnyxlqtjService.extract();
         return new JsonResult();
     }
 
@@ -65,7 +64,7 @@ public class ExtractController extends BaseController {
     @ResponseBody
     public JsonResult extractLnzylqtj() throws IOException {
         login();
-        lnzylqtjExtractor.extract();
+        lnzylqtjService.extract();
         return new JsonResult();
     }
 

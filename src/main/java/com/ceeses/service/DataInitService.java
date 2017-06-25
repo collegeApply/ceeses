@@ -63,8 +63,7 @@ public class DataInitService {
     }
 
     public void initDnzsjh(){
-//        String wkFilePath = "/Users/zhaoshan/dnzsjh-lg.xlsx";
-        String wkFilePath = "/root/dnzsjh-lg.xlsx";
+        String wkFilePath = Thread.currentThread().getContextClassLoader().getResource("dnzsjh-lg.xlsx").getPath();
         List<Dnzsjh> dnzsjhslg = excelUtil.initDnzsjh(wkFilePath, "5" , 2017);
 
         for (Dnzsjh dnzsjh : dnzsjhslg){
@@ -76,8 +75,7 @@ public class DataInitService {
             CommonConstans.majorEnrollPlan.put(majorKey , dnzsjh.getMajorCount());
         }
 
-//        String lkFilePath = "/Users/zhaoshan/dnzsjh-ws.xlsx";
-        String lkFilePath = "/root/dnzsjh-ws.xlsx";
+        String lkFilePath = Thread.currentThread().getContextClassLoader().getResource("dnzsjh-ws.xlsx").getPath();
         List<Dnzsjh> dnzsjhsws = excelUtil.initDnzsjh(lkFilePath,"1",2017);
 
         for (Dnzsjh dnzsjh : dnzsjhsws){

@@ -37,4 +37,9 @@ public class LnzylqtjDaoImpl implements LnzylqtjDao {
     public int count() {
         return lnzylqtjMapper.count();
     }
+
+    @Override
+    public void empty() {
+        lnzylqtjMapper.empty();
+    }
 }

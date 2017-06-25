@@ -2,6 +2,7 @@ package com.ceeses.service;
 
 import com.ceeses.dao.LnyxlqqkDao;
 import com.ceeses.dao.LnzylqtjDao;
+import com.ceeses.extractor.LnzylqtjExtractor;
 import com.ceeses.model.Lnyxlqqk;
 import com.ceeses.model.Lnzylqtj;
 import org.slf4j.Logger;
@@ -26,6 +27,11 @@ public class LnzylqtjService {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(LnzylqtjService.class);
     /**
+     * 历年专业录取统计数据提取器
+     */
+    @Autowired
+    private LnzylqtjExtractor lnzylqtjExtractor;
+    /**
      * 历年专业录取统计DAO
      */
     @Autowired
@@ -35,6 +41,13 @@ public class LnzylqtjService {
      */
     @Autowired
     private LnyxlqqkDao lnyxlqqkDao;
+
+    public void extract() {
+        LOGGER.info("清空历年专业录取统计表数据");
+        lnzylqtjDao.empty();
+        LOGGER.info("提取历年专业录取统计数据");
+        lnzylqtjExtractor.extract();
+    }
 
     /**
      * 处理平均分数和平均排名

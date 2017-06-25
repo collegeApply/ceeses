@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +53,7 @@ public class LnyxlqtjExtractor {
     @Autowired
     private LnyxlqtjDao lnyxlqtjDao;
 
-    public Integer extract() throws IOException {
+    public Integer extract() {
         LOGGER.info("提取历年院校录取统计开始......");
         long startTime = System.currentTimeMillis();
 

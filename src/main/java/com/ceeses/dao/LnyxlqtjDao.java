@@ -42,6 +42,11 @@ public interface LnyxlqtjDao {
     int count();
 
     /**
+     * 清空表数据
+     */
+    void empty();
+
+    /**
      * 思考实现筛选出满足条件的院校列表
      * 根据年份，批次，科类，加上固定的专业和学校的条件来筛选
      * 需要多次查询；

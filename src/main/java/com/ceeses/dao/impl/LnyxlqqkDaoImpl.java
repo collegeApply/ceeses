@@ -40,4 +40,9 @@ public class LnyxlqqkDaoImpl implements LnyxlqqkDao {
     public List<VolunteerInfo> queryVolunteerInfoWithMajor(VolunteerRequest volunteerRequest) {
         return lnyxlqqkMapper.queryVolunteerInfoWithMajor(volunteerRequest);
     }
+
+    @Override
+    public void empty() {
+        lnyxlqqkMapper.empty();
+    }
 }

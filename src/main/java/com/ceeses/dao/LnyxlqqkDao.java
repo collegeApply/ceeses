@@ -41,4 +41,8 @@ public interface LnyxlqqkDao {
      */
     List<VolunteerInfo> queryVolunteerInfoWithMajor(VolunteerRequest volunteerRequest);
 
+    /**
+     * 清空表数据
+     */
+    void empty();
 }

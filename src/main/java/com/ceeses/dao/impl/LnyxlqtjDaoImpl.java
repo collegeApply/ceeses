@@ -40,6 +40,11 @@ public class LnyxlqtjDaoImpl implements LnyxlqtjDao {
     }
 
     @Override
+    public void empty() {
+        lnyxlqtjMapper.empty();
+    }
+
+    @Override
     public List<CollegeEnrollHistory> queryCollegeEnrollHistory(ProbabilityCalcRequest probabilityCalcRequest) {
         return lnyxlqtjMapper.queryCollegeEnrollHistory(probabilityCalcRequest);
     }

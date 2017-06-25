@@ -48,6 +48,10 @@
         FROM `t_lnyxlqtj`;
     </select>
 
+    <delete id="empty">
+        TRUNCATE TABLE `t_lnyxlqtj`;
+    </delete>
+
     <select id="queryCollegeEnrollHistory" resultType="com.ceeses.dto.CollegeEnrollHistory"
             parameterType="com.ceeses.dto.ProbabilityCalcRequest">
         SELECT

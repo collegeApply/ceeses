@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +53,7 @@ public class LnzylqtjExtractor {
     @Autowired
     private LnzylqtjDao lnzylqtjDao;
 
-    public void extract() throws IOException {
+    public void extract() {
         LOGGER.info("提取历年院校信息");
         long startTime = System.currentTimeMillis();
 
@@ -84,24 +83,24 @@ public class LnzylqtjExtractor {
 
         LOGGER.info("提取历年专业录取统计开始......");
         int total = 0;
-//        if (collegeInfoMap.size() > 0) {
-//            List<Future<Integer>> futures = new ArrayList<>(years.size());
-//            for (Map.Entry<Integer, Map<String, String>> entry : collegeInfoMap.entrySet()) {
-//                if (entry.getValue().size() > 0) {
-//                    futures.add(executorService.submit(new ExtractTask(entry.getKey(), entry.getValue())));
-//                }
-//            }
-//            for (Future<Integer> future : futures) {
-//                try {
-//                    Integer count = future.get();
-//                    if (count != null) {
-//                        total += count;
-//                    }
-//                } catch (Exception e) {
-//                    LOGGER.error("提取数据发生异常", e);
-//                }
-//            }
-//        }
+        if (collegeInfoMap.size() > 0) {
+            List<Future<Integer>> futures = new ArrayList<>(years.size());
+            for (Map.Entry<Integer, Map<String, String>> entry : collegeInfoMap.entrySet()) {
+                if (entry.getValue().size() > 0) {
+                    futures.add(executorService.submit(new ExtractTask(entry.getKey(), entry.getValue())));
+                }
+            }
+            for (Future<Integer> future : futures) {
+                try {
+                    Integer count = future.get();
+                    if (count != null) {
+                        total += count;
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("提取数据发生异常", e);
+                }
+            }
+        }
         LOGGER.info("提取历年专业录取统计结束, 总记录数: {}, 耗时: {}ms", total, System.currentTimeMillis() - startTime);
     }
 
@@ -121,16 +120,15 @@ public class LnzylqtjExtractor {
             map.put(year, new HashMap<String, String>());
             Map<String, String> params = new HashMap<>();
             params.put("nf", year.toString());
-            Integer count = 0;
             PageInfo pageInfo = PageInfoUtil.extractPageInfo(lnyxlqtjPageUrl, params);
             LOGGER.info("提取{}年的院校信息, {}", year, pageInfo);
             long startTime = System.currentTimeMillis();
             for (int i = 1; i <= pageInfo.getTotalPage(); i++) {
                 params.put("pageNum", String.valueOf(i));
                 map.get(year).putAll(extractCollegeInfoByPage(params));
-                LOGGER.info("提取{}年的数据, {}, 已提取{}条数据", year, params, count);
+                LOGGER.info("提取{}年的数据, 已提取{}条数据", year, map.get(year).size());
             }
-            LOGGER.info("提取{}年的数据结束, {}, 共{}条数据, 耗时: {}ms", year, params, count, System.currentTimeMillis() - startTime);
+            LOGGER.info("提取{}年的院校信息结束, 共{}条数据, 耗时: {}ms", year, map.get(year).size(), System.currentTimeMillis() - startTime);
 
             return map;
         }
@@ -154,9 +152,9 @@ public class LnzylqtjExtractor {
                 if (dataTableTrs.size() > 1) {
                     for (Element dataTableTr : dataTableTrs) {
                         Elements tds = dataTableTr.select("td");
-                        if (tds.size() == 9) {
+                        if (tds.size() == 8) {
                             Element collegeNameElement = tds.get(0).getElementsByTag("a").get(0);
-                            map.put(collegeNameElement.text(), collegeNameElement.attr("href"));
+                            map.put(collegeNameElement.text(), "http://www.qhzk.com/" + collegeNameElement.attr("href"));
                         }
                     }
                 }
@@ -194,21 +192,21 @@ public class LnzylqtjExtractor {
                     if (dataTableTrs.size() > 1) {
                         for (Element dataTableTr : dataTableTrs) {
                             Elements tds = dataTableTr.select("td");
-                            if (tds.size() == 9) {
+                            if (tds.size() == 8) {
                                 Lnzylqtj lnzylqtj = new Lnzylqtj();
                                 lnzylqtj.setYear(year);
-                                lnzylqtj.setCollegeName(tds.get(0).text());
+                                lnzylqtj.setCollegeName(entry.getKey());
+                                lnzylqtj.setBatchCode(tds.get(0).text());
                                 lnzylqtj.setMajorName(tds.get(1).text());
-                                lnzylqtj.setBatchCode(tds.get(2).text());
-                                lnzylqtj.setCategory(tds.get(3).text());
-                                lnzylqtj.setEnrollCount(Integer.valueOf(tds.get(4).text()));
-                                String highGrade = tds.get(5).text();
+                                lnzylqtj.setCategory(tds.get(2).text());
+                                lnzylqtj.setEnrollCount(Integer.valueOf(tds.get(3).text()));
+                                String highGrade = tds.get(4).text();
                                 lnzylqtj.setHighGrade(Float.valueOf(StringUtils.hasText(highGrade) ? highGrade : "0.0"));
-                                String highRanking = tds.get(6).text();
+                                String highRanking = tds.get(5).text();
                                 lnzylqtj.setHighRanking(Integer.valueOf(StringUtils.hasText(highRanking) ? highRanking : "0"));
-                                String lowGrade = tds.get(7).text();
+                                String lowGrade = tds.get(6).text();
                                 lnzylqtj.setLowGrade(Float.valueOf(StringUtils.hasText(lowGrade) ? lowGrade : "0.0"));
-                                String lowRanking = tds.get(8).text();
+                                String lowRanking = tds.get(7).text();
                                 lnzylqtj.setLowRanking(Integer.valueOf(StringUtils.hasText(lowRanking) ? lowRanking : "0"));
                                 lnzylqtj.setAvgGrade(0.0f);
                                 lnzylqtj.setAvgRanking(0.0f);

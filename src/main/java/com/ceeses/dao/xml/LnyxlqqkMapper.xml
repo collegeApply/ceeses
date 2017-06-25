@@ -88,4 +88,7 @@
 
     </select>
 
+    <delete id="empty">
+        TRUNCATE TABLE `t_lnyxlqqk`;
+    </delete>
 </mapper>

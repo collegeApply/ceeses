@@ -49,4 +49,8 @@
         SELECT COUNT(*)
         FROM `t_lnzylqtj`;
     </select>
+
+    <delete id="empty">
+        TRUNCATE TABLE `t_lnzylqtj`;
+    </delete>
 </mapper>

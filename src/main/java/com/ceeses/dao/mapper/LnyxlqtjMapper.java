@@ -42,6 +42,11 @@ public interface LnyxlqtjMapper {
     int count();
 
     /**
+     * 清空表数据
+     */
+    void empty();
+
+    /**
      * 查询历年院校录取历史
      *
      * @param probabilityCalcRequest

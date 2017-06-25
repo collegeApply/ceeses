@@ -39,4 +39,9 @@ public interface LnyxlqqkMapper {
      * @return
      */
     public List<VolunteerInfo> queryVolunteerInfoWithMajor(VolunteerRequest volunteerRequest);
+
+    /**
+     * 清空表数据
+     */
+    void empty();
 }

@@ -38,4 +38,9 @@ public interface LnzylqtjDao {
      * @return 总数
      */
     int count();
+
+    /**
+     * 清空表数据
+     */
+    void empty();
 }
