@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.parsing.ParseState;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -218,6 +219,13 @@ public class ProbabilityCalcService {
                 calaDTO.setXcfGaiLv(0d);
             } else {
                 calaDTO.setXcfGaiLv((currentXc-lowXc)/(highXc-lowXc));
+            }
+            String collKey = calaDTO.getCollegeName() + "_" + category + "_" + calaDTO.getBatchCode();
+            for (Map.Entry<String, Integer> entry : CommonConstans.majorEnrollPlan.entrySet()){
+                if (entry.getKey().indexOf(collKey) > -1 ){
+                    calaDTO.getDnzsjhMap().put(entry.getKey().substring(entry.getKey().indexOf(collKey) + 9),
+                            entry.getValue());
+                }
             }
         }
 
@@ -603,6 +611,13 @@ public class ProbabilityCalcService {
                 calaDTO.setXcfGaiLv(0d);
             } else {
                 calaDTO.setXcfGaiLv((currentXc-lowXc)/(highXc-lowXc));
+            }
+            String collKey = calaDTO.getCollegeName() + "_" + category + "_" + calaDTO.getBatchCode();
+            for (Map.Entry<String, Integer> entry : CommonConstans.majorEnrollPlan.entrySet()){
+                if (entry.getKey().indexOf(collKey) > -1 ){
+                    calaDTO.getDnzsjhMap().put(entry.getKey().substring(entry.getKey().indexOf(collKey) + 9),
+                            entry.getValue());
+                }
             }
         }
 

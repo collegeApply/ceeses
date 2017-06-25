@@ -31,6 +31,11 @@ public class ProbabilityCalaDTO {
      */
     private Map<Integer,String> volunteerInfoMap = new HashMap<>();
 
+    /**
+     * 当年招生计划Map，key为专业名称，value为招生计划招生人数
+     */
+    private Map<String,Integer> dnzsjhMap = new HashMap<>();
+
     //最终计算出某院校的录取概率，位次法预测的概率
     //专业应该是跟院校平级的
     private double gaiLv;
@@ -151,5 +156,13 @@ public class ProbabilityCalaDTO {
 
     public void setXcfGaiLv(double xcfGaiLv) {
         this.xcfGaiLv = xcfGaiLv;
+    }
+
+    public Map<String, Integer> getDnzsjhMap() {
+        return dnzsjhMap;
+    }
+
+    public void setDnzsjhMap(Map<String, Integer> dnzsjhMap) {
+        this.dnzsjhMap = dnzsjhMap;
     }
 }
