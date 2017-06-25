@@ -204,6 +204,17 @@ public class ProbabilityCalcService {
             lnyxmc.setLowRanking((float)(totalLowRanking/counter));
             lnyxmc.setStandardGrade(stand);
             calaDTO.getYxRankingMap().put(currentYear,lnyxmc);
+
+            float currentXc = probabilityCalcRequest.getGrade() - stand;
+            float highXc = lnyxmc.getHighGrade() - stand;
+            float lowXc = lnyxmc.getLowGrade() - stand;
+            if (currentXc > highXc) {
+                calaDTO.setXcfGaiLv(1d);
+            }else if (currentXc < lowXc) {
+                calaDTO.setXcfGaiLv(0d);
+            } else {
+                calaDTO.setXcfGaiLv((currentXc-lowXc)/(highXc-lowXc));
+            }
         }
 
         response.setProbabilityCalaDTOs(calcDTOList);
@@ -574,6 +585,17 @@ public class ProbabilityCalcService {
             lnyxmc.setLowRanking((float)(totalLowRanking/counter));
             lnyxmc.setStandardGrade(stand);
             calaDTO.getYxRankingMap().put(currentYear,lnyxmc);
+
+            float currentXc = probabilityCalcRequest.getGrade() - stand;
+            float highXc = lnyxmc.getHighGrade() - stand;
+            float lowXc = lnyxmc.getLowGrade() - stand;
+            if (currentXc > highXc) {
+                calaDTO.setXcfGaiLv(1d);
+            }else if (currentXc < lowXc) {
+                calaDTO.setXcfGaiLv(0d);
+            } else {
+                calaDTO.setXcfGaiLv((currentXc-lowXc)/(highXc-lowXc));
+            }
         }
 
         for (ProbabilityCalaDTO calaDTO : calcDTOList){
@@ -624,6 +646,17 @@ public class ProbabilityCalcService {
                 lnzymc.setLowRanking((float)(totalLowRanking/counter));
                 lnzymc.setStandardGrade(fsx);
                 enrollDTO.getValue().getLnzymcMap().put(currentYear,lnzymc);
+
+                float currentXc = probabilityCalcRequest.getGrade() - fsx;
+                float highXc = lnzymc.getHighGrade() - fsx;
+                float lowXc = lnzymc.getLowGrade() - fsx;
+                if (currentXc > highXc) {
+                    enrollDTO.getValue().setXcfGaiLv(1d);
+                }else if (currentXc < lowXc) {
+                    enrollDTO.getValue().setXcfGaiLv(0d);
+                } else {
+                    enrollDTO.getValue().setXcfGaiLv((currentXc-lowXc)/(highXc-lowXc));
+                }
 
             }
 

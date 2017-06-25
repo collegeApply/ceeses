@@ -11,6 +11,9 @@ public class MajorEnrollDTO {
     //专业录取的概率
     private double gaiLv;
 
+    //线差法预测的概率
+    private double xcfGaiLv;
+
     /**
      * 针对界面，每年的Lnzymc数据已经包含招生计划、线差数据、名次数据三部分信息，
      */
@@ -45,5 +48,13 @@ public class MajorEnrollDTO {
 
     public void setVolunteerInfoMap(Map<Integer, String> volunteerInfoMap) {
         this.volunteerInfoMap = volunteerInfoMap;
+    }
+
+    public double getXcfGaiLv() {
+        return xcfGaiLv;
+    }
+
+    public void setXcfGaiLv(double xcfGaiLv) {
+        this.xcfGaiLv = xcfGaiLv;
     }
 }
