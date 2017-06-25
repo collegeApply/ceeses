@@ -113,30 +113,6 @@ public class LnfsdxqController extends BaseController {
         return new JsonResult();
     }
 
-    @RequestMapping("/calcGradeAndRanking")
-    @ResponseBody
-    public JsonResult calcGradeAndRanking(Integer year) throws IOException {
-        if (StringUtils.isEmpty(year)) {
-            year = 2016;
-        }
-        dataInitService.calculateGradeAndRanking(year);
-        return new JsonResult();
-    }
-
-
-    @RequestMapping("/initLnskfs")
-    @ResponseBody
-    public JsonResult initLnskfs() throws IOException {
-
-        List<Lnskfsx> lnskfsxes = lnskfsxDao.queryLnskfsx(null);
-        for (Lnskfsx lnskfsx : lnskfsxes) {
-            CommonConstans.lnskfsxMap.put(lnskfsx.getYear() + "_" + lnskfsx.getBatch() + "_" + lnskfsx.getCategory(),
-                    lnskfsx);
-        }
-
-        return new JsonResult();
-    }
-
     private QueryRecord covertToQueryRecord(ProbabilityCalcRequest request) {
         QueryRecord record = new QueryRecord();
         BeanUtils.copyProperties(request, record);

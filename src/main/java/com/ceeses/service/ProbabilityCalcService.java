@@ -65,31 +65,8 @@ public class ProbabilityCalcService {
             return response;
         }
 
-        //以下是三个初始化动作，以备查询前未初始化
-        if (CommonConstans.lnskfsxMap.isEmpty()){
-            List<Lnskfsx> lnskfsxes = lnskfsxDao.queryLnskfsx(null);
-            for (Lnskfsx lnskfsx: lnskfsxes) {
-                CommonConstans.lnskfsxMap.put(lnskfsx.getYear()+"_" + lnskfsx.getBatch() + "_" +lnskfsx.getCategory(),
-                        lnskfsx);
-            }
-            LOGGER.info("初始化历年省控分数线完成");
-        }
-
-        if (CommonConstans.volunteerMap.isEmpty()){
-            dataInitService.initVolunteerInfos(currentYear - 4);
-            LOGGER.info("初始化志愿号数据完成");
-        }
-
-        if (CommonConstans.dnyxlqycMap.isEmpty()){
-            dataInitService.initCurrentGradeAndRanking(currentYear);
-            LOGGER.info("初始化当年预测的分数和名次线完成");
-        }
 
         LOGGER.info("查询请求参数：" + probabilityCalcRequest.toString());
-        //1.根据分数获取当年批次
-        String batch = this.getBatch(currentYear, probabilityCalcRequest.getGrade(),
-                probabilityCalcRequest.getCategory());
-        LOGGER.info("根据分数计算当前批次：{}" , batch);
 
         //科类转换，只处理文史理工两个科类
         String category = null;
@@ -98,19 +75,17 @@ public class ProbabilityCalcService {
         } else if (probabilityCalcRequest.getCategory().equals("理工")){
             category = "5";
         }
-
-        //2.获取当年批次分数，计算达到这个批次的总人数
-
-        Integer currentGrade = CommonConstans.lnskfsxMap.get(currentYear + "_" + batch + "_" +
-                category).getGrade();
-        Integer currentTotal = getTotalRanking(currentYear,currentGrade,category);
-
-        LOGGER.info("当年该批次分数线：{}，通过此批次总人数{}" , currentGrade, currentTotal);
-
         //获取当前省控分数线的批次，根据传入的批次做匹配
         String fsxBatch = CommonConstans.getBatchByGrade(currentYear,probabilityCalcRequest.getGrade(),
                 probabilityCalcRequest.getBatch(),category);
         LOGGER.info("根据前端页面获取批次所属的省控线的批次：{}" , fsxBatch);
+
+        //2.获取当年批次分数，计算达到这个批次的总人数
+        Integer currentGrade = CommonConstans.lnskfsxMap.get(currentYear + "_" + fsxBatch + "_" +
+                category).getGrade();
+        Integer currentTotal = getTotalRanking(currentYear,currentGrade,category);
+        LOGGER.info("当年该批次分数线：{}，通过此批次总人数{}" , currentGrade, currentTotal);
+
 
         //主键：年份+院校+批次+科类，专业录取统计主键：年份+院校+批次+科类+专业
         Map<String, Lnyxmc> lnyxmcMap = new HashMap<>();
@@ -125,7 +100,7 @@ public class ProbabilityCalcService {
         for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
 
             //首先拿到某年固定批次的分数
-            Integer batchGrade = CommonConstans.lnskfsxMap.get(yearIndex + "_" + batch + "_" +
+            Integer batchGrade = CommonConstans.lnskfsxMap.get(yearIndex + "_" + fsxBatch + "_" +
                     category).getGrade();
             Integer indexTotal = getTotalRanking(yearIndex, batchGrade, category);
 
@@ -195,20 +170,39 @@ public class ProbabilityCalcService {
         }
 
 
-
+        //-----线差预测的数据要实时计算了，昨天做法错误；
         for (ProbabilityCalaDTO calaDTO : calcDTOList){
-            String yxKey = calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_" + category;
-            Dnyxlqyc dnyxlqyc = CommonConstans.dnyxlqycMap.get(yxKey);
+            int counter = 0;
+            int totalHighGrade = 0,totalLowGrade = 0,totalAvgGrade = 0,
+                    totalHighRanking = 0,totalLowRanking = 0,totalAvgRanking = 0;
+
+            for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
+                if (calaDTO.getYxRankingMap().containsKey(yearIndex)){
+                    Lnyxmc yearMc = calaDTO.getYxRankingMap().get(yearIndex);
+                    if (yearMc.getLowGrade() < 1 || yearMc.getLowRanking() < 1){
+                        continue;
+                    }
+                    totalHighGrade += (yearMc.getHighGrade() - yearMc.getStandardGrade());
+                    totalLowGrade += (yearMc.getLowGrade() - yearMc.getStandardGrade());
+                    totalAvgGrade += (yearMc.getAvgGrade() - yearMc.getStandardGrade());
+                    totalHighRanking += yearMc.getHighRanking();
+                    totalLowRanking += yearMc.getLowRanking();
+                    totalAvgRanking += yearMc.getAvgRanking();
+                    counter ++;
+                }
+            }
+
+            float stand = CommonConstans.getFsxGrade(currentYear,fsxBatch,category);
             Lnyxmc lnyxmc = new Lnyxmc();
             lnyxmc.setYear(currentYear);
-            lnyxmc.setAvgGrade(dnyxlqyc.getAvgGrade());
-            lnyxmc.setAvgRanking(dnyxlqyc.getAvgRanking());
+            lnyxmc.setAvgGrade((float)(totalAvgGrade/counter) + stand);
+            lnyxmc.setAvgRanking((float)(totalAvgRanking/counter));
             lnyxmc.setEnrollCunt(0);
-            lnyxmc.setHighGrade(dnyxlqyc.getHighGrade());
-            lnyxmc.setHighRanking((float)dnyxlqyc.getHighRanking());
-            lnyxmc.setLowGrade(dnyxlqyc.getLowGrade());
-            lnyxmc.setLowRanking((float)dnyxlqyc.getLowRanking());
-            lnyxmc.setStandardGrade(CommonConstans.getFsxGrade(currentYear,fsxBatch,category));
+            lnyxmc.setHighGrade((float)totalHighGrade/counter + stand);
+            lnyxmc.setHighRanking((float)(totalHighRanking/counter));
+            lnyxmc.setLowGrade((float)totalLowGrade/counter + stand);
+            lnyxmc.setLowRanking((float)(totalLowRanking/counter));
+            lnyxmc.setStandardGrade(stand);
             calaDTO.getYxRankingMap().put(currentYear,lnyxmc);
         }
 
@@ -242,32 +236,8 @@ public class ProbabilityCalcService {
             return response;
         }
 
-        //以下是三个初始化动作，以备查询前未初始化
-        if (CommonConstans.lnskfsxMap.isEmpty()){
-            List<Lnskfsx> lnskfsxes = lnskfsxDao.queryLnskfsx(null);
-            for (Lnskfsx lnskfsx: lnskfsxes) {
-                CommonConstans.lnskfsxMap.put(lnskfsx.getYear()+"_" + lnskfsx.getBatch() + "_" +lnskfsx.getCategory(),
-                        lnskfsx);
-            }
-            LOGGER.info("初始化历年省控分数线完成");
-        }
-
-        if (CommonConstans.volunteerMap.isEmpty()){
-            dataInitService.initVolunteerInfos(currentYear - 4);
-            LOGGER.info("初始化志愿号数据完成");
-        }
-
-        if (CommonConstans.dnyxlqycMap.isEmpty()){
-            dataInitService.initCurrentGradeAndRanking(currentYear);
-            LOGGER.info("初始化当年预测的分数和名次线完成");
-        }
-
         LOGGER.info("查询请求参数：" + probabilityCalcRequest.toString());
         //1.根据分数获取当年批次
-        String batch = this.getBatch(currentYear, probabilityCalcRequest.getGrade(),
-                probabilityCalcRequest.getCategory());
-        LOGGER.info("根据分数计算当前批次：{}" , batch);
-
         //科类转换，只处理文史理工两个科类
         String category = null;
         if (probabilityCalcRequest.getCategory().equals("文史")){
@@ -275,19 +245,18 @@ public class ProbabilityCalcService {
         } else if (probabilityCalcRequest.getCategory().equals("理工")){
             category = "5";
         }
-
-        //2.获取当年批次分数，计算达到这个批次的总人数
-
-        Integer currentGrade = CommonConstans.lnskfsxMap.get(currentYear + "_" + batch + "_" +
-                category).getGrade();
-        Integer currentTotal = getTotalRanking(currentYear,currentGrade,category);
-
-        LOGGER.info("当年该批次分数线：{}，通过此批次总人数{}" , currentGrade, currentTotal);
-
         //获取当前省控分数线的批次，根据传入的批次做匹配
         String fsxBatch = CommonConstans.getBatchByGrade(currentYear,probabilityCalcRequest.getGrade(),
                 probabilityCalcRequest.getBatch(),category);
         LOGGER.info("根据前端页面获取批次所属的省控线的批次：{}" , fsxBatch);
+
+        //2.获取当年批次分数，计算达到这个批次的总人数
+
+        Integer currentGrade = CommonConstans.lnskfsxMap.get(currentYear + "_" + fsxBatch + "_" +
+                category).getGrade();
+        Integer currentTotal = getTotalRanking(currentYear,currentGrade,category);
+
+        LOGGER.info("当年该批次分数线：{}，通过此批次总人数{}" , currentGrade, currentTotal);
 
         //主键：年份+院校+批次+科类，专业录取统计主键：年份+院校+批次+科类+专业
         Map<String, Lnyxmc> lnyxmcMap = new HashMap<>();
@@ -310,7 +279,7 @@ public class ProbabilityCalcService {
         for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
 
             //首先拿到某年固定批次的分数
-            Integer batchGrade = CommonConstans.lnskfsxMap.get(yearIndex + "_" + batch + "_" +
+            Integer batchGrade = CommonConstans.lnskfsxMap.get(yearIndex + "_" + fsxBatch + "_" +
                     category).getGrade();
             Integer indexTotal = getTotalRanking(yearIndex, batchGrade, category);
 
@@ -326,8 +295,6 @@ public class ProbabilityCalcService {
             BeanUtils.copyProperties(probabilityCalcRequest,queryTarget);
             queryTarget.setYear(yearIndex);
             queryTarget.setRanking((int)indexRanking);
-            queryTarget.setTargetSchool(queryTarget.getCollegeCode());
-            queryTarget.setCollegeCode(null);
             //TODO 需做批次转换，客户使用时候，统一转成16年的批次编号，输入参数转回当年，输出参数设置Map时候转回16年
             LOGGER.info("开始查询并初始化年份{}的录取数据", yearIndex);
             List<CollegeEnrollHistory> enrollHistories = lnyxlqtjDao.queryCollegeEnrollHistory(queryTarget);
@@ -573,19 +540,39 @@ public class ProbabilityCalcService {
         }
 
 
+        //-----线差预测的数据要实时计算了，昨天做法错误；
         for (ProbabilityCalaDTO calaDTO : calcDTOList){
-            String yxKey = calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_" + category;
-            Dnyxlqyc dnyxlqyc = CommonConstans.dnyxlqycMap.get(yxKey);
+            int counter = 0;
+            int totalHighGrade = 0,totalLowGrade = 0,totalAvgGrade = 0,
+                    totalHighRanking = 0,totalLowRanking = 0,totalAvgRanking = 0;
+
+            for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
+                if (calaDTO.getYxRankingMap().containsKey(yearIndex)){
+                    Lnyxmc yearMc = calaDTO.getYxRankingMap().get(yearIndex);
+                    if (yearMc.getLowGrade() < 1 || yearMc.getLowRanking() < 1){
+                        continue;
+                    }
+                    totalHighGrade += (yearMc.getHighGrade() - yearMc.getStandardGrade());
+                    totalLowGrade += (yearMc.getLowGrade() - yearMc.getStandardGrade());
+                    totalAvgGrade += (yearMc.getAvgGrade() - yearMc.getStandardGrade());
+                    totalHighRanking += yearMc.getHighRanking();
+                    totalLowRanking += yearMc.getLowRanking();
+                    totalAvgRanking += yearMc.getAvgRanking();
+                    counter ++;
+                }
+            }
+
+            float stand = CommonConstans.getFsxGrade(currentYear,fsxBatch,category);
             Lnyxmc lnyxmc = new Lnyxmc();
             lnyxmc.setYear(currentYear);
-            lnyxmc.setAvgGrade(dnyxlqyc.getAvgGrade());
-            lnyxmc.setAvgRanking(dnyxlqyc.getAvgRanking());
+            lnyxmc.setAvgGrade((float)(totalAvgGrade/counter) + stand);
+            lnyxmc.setAvgRanking((float)(totalAvgRanking/counter));
             lnyxmc.setEnrollCunt(0);
-            lnyxmc.setHighGrade(dnyxlqyc.getHighGrade());
-            lnyxmc.setHighRanking((float)dnyxlqyc.getHighRanking());
-            lnyxmc.setLowGrade(dnyxlqyc.getLowGrade());
-            lnyxmc.setLowRanking((float)dnyxlqyc.getLowRanking());
-            lnyxmc.setStandardGrade(CommonConstans.getFsxGrade(currentYear,fsxBatch,category));
+            lnyxmc.setHighGrade((float)totalHighGrade/counter + stand);
+            lnyxmc.setHighRanking((float)(totalHighRanking/counter));
+            lnyxmc.setLowGrade((float)totalLowGrade/counter + stand);
+            lnyxmc.setLowRanking((float)(totalLowRanking/counter));
+            lnyxmc.setStandardGrade(stand);
             calaDTO.getYxRankingMap().put(currentYear,lnyxmc);
         }
 
@@ -602,21 +589,42 @@ public class ProbabilityCalcService {
 
         for (ProbabilityCalaDTO calaDTO : calcDTOList){
             for (Map.Entry<String, MajorEnrollDTO> enrollDTO : calaDTO.getMajorEnrollDTOMap().entrySet()){
-                String zyKey = calaDTO.getCollegeName() + "_" + calaDTO.getBatchCode() + "_" +
-                        category + "_" + enrollDTO.getKey();
-                Dnzylqyc dnzylqyc = CommonConstans.dnzylqycMap.get(zyKey);
+
+                int counter = 0;
+                int totalHighGrade = 0,totalLowGrade = 0,totalAvgGrade = 0,
+                        totalHighRanking = 0,totalLowRanking = 0,totalAvgRanking = 0;
+
+                for (Integer yearIndex = currentYear - 1; yearIndex >= currentYear - calcYears ;yearIndex -- ){
+                    if (enrollDTO.getValue().getLnzymcMap().containsKey(yearIndex)){
+                        Lnzymc yearMc = enrollDTO.getValue().getLnzymcMap().get(yearIndex);
+                        if (yearMc.getLowGrade() < 1 || yearMc.getLowRanking() < 1){
+                            continue;
+                        }
+                        totalHighGrade += (yearMc.getHighGrade() - yearMc.getStandardGrade());
+                        totalLowGrade += (yearMc.getLowGrade() - yearMc.getStandardGrade());
+                        totalAvgGrade += (yearMc.getAvgGrade() - yearMc.getStandardGrade());
+                        totalHighRanking += yearMc.getHighRanking();
+                        totalLowRanking += yearMc.getLowRanking();
+                        totalAvgRanking += yearMc.getAvgRanking();
+                        counter ++;
+                    }
+                }
+
+                float fsx = CommonConstans.getFsxGrade(currentYear,fsxBatch,category);
+
                 Lnzymc lnzymc = new Lnzymc();
                 lnzymc.setMajorName(enrollDTO.getKey());
                 lnzymc.setYear(currentYear);
-                lnzymc.setAvgGrade(dnzylqyc.getAvgGrade());
-                lnzymc.setAvgRanking(dnzylqyc.getAvgRanking());
+                lnzymc.setAvgGrade((float)(totalAvgGrade/counter) + fsx);
+                lnzymc.setAvgRanking((float)(totalAvgRanking/counter));
                 lnzymc.setEnrollCunt(0);
-                lnzymc.setHighGrade(dnzylqyc.getHighGrade());
-                lnzymc.setHighRanking((float)dnzylqyc.getHighRanking());
-                lnzymc.setLowGrade(dnzylqyc.getLowGrade());
-                lnzymc.setLowRanking((float)dnzylqyc.getLowRanking());
-                lnzymc.setStandardGrade(CommonConstans.getFsxGrade(currentYear,fsxBatch,category));
+                lnzymc.setHighGrade((float)totalHighGrade/counter + fsx);
+                lnzymc.setHighRanking((float)(totalHighRanking/counter));
+                lnzymc.setLowGrade((float)totalLowGrade/counter  + fsx);
+                lnzymc.setLowRanking((float)(totalLowRanking/counter));
+                lnzymc.setStandardGrade(fsx);
                 enrollDTO.getValue().getLnzymcMap().put(currentYear,lnzymc);
+
             }
 
         }
@@ -642,7 +650,7 @@ public class ProbabilityCalcService {
         if (!probabilityCalaDTOMap.keySet().contains(enrollHistory.getCollege_name() + "_" +
                 enrollHistory.getBatch_code() + "_" + enrollHistory.getCategory())){
             ProbabilityCalaDTO calaDTO = new ProbabilityCalaDTO();
-            calaDTO.setCollegeCode(enrollHistory.getCollege_name());
+            calaDTO.setCollegeCode(enrollHistory.getCollege_code());
             calaDTO.setAreaName(enrollHistory.getArea());
             calaDTO.setBatchCode(enrollHistory.getBatch_code());
             calaDTO.setCollegeType(enrollHistory.getType());
@@ -860,57 +868,6 @@ public class ProbabilityCalcService {
                 return 0;
             }
         });
-    }
-
-
-    /**
-     * 根据年份，成绩，科类计算能达到的批次，只计算需要预估的年份比如2017
-     * 返回当前批次对应的分数线
-     * @param year
-     * @param grade
-     * @return
-     */
-    private String getBatch(Integer year, Integer grade, String category){
-        String batchResult = "";
-        //倒序
-        TreeSet sortedSet = new TreeSet(new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                Lnskfsx h1 = (Lnskfsx) o1;
-                Lnskfsx h2 = (Lnskfsx) o2;
-                if (h1.getGrade() > h2.getGrade()) {
-                    return -1;
-                }
-                if (h1.getGrade() < h2.getGrade()) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
-
-        if (category.equals("文史")){
-            category = "1";
-        } else if (category.equals("理工")){
-            category = "5";
-        }
-
-        //查询省控线,忽略贫困定向这两个线
-        for (Lnskfsx lnskfsx : CommonConstans.lnskfsxMap.values()){
-            if (lnskfsx.getYear().equals(year)  && lnskfsx.getCategory().equals(category) &&
-                    !"7".equals(lnskfsx.getCategory()) && !"8".equals(lnskfsx.getCategory())){
-                sortedSet.add(lnskfsx);
-            }
-        }
-
-        for (Object obj : sortedSet){
-            Lnskfsx hg = (Lnskfsx) obj;
-            //拿到的第一个小于你当前分数的就是你分数对应的批次线
-            if (hg.getGrade() < grade){
-                batchResult = hg.getBatch();
-                break;
-            }
-        }
-        return batchResult;
     }
 
     /**

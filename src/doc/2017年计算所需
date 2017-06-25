@@ -2,6 +2,3 @@
 2.调用http://106.14.138.0:8088/ceeses/lnfsdxq/initLnfsdxq?fileName=/root/lnfsd-2017.xlsx 初始化2017年的分数段数据；
 3.看情况决定是否同步2017年招生计划数据，可能不准确；
 
-数据初始化相关
-1.DataInitService.calculateGradeAndRanking(2017);  只需要执行一次，插入数据库
-2.dataInitService.initCurrentGradeAndRanking(2017); 每次启动建议执行一次，不然首次查询会很慢

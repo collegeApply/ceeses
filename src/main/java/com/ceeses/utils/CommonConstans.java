@@ -139,14 +139,11 @@ public class CommonConstans {
     }
 
 
-    public static Map<String,String> volunteerMap = new HashMap<>();
+    public static final Map<String,String> volunteerMap = new HashMap<>();
 
-    public static Map<String,String> volunteerMajorMap = new HashMap<>();
+    public static final Map<String,String> volunteerMajorMap = new HashMap<>();
 
-    public static Map<String,Dnyxlqyc> dnyxlqycMap = new HashMap<>();
-
-    public static Map<String,Dnzylqyc> dnzylqycMap = new HashMap<>();
-
+    public static final Integer currentYear = 2016;
 
     public static float getFsxGrade(Integer yearIndex,String fsxBatch, String category){
 

@@ -85,46 +85,6 @@ CREATE TABLE `t_lnzylqtj` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年专业录取统计，针对某个院校';
 
 
-
-
--- 以下两张表是新增的，用来存储预测的分数和名次，结构跟录取统计一致
--- 院校录取统计预测
-CREATE TABLE `t_yxlqyc` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `year` smallint(4) NOT NULL COMMENT '年份',
-  `college_code` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校编码，统一代码',
-  `college_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校名称',
-  `batch_code` char(1) COLLATE utf8_unicode_ci NOT NULL COMMENT '批次编号',
-  `category` char(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '科类编号',
-  `enroll_count` smallint(4) COMMENT '更新进去的',
-  `high_grade` float(9,3) NOT NULL COMMENT '预测最高分',
-  `low_grade` float(9,3) NOT NULL COMMENT '预测最低分',
-  `avg_grade` float(6,2) DEFAULT NULL COMMENT '预测平均分',
-  `high_ranking` smallint(4) NOT NULL COMMENT '预测最高名次，数字越小名次越高',
-  `low_ranking` smallint(4) NOT NULL COMMENT '预测最低名次',
-  `avg_ranking` float(9,3) DEFAULT NULL COMMENT '预测平均名次需计算出来',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='院校分数与名次预测，针对某个院校';
-
--- 专业录取统计预测
-CREATE TABLE `t_zylqyc` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `year` smallint(4) NOT NULL COMMENT '年份',
-  `college_name` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT '院校名称',
-  `major_name` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT '专业名称，专业只按名称模糊筛选',
-  `batch_code` char(1) COLLATE utf8_unicode_ci NOT NULL COMMENT '批次编号',
-  `category` char(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '科类编号',
-  `enroll_count` smallint(4) COMMENT '录取人数统计，更新进去',
-  `high_grade` smallint(4) NOT NULL COMMENT '预测最高分',
-  `low_grade` smallint(4) NOT NULL COMMENT '预测最低分',
-  `avg_grade` float(6,2) DEFAULT NULL COMMENT '预测平均分，需计算出来',
-  `high_ranking` smallint(4) NOT NULL COMMENT '预测最高名次，数字越小名次越高',
-  `low_ranking` smallint(4) NOT NULL COMMENT '预测最低名次',
-  `avg_ranking` float(9,3) DEFAULT NULL COMMENT '预测平均名次需计算出来',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='专业分数与名次预测，针对某个院校';
-
-
 -- 院校基础信息表
 DROP TABLE IF EXISTS `t_college_info`;
 CREATE TABLE `t_college_info` (
