@@ -100,7 +100,7 @@ $(function () {
                                 }
                                 resultTableHtml += '<td rowspan="3">' + volunteerInfo + '</td>';
                             }
-                            resultTableHtml += '<td rowspan="3"><a class="btn btn-primary btn-xs" onclick="showMajorDetails(\'' + this.collegeCode + '\', this)">查看专业详情</a></td>';
+                            resultTableHtml += '<td rowspan="3"><a class="btn btn-primary btn-xs" onclick="showMajorDetails(\'' + this.collegeName + '\', this)">查看专业详情</a></td>';
                             resultTableHtml += '</tr>';
                             // 第二行
                             resultTableHtml += '<tr>';
@@ -140,11 +140,11 @@ $(function () {
     });
 });
 
-function showMajorDetails(collegeCode, obj) {
+function showMajorDetails(collegeName, obj) {
     if ($(obj).text() == '查看专业详情') {
         $('#tipModel').modal("show");
         var requestForm = extractForm();
-        requestForm['collegeCode'] = collegeCode;
+        requestForm['collegeName'] = collegeName;
         $.ajax({
             url: 'lnfsdxq/getTargetCollegeWithMajor',
             type: 'POST',
