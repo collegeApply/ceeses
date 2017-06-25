@@ -112,6 +112,14 @@
             and ci.`area` = #{areaName}
         </if>
 
+        <if test="schoolType == '985' or schoolType == '211'">
+            and ci.`type` LIKE concat('%',#{schoolType},'%')
+        </if>
+
+        <if test="schoolType == ''">
+            and ci.`type` is NULL
+        </if>
+
         <if test="targetMajor !=null and targetMajor != ''">
             <![CDATA[
 				and zy.`low_ranking` >= #{ranking}

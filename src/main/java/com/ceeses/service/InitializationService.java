@@ -44,7 +44,7 @@ public class InitializationService {
         }
 
         if (CommonConstans.volunteerMap.isEmpty()){
-            dataInitService.initVolunteerInfos(CommonConstans.currentYear - 4);
+            dataInitService.initVolunteerInfos(2012);
             LOGGER.info("初始化志愿号数据完成");
         }
 

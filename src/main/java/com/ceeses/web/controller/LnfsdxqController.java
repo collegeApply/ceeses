@@ -64,7 +64,7 @@ public class LnfsdxqController extends BaseController {
     @RequestMapping("/getTargetColleges")
     @ResponseBody
     public ProbabilityCalaResponse getTargetColleges(ProbabilityCalcRequest probabilityCalcRequest) throws IOException {
-        probabilityCalcRequest.setYear(2016);
+        probabilityCalcRequest.setYear(2017);
         QueryRecord record = covertToQueryRecord(probabilityCalcRequest);
         ProbabilityCalaResponse response = null;
         try {
@@ -80,7 +80,7 @@ public class LnfsdxqController extends BaseController {
     @RequestMapping("/getTargetCollegeWithMajor")
     @ResponseBody
     public ProbabilityCalaResponse getTargetCollegeWithMajor(ProbabilityCalcRequest probabilityCalcRequest) {
-        probabilityCalcRequest.setYear(2016);
+        probabilityCalcRequest.setYear(2017);
         ProbabilityCalaResponse response = null;
         try {
             response = probabilityCalcService.getTargetCollegeWithMajor(probabilityCalcRequest);

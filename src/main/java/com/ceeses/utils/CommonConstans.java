@@ -143,8 +143,6 @@ public class CommonConstans {
 
     public static final Map<String,String> volunteerMajorMap = new HashMap<>();
 
-    public static final Integer currentYear = 2016;
-
     public static float getFsxGrade(Integer yearIndex,String fsxBatch, String category){
 
         if (!CommonConstans.lnskfsxMap.containsKey(yearIndex + "_" +
