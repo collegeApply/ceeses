@@ -12,6 +12,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -42,6 +43,11 @@ public class LnyxlqtjExtractor {
      */
     private String lnyxlqtjPageUrl = "http://www.qhzk.com/YXLQShow.action";
     /**
+     * 爬取数据的年份
+     */
+    @Value("#{'${extract.years}'.split(',')}")
+    private List<Integer> years;
+    /**
      * 线程池
      */
     private ExecutorService executorService = Executors.newFixedThreadPool(4);
@@ -51,15 +57,6 @@ public class LnyxlqtjExtractor {
     public Integer extract() throws IOException {
         LOGGER.info("提取历年院校录取统计开始......");
         long startTime = System.currentTimeMillis();
-
-        Document document = Jsoup.parse(HttpClientUtil.post(lnyxlqtjPageUrl).getHtml());
-
-        // 年份
-        List<Integer> years = new ArrayList<>();
-        for (Element element : document.getElementById("ddl_nf").select("option")) {
-            years.add(Integer.valueOf(element.attr("value")));
-        }
-        LOGGER.info("提取年份信息结束, {}", years);
 
         List<Future<Integer>> futures = new ArrayList<>(years.size());
         for (Integer year : years) {

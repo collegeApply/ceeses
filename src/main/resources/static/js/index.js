@@ -172,7 +172,7 @@ function showMajorDetails(collegeName, obj) {
                         for (var year in lnzymcMap) {
                             resultTableHtml += '<td>' + Math.round(lnzymcMap[year].highGrade - lnzymcMap[year].standardGrade).toFixed(1) + '</td>';
                         }
-                        resultTableHtml += '<td rowspan="3">' + (Math.round(probabilityCalaDTO.xcfGaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
+                        resultTableHtml += '<td rowspan="3">' + (Math.round(majorEnrollDTOMap[major].xcfGaiLv * 10000) / 100).toFixed(2) + '%' + '</td>';
                         for (var year in lnzymcMap) {
                             resultTableHtml += '<td>' + lnzymcMap[year].highRanking + '</td>';
                         }

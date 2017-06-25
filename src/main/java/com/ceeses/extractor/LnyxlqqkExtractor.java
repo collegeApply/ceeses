@@ -12,6 +12,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -40,6 +41,11 @@ public class LnyxlqqkExtractor {
      */
     private String lnyxlqqkPageUrl = "http://www.qhzk.com/lnlqqkk.action";
     /**
+     * 爬取数据的年份
+     */
+    @Value("#{'${extract.years}'.split(',')}")
+    private List<Integer> years;
+    /**
      * 线程池
      */
     private ExecutorService executorService = Executors.newFixedThreadPool(4);
@@ -51,13 +57,6 @@ public class LnyxlqqkExtractor {
         long startTime = System.currentTimeMillis();
 
         Document document = Jsoup.parse(HttpClientUtil.post(lnyxlqqkPageUrl).getHtml());
-
-        // 年份
-        List<Integer> years = new ArrayList<>();
-        for (Element element : document.getElementById("ddl_nf").select("option")) {
-            years.add(Integer.valueOf(element.attr("value")));
-        }
-        LOGGER.info("提取年份信息结束, {}", years);
 
         // 科别
         List<String> kldmList = new ArrayList<>();
