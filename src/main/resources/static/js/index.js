@@ -22,7 +22,7 @@ $(function () {
 
     $searchConditionsContainer.find('button[name=searchBtn]').click(function () {
         if (validateForm()) {
-            $('#tipModel').modal("show");
+            $('#waitingDialog').modal("show");
             $.ajax({
                 url: 'lnfsdxq/getTargetColleges',
                 type: 'POST',
@@ -77,7 +77,7 @@ $(function () {
                             resultTableHtml += '<tr>';
                             resultTableHtml += '<td rowspan="3">' + (index + 1) + '</td>';
                             resultTableHtml += '<td rowspan="3">' + this.collegeCode + '</td>';
-                            resultTableHtml += '<td rowspan="3">' + this.collegeName + '</td>';
+                            resultTableHtml += '<td rowspan="3"><a style="cursor: pointer" onclick="showDnzsjh(this, \'' + this.collegeName + '\')">' + this.collegeName + '</a></td>';
                             resultTableHtml += '<td rowspan="3">' + (this.areaName == null ? '' : this.areaName) + '</td>';
                             resultTableHtml += '<td rowspan="3">' + this.batchName + '</td>';
                             resultTableHtml += '<td rowspan="3">' + (this.collegeType == null ? '其它' : this.collegeType) + '</td>';
@@ -134,7 +134,7 @@ $(function () {
                     } else {
                         $('div#resultTableContainer').html('<span>无预测结果</span>');
                     }
-                    $('#tipModel').modal("hide");
+                    $('#waitingDialog').modal("hide");
                 }
             });
         }
@@ -147,7 +147,7 @@ $(function () {
 
 function showMajorDetails(collegeName, obj) {
     if ($(obj).text() == '查看专业详情') {
-        $('#tipModel').modal("show");
+        $('#waitingDialog').modal("show");
         var requestForm = extractForm();
         requestForm['targetSchool'] = collegeName;
         $.ajax({
@@ -218,7 +218,7 @@ function showMajorDetails(collegeName, obj) {
                     $(obj).parent().parent().next().next().after(resultTableHtml);
                     $(obj).text('收起专业详情');
                 }
-                $('#tipModel').modal("hide");
+                $('#waitingDialog').modal("hide");
             }
         });
     } else {
@@ -257,6 +257,33 @@ function showTableHead() {
             $shelter.hide();
         }
     });
+}
+
+/**
+ * 显示当年招生计划
+ *
+ * @param obj
+ * @param collegeName 院校名称
+ */
+function showDnzsjh(obj, collegeName) {
+    if (collegeDnzsjhMap[collegeName]) {
+        var tableHtml = '<table class="table table-bordered table-condensed table-hover">';
+        tableHtml += '<tbody>';
+        for (var major in collegeDnzsjhMap[collegeName]) {
+            tableHtml += '<tr>';
+            tableHtml += '<td>' + major + '</td>';
+            tableHtml += '<td>' + collegeDnzsjhMap[collegeName][major] + '</td>';
+            tableHtml += '</tr>';
+        }
+        tableHtml += '</tbody>';
+        tableHtml += '</table>';
+        var $dnzsjhDialog = $('#dnzsjhDialog');
+        $dnzsjhDialog.draggable();
+        $dnzsjhDialog.find('.modal-title').html('<strong>' + collegeName + '</strong>今年招生计划');
+        $dnzsjhDialog.find('.modal-body').html(tableHtml);
+
+        $dnzsjhDialog.modal("show");
+    }
 }
 
 /**
