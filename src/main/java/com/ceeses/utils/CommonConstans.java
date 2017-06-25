@@ -1,7 +1,5 @@
 package com.ceeses.utils;
 
-import com.ceeses.model.Dnyxlqyc;
-import com.ceeses.model.Dnzylqyc;
 import com.ceeses.model.Lnskfsx;
 
 import java.util.Comparator;
@@ -107,7 +105,7 @@ public class CommonConstans {
         if ("1".equals(batchCode) || "8".equals(batchCode) || "A".equals(batchCode)) {
             for (Lnskfsx lnskfsx : CommonConstans.lnskfsxMap.values()) {
                 if (lnskfsx.getYear().equals(year) && lnskfsx.getCategory().equals(category) &&
-                        !"7".equals(lnskfsx.getCategory()) && !"8".equals(lnskfsx.getCategory())) {
+                        !"7".equals(lnskfsx.getBatch()) && !"8".equals(lnskfsx.getBatch())) {
                     sortedSet.add(lnskfsx);
                 }
             }
@@ -124,7 +122,7 @@ public class CommonConstans {
         if ("H".equals(batchCode)) {
             for (Lnskfsx lnskfsx : CommonConstans.lnskfsxMap.values()) {
                 if (lnskfsx.getYear().equals(year) && lnskfsx.getCategory().equals(category) &&
-                        ("7".equals(lnskfsx.getCategory()) || "8".equals(lnskfsx.getCategory()))) {
+                        ("7".equals(lnskfsx.getBatch()) || "8".equals(lnskfsx.getBatch()))) {
                     sortedSet.add(lnskfsx);
                 }
             }
@@ -143,6 +141,10 @@ public class CommonConstans {
     public static final Map<String,String> volunteerMap = new HashMap<>();
 
     public static final Map<String,String> volunteerMajorMap = new HashMap<>();
+
+    public static final Map<String,Integer> collegeEnrollPlan = new HashMap<>();
+
+    public static final Map<String, Integer> majorEnrollPlan = new HashMap<>();
 
     public static float getFsxGrade(Integer yearIndex,String fsxBatch, String category){
 

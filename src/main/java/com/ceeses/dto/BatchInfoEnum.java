@@ -36,7 +36,8 @@ public enum BatchInfoEnum {
     BATCH_B("C","二本定向"),
     BATCH_D("D","三本定向"),
     BATCH_E("E","提前专科定向"),
-    BATCH_F("F","普通专科定向"),;
+    BATCH_F("F","普通专科定向"),
+    BATCH_H("H","贫困定向"),;
 
     public String key;
 

@@ -48,6 +48,10 @@ public class InitializationService {
             LOGGER.info("初始化志愿号数据完成");
         }
 
+        if (CommonConstans.collegeEnrollPlan.isEmpty()){
+            dataInitService.initDnzsjh();
+        }
+
         LOGGER.info("初始化数据完成");
     }
 }

@@ -3,7 +3,9 @@ package com.ceeses.service;
 import com.ceeses.dao.LnyxlqqkDao;
 import com.ceeses.dao.LnyxlqtjDao;
 import com.ceeses.dto.*;
+import com.ceeses.model.Dnzsjh;
 import com.ceeses.utils.CommonConstans;
+import com.ceeses.utils.ExcelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class DataInitService {
 
     @Autowired
     LnyxlqtjDao lnyxlqtjDao;
+
+    @Autowired
+    ExcelUtil excelUtil;
 
     public void initVolunteerInfos(Integer startYear){
         CommonConstans.volunteerMap.clear();
@@ -57,5 +62,32 @@ public class DataInitService {
 
     }
 
+    public void initDnzsjh(){
+//        String wkFilePath = "/Users/zhaoshan/dnzsjh-lg.xlsx";
+        String wkFilePath = "/root/dnzsjh-lg.xlsx";
+        List<Dnzsjh> dnzsjhslg = excelUtil.initDnzsjh(wkFilePath, "5" , 2017);
 
+        for (Dnzsjh dnzsjh : dnzsjhslg){
+            String collKey = dnzsjh.getCollegeName() + "_" + dnzsjh.getCategory() + "_" + dnzsjh.getBatch();
+            String majorKey = collKey + "_"  + dnzsjh.getMajorName();
+            if (!CommonConstans.collegeEnrollPlan.containsKey(collKey)){
+                CommonConstans.collegeEnrollPlan.put(collKey, dnzsjh.getCollegeCount());
+            }
+            CommonConstans.majorEnrollPlan.put(majorKey , dnzsjh.getMajorCount());
+        }
+
+//        String lkFilePath = "/Users/zhaoshan/dnzsjh-ws.xlsx";
+        String lkFilePath = "/root/dnzsjh-ws.xlsx";
+        List<Dnzsjh> dnzsjhsws = excelUtil.initDnzsjh(lkFilePath,"1",2017);
+
+        for (Dnzsjh dnzsjh : dnzsjhsws){
+            String collKey = dnzsjh.getCollegeName() + "_" + dnzsjh.getCategory() + "_" + dnzsjh.getBatch();
+            String majorKey = collKey + "_" + dnzsjh.getMajorName();
+            if (!CommonConstans.collegeEnrollPlan.containsKey(collKey)){
+                CommonConstans.collegeEnrollPlan.put(collKey, dnzsjh.getCollegeCount());
+            }
+            CommonConstans.majorEnrollPlan.put(majorKey , dnzsjh.getMajorCount());
+        }
+        LOGGER.info("初始化当年招生计划完成");
+    }
 }

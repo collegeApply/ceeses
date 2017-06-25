@@ -6,7 +6,6 @@ package com.ceeses.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.ceeses.dao.LnfsdxqDao;
-import com.ceeses.dao.LnyxlqqkDao;
+import com.ceeses.model.Dnzsjh;
 import com.ceeses.model.Lnfsdxq;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -30,11 +29,16 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ExcelUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExcelUtil.class);
+
     //默认单元格内容为数字时格式
     private static DecimalFormat df = new DecimalFormat("0");
     // 默认单元格格式化日期字符串
@@ -82,7 +86,7 @@ public class ExcelUtil {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("解析Excel出错", e);
         }
 
         lnfsdxqDao.initLnfsdxq(result);
@@ -91,16 +95,61 @@ public class ExcelUtil {
     }
 
 
-    public static void readExcel2003(File file) {
+    /**
+     * 初始化当年的招生计划
+     * 为了简单处理，此信息不存数据库了，每次应用启动时，直接从excel加载到内存
+     * 文件从classpath读取一直有问题，所以服务器上从固定目录/root/dnzsjh-lg.xlsx  /root/dnzsjh-ws.xlsx 读取
+     * 数据库事情以后再说
+     * @param filePath
+     * @param category
+     * @return
+     */
+    public List<Dnzsjh> initDnzsjh(String filePath, String category, Integer year) {
+        List<Dnzsjh> result = new ArrayList<>();
+        try {
+            File file = new File(filePath);
+            XSSFWorkbook wb = new XSSFWorkbook(file);
+            int sheetNum = wb.getNumberOfSheets();
+            for (int i = 0; i < sheetNum; i++) {
+                XSSFSheet sheet = wb.getSheetAt(i);
 
-//            ArrayList<ArrayList<Object>> rowList = new ArrayList<ArrayList<Object>>();
-//            ArrayList<Object> colList;
-//            HSSFWorkbook wb = new HSSFWorkbook(new FileInputStream(file));
-//            HSSFSheet sheet = wb.getSheetAt(0);
-//            HSSFRow row;
-//            HSSFCell cell;
-//            Object value;
+                Iterator<Row> rowIterator = sheet.rowIterator();
+                while (rowIterator.hasNext()) {
+                    Row row = rowIterator.next();
+
+                    if (row.getCell(0).getCellTypeEnum().equals(CellType.STRING)) {
+                        continue;
+                    }
+
+                    Dnzsjh dnzsjh = new Dnzsjh();
+                    dnzsjh.setYear(year);
+                    dnzsjh.setCategory(category);
+                    dnzsjh.setBatch(sheet.getSheetName().trim());
+                    dnzsjh.setIndex((int)row.getCell(0).getNumericCellValue());
+                    dnzsjh.setCollegeCode(String.valueOf(row.getCell(1).getNumericCellValue()).trim());
+                    dnzsjh.setCollegeName(row.getCell(2).getStringCellValue().trim());
+                    dnzsjh.setCollegeCount((int)row.getCell(3).getNumericCellValue());
+                    if (row.getCell(4).getCellTypeEnum().equals(CellType.STRING)) {
+                        dnzsjh.setMajorCode(String.valueOf(row.getCell(4).getStringCellValue()).trim());
+                    }
+                    if (row.getCell(4).getCellTypeEnum().equals(CellType.NUMERIC)) {
+                        dnzsjh.setMajorCode(String.valueOf(row.getCell(4).getNumericCellValue()).trim());
+                    }
+                    String major  = row.getCell(5).getStringCellValue().trim();
+                    String major2 = major.replace("（","(").replace("）",")");
+                    dnzsjh.setMajorName(major2);
+                    dnzsjh.setMajorCount((int)row.getCell(6).getNumericCellValue());
+
+                    result.add(dnzsjh);
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("解析Excel出错", e);
+        }
+        return result;
     }
+
 
 
     public static void writeExcel(ArrayList<ArrayList<Object>> result, String path) {

@@ -197,7 +197,11 @@ public class ProbabilityCalcService {
             lnyxmc.setYear(currentYear);
             lnyxmc.setAvgGrade((float)(totalAvgGrade/counter) + stand);
             lnyxmc.setAvgRanking((float)(totalAvgRanking/counter));
-            lnyxmc.setEnrollCunt(0);
+            lnyxmc.setEnrollCunt(CommonConstans.collegeEnrollPlan.get(calaDTO.getCollegeName() + "_" +
+                    category + "_" + calaDTO.getBatchCode()));
+            if (null == lnyxmc.getEnrollCunt()){
+                lnyxmc.setEnrollCunt(0);
+            }
             lnyxmc.setHighGrade((float)totalHighGrade/counter + stand);
             lnyxmc.setHighRanking((float)(totalHighRanking/counter));
             lnyxmc.setLowGrade((float)totalLowGrade/counter + stand);
@@ -578,7 +582,11 @@ public class ProbabilityCalcService {
             lnyxmc.setYear(currentYear);
             lnyxmc.setAvgGrade((float)(totalAvgGrade/counter) + stand);
             lnyxmc.setAvgRanking((float)(totalAvgRanking/counter));
-            lnyxmc.setEnrollCunt(0);
+            lnyxmc.setEnrollCunt(CommonConstans.collegeEnrollPlan.get(calaDTO.getCollegeName() + "_" +
+                    category + "_" + calaDTO.getBatchCode()));
+            if (null == lnyxmc.getEnrollCunt()){
+                lnyxmc.setEnrollCunt(0);
+            }
             lnyxmc.setHighGrade((float)totalHighGrade/counter + stand);
             lnyxmc.setHighRanking((float)(totalHighRanking/counter));
             lnyxmc.setLowGrade((float)totalLowGrade/counter + stand);
@@ -639,7 +647,13 @@ public class ProbabilityCalcService {
                 lnzymc.setYear(currentYear);
                 lnzymc.setAvgGrade((float)(totalAvgGrade/counter) + fsx);
                 lnzymc.setAvgRanking((float)(totalAvgRanking/counter));
-                lnzymc.setEnrollCunt(0);
+                String majorKey = calaDTO.getCollegeName() + "_" +
+                        category + "_" + calaDTO.getBatchCode() + "_" + enrollDTO.getKey();
+                String majorKey2 = majorKey.replace("（","(").replace("）",")");
+                lnzymc.setEnrollCunt(CommonConstans.majorEnrollPlan.get(majorKey2));
+                if (null == lnzymc.getEnrollCunt()){
+                    lnzymc.setEnrollCunt(0);
+                }
                 lnzymc.setHighGrade((float)totalHighGrade/counter + fsx);
                 lnzymc.setHighRanking((float)(totalHighRanking/counter));
                 lnzymc.setLowGrade((float)totalLowGrade/counter  + fsx);
