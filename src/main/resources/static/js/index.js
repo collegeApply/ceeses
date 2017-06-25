@@ -158,7 +158,7 @@ function showMajorDetails(collegeName, obj) {
                     var majorEnrollDTOMap = probabilityCalaDTO.majorEnrollDTOMap;
                     var resultTableHtml = '';
                     for (var major in  majorEnrollDTOMap) {
-                        resultTableHtml += '<tr class="major-item-' + collegeCode + '">';
+                        resultTableHtml += '<tr class="major-item-' + collegeName + '">';
                         resultTableHtml += '<td rowspan="3" colspan="4"></td>';
                         resultTableHtml += '<td rowspan="3">' + probabilityCalaDTO.batchName + '</td>';
                         resultTableHtml += '<td rowspan="3">' + (probabilityCalaDTO.collegeType == null ? '其它' : probabilityCalaDTO.collegeType) + '</td>';
@@ -192,7 +192,7 @@ function showMajorDetails(collegeName, obj) {
                         resultTableHtml += '<td rowspan="3"></td>';
                         resultTableHtml += '</tr>';
                         // 第二行
-                        resultTableHtml += '<tr class="major-item-' + collegeCode + '">';
+                        resultTableHtml += '<tr class="major-item-' + collegeName + '">';
                         for (var year in lnzymcMap) {
                             resultTableHtml += '<td>' + Math.round(lnzymcMap[year].avgGrade - lnzymcMap[year].standardGrade).toFixed(1) + '</td>';
                         }
@@ -201,7 +201,7 @@ function showMajorDetails(collegeName, obj) {
                         }
                         resultTableHtml += '</tr>';
                         // 第三行
-                        resultTableHtml += '<tr class="major-item-' + collegeCode + '">';
+                        resultTableHtml += '<tr class="major-item-' + collegeName + '">';
                         for (var year in lnzymcMap) {
                             resultTableHtml += '<td>' + Math.round(lnzymcMap[year].lowGrade - lnzymcMap[year].standardGrade).toFixed(1) + '</td>';
                         }
@@ -218,7 +218,7 @@ function showMajorDetails(collegeName, obj) {
         });
     } else {
         $(obj).parent().prop('rowspan', 3);
-        $(obj).parent().parent().parent().find('tr.major-item-' + collegeCode).remove();
+        $(obj).parent().parent().parent().find('tr.major-item-' + collegeName).remove();
         $(obj).text('查看专业详情');
     }
     showTableHead();
