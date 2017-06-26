@@ -92,15 +92,10 @@ public class LnyxlqtjExtractor {
             if (dataTableTrs.size() > 1) {
                 for (Element dataTableTr : dataTableTrs) {
                     Elements tds = dataTableTr.select("td");
-                    if (tds.size() == 8) {
+                    if (tds.size() == 9) {
                         Lnyxlqtj lnyxlqtj = new Lnyxlqtj();
                         lnyxlqtj.setYear(Integer.valueOf(params.get("nf")));
-
-                        Element collegeNameElement = tds.get(0).getElementsByTag("a").get(0);
-
-                        lnyxlqtj.setCollegeName(collegeNameElement.text());
-                        lnyxlqtj.setCollegeCode(collegeNameElement.attr("href").split("\\?")[1].split("&")[0].split("=")[1]);
-
+                        lnyxlqtj.setCollegeName(tds.get(0).text());
                         lnyxlqtj.setBatchCode(tds.get(1).text());
                         lnyxlqtj.setCategory(tds.get(2).text());
                         lnyxlqtj.setEnrollCount(Integer.valueOf(tds.get(3).text()));
@@ -173,7 +168,9 @@ public class LnyxlqtjExtractor {
                     for (int i = 1; i <= pageInfo.getTotalPage(); i++) {
                         params.put("pageNum", String.valueOf(i));
                         List<Lnyxlqtj> lnyxlqtjs = extractLnyxlqtjByPage(params);
-                        lnyxlqtjDao.batchSaveLnyxlqtj(lnyxlqtjs);
+                        if (lnyxlqtjs.size() > 0) {
+                            lnyxlqtjDao.batchSaveLnyxlqtj(lnyxlqtjs);
+                        }
                         count += lnyxlqtjs.size();
                     }
                     LOGGER.info("提取参数为{}的数据结束, {}, 耗时: {}ms", params, pageInfo, System.currentTimeMillis() - startTime);

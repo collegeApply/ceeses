@@ -185,7 +185,6 @@ function showMajorDetails(collegeName, obj) {
                         for (var year in majorEnrollDTOMap[major].volunteerInfoMap) {
                             var volunteerInfo = '';
                             if (majorEnrollDTOMap[major].volunteerInfoMap[year]) {
-                                console.info(majorEnrollDTOMap[major].volunteerInfoMap[year])
                                 var volunteerInfoItems = majorEnrollDTOMap[major].volunteerInfoMap[year].split('--');
                                 for (var j = 0; j < volunteerInfoItems.length; j++) {
                                     volunteerInfo += volunteerInfoItems[j] + '--<br>'
@@ -231,6 +230,7 @@ function showMajorDetails(collegeName, obj) {
 
 // 向下滚动页面时显示预测结果表格表头
 function showTableHead() {
+    $(window).unbind('scroll');
     var $resultTableContainer = $('div#resultTableContainer');
     var $resultTable = $resultTableContainer.children('table');
     var resultTableHeadHeight = $resultTable.children('caption').height() + $resultTable.children('thead').height();
@@ -252,6 +252,7 @@ function showTableHead() {
     $(window).scroll(function () {
         var scrollTop = (document.documentElement.scrollTop | document.body.scrollTop) - ($resultTable.offset().top + resultTableHeadHeight + 16);//判断是否到达窗口顶部
         if (scrollTop > 0) {
+            $shelter.css("width", $resultTable.width() + 2);
             $shelter.show();
         } else {
             $shelter.hide();
@@ -268,6 +269,12 @@ function showTableHead() {
 function showDnzsjh(obj, collegeName) {
     if (collegeDnzsjhMap[collegeName]) {
         var tableHtml = '<table class="table table-bordered table-condensed table-hover">';
+        tableHtml += '<thead>';
+        tableHtml += '<tr>';
+        tableHtml += '<th>专业名称</th>';
+        tableHtml += '<th>招收人数</th>';
+        tableHtml += '</tr>';
+        tableHtml += '</thead>';
         tableHtml += '<tbody>';
         for (var major in collegeDnzsjhMap[collegeName]) {
             tableHtml += '<tr>';
@@ -277,12 +284,15 @@ function showDnzsjh(obj, collegeName) {
         }
         tableHtml += '</tbody>';
         tableHtml += '</table>';
-        var $dnzsjhDialog = $('#dnzsjhDialog');
-        $dnzsjhDialog.draggable();
-        $dnzsjhDialog.find('.modal-title').html('<strong>' + collegeName + '</strong>今年招生计划');
-        $dnzsjhDialog.find('.modal-body').html(tableHtml);
+        var $dnzsjhPanel = $('#dnzsjhPanel');
+        $dnzsjhPanel.draggable({
+            cursor: 'move'
+        });
+        $dnzsjhPanel.find('.panel-title').html('<strong>' + collegeName + '</strong>今年招生计划');
+        $dnzsjhPanel.find('.panel-body').find('.table-responsive').html(tableHtml);
+        $dnzsjhPanel.css({'top': $(obj).offset().top + $(obj).height(), "left": $(obj).offset().left + $(obj).width()});
 
-        $dnzsjhDialog.modal("show");
+        $dnzsjhPanel.show();
     }
 }
 
