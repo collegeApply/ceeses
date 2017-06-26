@@ -1,0 +1,19 @@
+数据提取步骤：
+第一步： 提取历年院校录取情况
+curl http://localhost:8088/ceeses/extract/lnyxlqqk
+
+第二步： 提取历年院校录取统计
+curl http://localhost:8088/ceeses/extract/lnyxlqtj
+
+第三步： 提取历年专业录取统计
+curl http://localhost:8088/ceeses/extract/lnzylqtj
+
+第四步： 提取院校信息
+curl http://localhost:8088/ceeses/extract/college
+
+数据处理步骤：
+第一步：处理历年院校录取统计的平均分数和平均名次
+curl http://localhost:8088/ceeses/resolve/lnyxlqtj
+
+第二步：处理历年专业录取统计的平均分数和平均名次
+curl http://localhost:8088/ceeses/resolve/lnzylqtj
