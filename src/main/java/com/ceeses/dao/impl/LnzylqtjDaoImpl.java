@@ -3,6 +3,8 @@ package com.ceeses.dao.impl;
 import com.ceeses.dao.LnzylqtjDao;
 import com.ceeses.dao.mapper.LnzylqtjMapper;
 import com.ceeses.model.Lnzylqtj;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,13 +16,21 @@ import java.util.Map;
  */
 @Repository
 public class LnzylqtjDaoImpl implements LnzylqtjDao {
+    /**
+     * logger
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(LnzylqtjDaoImpl.class);
 
     @Autowired
     LnzylqtjMapper lnzylqtjMapper;
 
     @Override
     public void batchSaveLnzylqtj(List<Lnzylqtj> lnzylqtjs) {
-        lnzylqtjMapper.batchSaveLnzylqtj(lnzylqtjs);
+        try {
+            lnzylqtjMapper.batchSaveLnzylqtj(lnzylqtjs);
+        } catch (Exception e) {
+            LOGGER.error("保存历年专业录取统计失败, {}", lnzylqtjs, e);
+        }
     }
 
     @Override

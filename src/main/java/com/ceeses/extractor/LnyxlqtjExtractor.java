@@ -107,8 +107,8 @@ public class LnyxlqtjExtractor {
                         lnyxlqtj.setLowGrade(Float.valueOf(StringUtils.hasText(lowGrade) ? lowGrade : "0.0"));
                         String lowRanking = tds.get(7).text();
                         lnyxlqtj.setLowRanking(Integer.valueOf(StringUtils.hasText(lowRanking) ? lowRanking : "0"));
-                        lnyxlqtj.setAvgGrade(((lnyxlqtj.getHighGrade()) + lnyxlqtj.getLowGrade()) / 2);
-                        lnyxlqtj.setAvgRanking(((float) (lnyxlqtj.getHighRanking() + lnyxlqtj.getLowRanking())) / 2);
+                        lnyxlqtj.setAvgGrade(0.0f);
+                        lnyxlqtj.setAvgRanking(0.0f);
 
                         lnyxlqtjs.add(lnyxlqtj);
                     }

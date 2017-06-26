@@ -3,7 +3,7 @@ package com.ceeses.http.util;
 import com.ceeses.http.model.HttpResponseInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -39,6 +39,8 @@ public class HttpClientUtil {
 
     public static HttpResponseInfo get(String url) {
         HttpGet get = new HttpGet(url);
+        // 设置请求和传输超时时间
+        get.setConfig(RequestConfig.custom().setSocketTimeout(30000).setConnectTimeout(30000).build());
 
         HttpResponseInfo responseInfo = new HttpResponseInfo();
         HttpResponse response;
@@ -60,6 +62,8 @@ public class HttpClientUtil {
 
     public static HttpResponseInfo post(String url, Map<String, String> params) {
         HttpPost post = new HttpPost(url);
+        // 设置请求和传输超时时间
+        post.setConfig(RequestConfig.custom().setSocketTimeout(30000).setConnectTimeout(30000).build());
         List<NameValuePair> nameValuePairs = new ArrayList<>();
         if (params != null && params.size() > 0) {
             for (Map.Entry<String, String> entry : params.entrySet()) {

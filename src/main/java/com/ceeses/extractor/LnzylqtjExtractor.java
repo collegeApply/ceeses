@@ -110,9 +110,8 @@ public class LnzylqtjExtractor {
                         lnzylqtj.setLowGrade(Float.valueOf(StringUtils.hasText(lowGrade) ? lowGrade : "0.0"));
                         String lowRanking = tds.get(8).text();
                         lnzylqtj.setLowRanking(Integer.valueOf(StringUtils.hasText(lowRanking) ? lowRanking : "0"));
-                        String avgGrade = tds.get(9).text();
-                        lnzylqtj.setAvgGrade(Float.valueOf(StringUtils.hasText(avgGrade) ? avgGrade : "0.0"));
-                        lnzylqtj.setAvgRanking(((float) (lnzylqtj.getHighRanking() + lnzylqtj.getLowRanking())) / 2);
+                        lnzylqtj.setAvgGrade(0.0f);
+                        lnzylqtj.setAvgRanking(0.0f);
 
                         lnzylqtjs.add(lnzylqtj);
                     }
@@ -144,7 +143,9 @@ public class LnzylqtjExtractor {
             for (int i = 1; i <= pageInfo.getTotalPage(); i++) {
                 params.put("pageNum", String.valueOf(i));
                 List<Lnzylqtj> lnzylqtjs = extractLnzylqtjByPage(params);
-                lnzylqtjDao.batchSaveLnzylqtj(lnzylqtjs);
+                if (lnzylqtjs.size() > 0) {
+                    lnzylqtjDao.batchSaveLnzylqtj(lnzylqtjs);
+                }
                 count += lnzylqtjs.size();
                 LOGGER.info("提取{}年的数据, {}, 已提取{}条数据", year, params, count);
             }

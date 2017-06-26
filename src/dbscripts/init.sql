@@ -65,6 +65,8 @@ CREATE TABLE `t_lnyxlqtj` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年院校录取统计，针对某个院校';
 
+ALTER TABLE `t_lnyxlqtj` MODIFY `college_code` varchar(20) COMMENT '院校编码，统一代码';
+
 -- 历年专业录取统计表
 CREATE TABLE `t_lnzylqtj` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -83,7 +85,6 @@ CREATE TABLE `t_lnzylqtj` (
   `avg_ranking` float(9,3) DEFAULT NULL COMMENT '平均名次需计算出来',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='历年专业录取统计，针对某个院校';
-
 
 -- 院校基础信息表
 DROP TABLE IF EXISTS `t_college_info`;

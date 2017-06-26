@@ -131,4 +131,24 @@ public class Lnzylqtj {
     public void setAvgRanking(Float avgRanking) {
         this.avgRanking = avgRanking;
     }
+
+    @Override
+    public String toString() {
+        return "Lnzylqtj{" +
+                "id=" + id +
+                ", year=" + year +
+                ", collegeEnrollId=" + collegeEnrollId +
+                ", collegeName='" + collegeName + '\'' +
+                ", majorName='" + majorName + '\'' +
+                ", batchCode='" + batchCode + '\'' +
+                ", category='" + category + '\'' +
+                ", enrollCount=" + enrollCount +
+                ", highGrade=" + highGrade +
+                ", lowGrade=" + lowGrade +
+                ", avgGrade=" + avgGrade +
+                ", highRanking=" + highRanking +
+                ", lowRanking=" + lowRanking +
+                ", avgRanking=" + avgRanking +
+                '}';
+    }
 }
