@@ -136,7 +136,7 @@ CREATE TABLE `t_query_code` (
   `status` ENUM('0', '1') DEFAULT '0' NOT NULL COMMENT '状态，0表示可用，1表示不可用',
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unq_query_code`(`code`);
+  UNIQUE KEY `unq_query_code`(`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='查询码表';
 
 -- 省控线直接初始化进去

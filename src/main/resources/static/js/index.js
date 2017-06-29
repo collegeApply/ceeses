@@ -5,6 +5,10 @@
 
 $.fn.select2.defaults.set("theme", "bootstrap");
 
+bootbox.setDefaults({
+    locale: "zh_CN"
+});
+
 var areas = [
     '北京', '广东', '山东', '江苏', '河南', '上海', '河北', '浙江', '陕西', '湖南', '重庆', '福建', '天津', '云南', '四川', '广西', '安徽', '海南', '江西', '湖北', '山西', '辽宁', '台湾', '黑龙江', '内蒙古', '香港', '澳门', '贵州', '甘肃', '青海', '新疆', '西藏', '吉林', '宁夏'
 ];
@@ -22,6 +26,47 @@ $(function () {
 
     $searchConditionsContainer.find('button[name=searchBtn]').click(function () {
         if (validateForm()) {
+            var allowQuery = false;
+            $.ajax({
+                url: 'query/code/check',
+                type: 'POST',
+                async: false,
+                success: function (result) {
+                    if (result && result.code == '0') {
+                        allowQuery = true;
+                    }
+                }
+            });
+
+            if (!allowQuery) {
+                bootbox.prompt({
+                    title: "请输入查询码",
+                    size: "small",
+                    callback: function (queryCode) {
+                        if (queryCode) {
+                            $.ajax({
+                                url: 'query/code/validate',
+                                type: 'POST',
+                                async: false,
+                                dataType: 'json',
+                                data: {queryCode: queryCode},
+                                success: function (result) {
+                                    if (result && result.code == '0') {
+                                        allowQuery = true;
+                                    } else {
+                                        bootbox.alert(result.msg);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            if (!allowQuery) {
+                return;
+            }
+
             $('#waitingDialog').modal("show");
             $.ajax({
                 url: 'lnfsdxq/getTargetColleges',
@@ -348,11 +393,6 @@ function initSchoolSelect() {
 }
 
 function validateForm() {
-    if (!$searchConditionsContainer.find('input[name=queryCode]').val()) {
-        bootbox.alert("请输入查询码");
-        return false;
-    }
-
     if (!$searchConditionsContainer.find('input[name=studentName]').val()) {
         bootbox.alert("请输入姓名");
         return false;
@@ -383,7 +423,6 @@ function validateForm() {
 
 function extractForm() {
     var requestForm = {};
-    requestForm['queryCode'] = $searchConditionsContainer.find('input[name=queryCode]').val();
     requestForm['studentName'] = $searchConditionsContainer.find('input[name=studentName]').val();
     requestForm['examRegCode'] = $searchConditionsContainer.find('input[name=examRegCode]').val();
     requestForm['grade'] = $searchConditionsContainer.find('input[name=grade]').val();
