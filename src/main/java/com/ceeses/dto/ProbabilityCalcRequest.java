@@ -5,8 +5,8 @@ package com.ceeses.dto;
  * 初步确定的输入参数根据用户输入结果查询
  */
 public class ProbabilityCalcRequest {
-
     //以下必填
+    private String queryCode;
     private Integer year;
     private String studentName;
     private String examRegCode;
@@ -35,6 +35,14 @@ public class ProbabilityCalcRequest {
     //查询算法,可以同时选个两种算法
     //1:位次法，2:线差法，3:两种皆有
     private String algorithmType;
+
+    public String getQueryCode() {
+        return queryCode;
+    }
+
+    public void setQueryCode(String queryCode) {
+        this.queryCode = queryCode;
+    }
 
     public Integer getYear() {
         return year;
@@ -151,7 +159,8 @@ public class ProbabilityCalcRequest {
     @Override
     public String toString() {
         return "ProbabilityCalcRequest{" +
-                "year=" + year +
+                "queryCode='" + queryCode + '\'' +
+                ", year=" + year +
                 ", studentName='" + studentName + '\'' +
                 ", examRegCode='" + examRegCode + '\'' +
                 ", grade=" + grade +

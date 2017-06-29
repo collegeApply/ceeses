@@ -348,6 +348,11 @@ function initSchoolSelect() {
 }
 
 function validateForm() {
+    if (!$searchConditionsContainer.find('input[name=queryCode]').val()) {
+        bootbox.alert("请输入查询码");
+        return false;
+    }
+
     if (!$searchConditionsContainer.find('input[name=studentName]').val()) {
         bootbox.alert("请输入姓名");
         return false;
@@ -378,6 +383,7 @@ function validateForm() {
 
 function extractForm() {
     var requestForm = {};
+    requestForm['queryCode'] = $searchConditionsContainer.find('input[name=queryCode]').val();
     requestForm['studentName'] = $searchConditionsContainer.find('input[name=studentName]').val();
     requestForm['examRegCode'] = $searchConditionsContainer.find('input[name=examRegCode]').val();
     requestForm['grade'] = $searchConditionsContainer.find('input[name=grade]').val();

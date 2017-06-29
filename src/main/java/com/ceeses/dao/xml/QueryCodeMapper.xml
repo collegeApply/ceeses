@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ceeses.dao.mapper.QueryCodeMapper">
+
+    <resultMap id="queryCodeMap" type="com.ceeses.model.QueryCode">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="code" column="code" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="save" parameterType="com.ceeses.model.QueryCode">
+        INSERT INTO `t_query_code` (`code`)
+        VALUE (#{code});
+    </insert>
+
+    <select id="queryByCode" parameterType="string" resultMap="queryCodeMap">
+        SELECT * FROM `t_query_code` WHERE `code` = #{code};
+    </select>
+</mapper>
